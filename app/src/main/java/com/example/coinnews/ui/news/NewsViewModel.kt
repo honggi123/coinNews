@@ -16,6 +16,6 @@ class NewsViewModel @Inject constructor(
     val articles = newsRepository.getArticles()
         .cachedIn(viewModelScope)
 
-    val videos = newsRepository.getVideos()
+    val twitterPosts = newsRepository.getVideos()
         .cachedIn(viewModelScope)
 }

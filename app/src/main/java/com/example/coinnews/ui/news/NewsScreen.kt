@@ -1,5 +1,6 @@
 package com.example.coinnews.ui.news
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,16 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.coinenews.R
+import com.example.coinnews.R
 import com.example.coinnews.model.Article
-import com.example.coinnews.model.ArticleAsset
 import com.example.coinnews.model.ArticleMetaData
 import com.example.coinnews.ui.news.components.ArticleContent
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
 
 enum class Categorys(@StringRes val titleResId: Int) {
     News(R.string.news),
-    Video(R.string.video),
+    Twitter(R.string.twitter),
 }
 
 class TabContent(val category: Categorys, val content: @Composable () -> Unit)
@@ -91,7 +91,7 @@ fun NewsScreenContent(
 
 @Composable
 fun rememberTabContent(newsViewModel: NewsViewModel): List<TabContent> {
-    val topicsSection = TabContent(Categorys.News) {
+    val newsSection = TabContent(Categorys.News) {
         val articles = newsViewModel.articles.collectAsLazyPagingItems()
         ArticleContent(
             articles = articles,
@@ -99,11 +99,11 @@ fun rememberTabContent(newsViewModel: NewsViewModel): List<TabContent> {
         )
     }
 
-    val peopleSection = TabContent(Categorys.Video) {
-        val videos = newsViewModel.videos.collectAsLazyPagingItems()
+    val twitterSection = TabContent(Categorys.Twitter) {
+        val twitterPosts = newsViewModel.twitterPosts.collectAsLazyPagingItems()
     }
 
-    return listOf(topicsSection, peopleSection)
+    return listOf(newsSection, twitterSection)
 }
 
 private fun createArticleIntent(article: Article) {}

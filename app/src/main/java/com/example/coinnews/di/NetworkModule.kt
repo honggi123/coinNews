@@ -11,6 +11,7 @@ import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.io.IOException
 import javax.inject.Singleton
@@ -21,8 +22,12 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
         return OkHttpClient.Builder()
-            .addInterceptor(AppInterceptor())
+            .addInterceptor(loggingInterceptor)
             .build()
     }
 
@@ -33,7 +38,7 @@ object NetworkModule {
             Json { ignoreUnknownKeys = true }.asConverterFactory("application/json".toMediaType())
 
         return Retrofit.Builder()
-            .baseUrl("https://pro-api.coinmarketcap.com")
+            .baseUrl("https://openapi.naver.com")
             .client(client)
             .addConverterFactory(converterFactory)
             .build()
@@ -43,15 +48,5 @@ object NetworkModule {
     @Provides
     fun provideNewsService(retrofit: Retrofit): NewsService {
         return retrofit.create(NewsService::class.java)
-    }
-
-    class AppInterceptor : Interceptor {
-        @Throws(IOException::class)
-        override fun intercept(chain: Interceptor.Chain) : Response = with(chain) {
-            val newRequest = request().newBuilder()
-                .addHeader("X-CMC_PRO_API_KEY", "a164184f-4e7f-4424-94ec-cc5437304222")
-                .build()
-            proceed(newRequest)
-        }
     }
 }

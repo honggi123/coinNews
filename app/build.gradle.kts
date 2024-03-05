@@ -1,18 +1,18 @@
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("dagger.hilt.android.plugin")
+    id("kotlinx-serialization")
     kotlin("kapt")
 }
 
 android {
-    namespace = "com.example.coinenews"
+    namespace = "com.example.coinnews"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.coinenews"
-        minSdk = 24
+        applicationId = "com.example.coinnews"
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"

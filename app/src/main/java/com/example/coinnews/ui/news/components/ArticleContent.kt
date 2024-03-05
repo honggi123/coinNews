@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,14 +16,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
@@ -30,10 +34,11 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.coinnews.model.Article
-import com.example.coinnews.model.ArticleAsset
 import com.example.coinnews.model.ArticleMetaData
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun ArticleContent(
@@ -50,12 +55,13 @@ fun ArticleContent(
         state = state
     ) {
         items(articles.itemCount) { index ->
-            articles[index]?.let{
+            articles[index]?.let {
                 ArticleContentItem(
                     article = it,
                     onArticleClick = onArticleClick,
                     modifier = Modifier
                 )
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
@@ -69,36 +75,25 @@ private fun ArticleContentItem(
 ) {
     Column(
         modifier = modifier.clickable { onArticleClick(article) },
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalAlignment = Alignment.Start,
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Column(
-                modifier = Modifier.weight(1F),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                horizontalAlignment = Alignment.Start,
-            ) {
-                Text(
-                    text = article.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-                ArticleMetaData(
-                    article = article,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            AsyncImage(
-                model = article.imageUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .width(110.dp)
-                    .height(104.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
-        }
+        Text(
+            text = article.title,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = article.description,
+            style = MaterialTheme.typography.bodyLarge,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Normal,
+        )
+        ArticleMetaData(
+            article = article,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -111,20 +106,8 @@ private fun ArticleMetaData(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        article.assets.forEach { asset ->
-            Text(
-                text = asset.symbol,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Normal
-            )
-        }
         Text(
-            text = "・",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Normal
-        )
-        Text(
-            text = article.metaData.author,
+            text = article.metaData.author ?: "알 수 없는 출처",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Normal
         )
@@ -134,7 +117,7 @@ private fun ArticleMetaData(
             fontWeight = FontWeight.Normal
         )
         Text(
-            text = article.metaData.createdAt,
+            text = getTimeAgo(article.metaData.createdAt, LocalDateTime.now()),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Normal
         )
@@ -148,18 +131,11 @@ fun PreviewArticleContent() {
         Article(
             id = "1",
             title = "블롬버그 \"버블 조짐 있다\"vs 월스트리트저널 \"과거 만큼은 아니다\"",
-            imageUrl = "imageUrl",
             url = "url",
-            assets = listOf(
-                ArticleAsset(
-                    id = "1",
-                    name = "ether",
-                    symbol = "eth"
-                )
-            ),
+            description = "한편, 한화투자증권은 2021년 2월에 암호화폐 거래소 업비트와 주식 거래 플랫폼 증권플러스 등을 운영하는 두나무 보통주 약 200만주를 583억원에 매수한 바 있다.",
             metaData = ArticleMetaData(
                 author = "블록미디어",
-                createdAt = "2시간 전"
+                createdAt = LocalDateTime.now()
             )
         )
     )
@@ -175,5 +151,17 @@ fun PreviewArticleContent() {
                 .padding(10.dp)
                 .background(White)
         )
+    }
+}
+
+private fun getTimeAgo(fromTime: LocalDateTime, toTime: LocalDateTime = LocalDateTime.now()): String {
+    val minutes = ChronoUnit.MINUTES.between(fromTime, toTime)
+    val hours = ChronoUnit.HOURS.between(fromTime, toTime)
+    val days = ChronoUnit.DAYS.between(fromTime, toTime)
+
+    return when {
+        minutes < 60 -> "$minutes 분 전"
+        hours < 24 -> "$hours 시간 전"
+        else -> "$days 일 전"
     }
 }

@@ -9,7 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
-import com.example.coinenews.R
+import com.example.coinnews.R
 
 private val Montserrat = FontFamily(
     Font(R.font.noto_sans_kr_regular),

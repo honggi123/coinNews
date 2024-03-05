@@ -1,17 +1,22 @@
 package com.example.coinnews.data.repository.impl
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import com.example.coinnews.data.mapper.toArticle
 import com.example.coinnews.data.network.retrofit.NewsService
 import com.example.coinnews.data.paging.NewsPagingSource
 import com.example.coinnews.data.repository.NewsRepository
 import com.example.coinnews.model.Article
+import com.example.coinnews.model.ArticleMetaData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+
+private const val DEFAULT_CRYPTO_QUERY = "암호화폐"
 
 @Singleton
 class NewsRepositoryImpl @Inject constructor(
@@ -24,8 +29,13 @@ class NewsRepositoryImpl @Inject constructor(
                 enablePlaceholders = false, // todo
                 pageSize = 5
             ),
-            pagingSourceFactory = { NewsPagingSource(service = newsService, contentType = "news") }
-        ).flow.map { it.map { TODO() } }
+            pagingSourceFactory = {
+                NewsPagingSource(
+                    service = newsService,
+                    query = DEFAULT_CRYPTO_QUERY
+                )
+            }
+        ).flow.map { it.map { it.toArticle() } }
     }
 
     override fun getVideos(): Flow<PagingData<Article>> {
@@ -34,7 +44,7 @@ class NewsRepositoryImpl @Inject constructor(
                 enablePlaceholders = false, // todo
                 pageSize = 5
             ),
-            pagingSourceFactory = { NewsPagingSource(service = newsService, contentType = "video") }
+            pagingSourceFactory = { NewsPagingSource(service = newsService, query = DEFAULT_CRYPTO_QUERY) }
         ).flow.map { it.map { TODO() } }
     }
 }
