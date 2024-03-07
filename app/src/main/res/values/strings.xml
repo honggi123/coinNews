@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">CoinMarketCapNewsApp</string>
     <string name="news">뉴스</string>
-    <string name="twitter">트위터</string>
     <string name="coin">코인</string>
+    <string name="interesting_coin">관심 코인</string>
+
+    <string name="hash_tag">#</string>
+    <string name="market_cap">시가 총액</string>
+    <string name="price">가격</string>
+    <string name="percent_change_24h">24시간 %</string>
 </resources>

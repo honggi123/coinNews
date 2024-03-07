@@ -59,7 +59,6 @@ fun ArticleContent(
                 ArticleContentItem(
                     article = it,
                     onArticleClick = onArticleClick,
-                    modifier = Modifier
                 )
                 Spacer(modifier = Modifier.height(20.dp))
             }

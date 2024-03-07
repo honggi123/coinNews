@@ -6,7 +6,7 @@ import com.example.coinnews.model.ArticleMetaData
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun NetworkArticle.toArticle(): Article {
+fun NetworkArticle.toDomain(): Article {
     return Article(
         id = "",
         title = this.title,

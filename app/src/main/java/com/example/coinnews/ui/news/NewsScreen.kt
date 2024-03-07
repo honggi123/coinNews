@@ -1,38 +1,36 @@
 package com.example.coinnews.ui.news
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.coinnews.R
 import com.example.coinnews.model.Article
-import com.example.coinnews.model.ArticleMetaData
 import com.example.coinnews.ui.news.components.ArticleContent
-import com.example.coinnews.ui.theme.CoinNewsAppTheme
+import com.example.coinnews.ui.news.components.CoinContent
 
 enum class Categorys(@StringRes val titleResId: Int) {
     News(R.string.news),
-    Twitter(R.string.twitter),
+    Coin(R.string.coin),
+    InterestingCoin(R.string.interesting_coin),
 }
 
 class TabContent(val category: Categorys, val content: @Composable () -> Unit)
@@ -79,13 +77,43 @@ fun NewsScreenContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
-    val selectedTab = tabs.find { it.category == selectedCategory}
+    val selectedTabIndex = tabs.indexOfFirst { it.category == selectedCategory }
 
-    // todo add tab
     Column(
         modifier = modifier.padding(contentPadding)
     ) {
-        selectedTab?.let { it.content() }
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            contentColor = MaterialTheme.colorScheme.primary
+        ) {
+            NewsTabRowContent(
+                tabs,
+                selectedTabIndex,
+                onCategoryChange
+            )
+        }
+        Spacer(modifier = Modifier.height(15.dp))
+        tabs[selectedTabIndex].content()
+    }
+}
+
+@Composable
+fun NewsTabRowContent(
+    tabs: List<TabContent>,
+    selectedTabIndex: Int,
+    onCategoryChange: (Categorys) -> Unit
+) {
+    tabs.forEachIndexed { index, content ->
+        Tab(
+            selected = selectedTabIndex == index,
+            onClick = { onCategoryChange(content.category) },
+            modifier = Modifier.height(50.dp)
+        ) {
+            Text(
+                text = stringResource(id = content.category.titleResId),
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
     }
 }
 
@@ -99,11 +127,22 @@ fun rememberTabContent(newsViewModel: NewsViewModel): List<TabContent> {
         )
     }
 
-    val twitterSection = TabContent(Categorys.Twitter) {
-        val twitterPosts = newsViewModel.twitterPosts.collectAsLazyPagingItems()
+    val coinSection = TabContent(Categorys.Coin) {
+        val coins = newsViewModel.coins.collectAsLazyPagingItems()
+        val sortOptions by newsViewModel.coinSortOptions.collectAsStateWithLifecycle()
+
+        CoinContent(
+            sortOptions = sortOptions,
+            onSortingClick = newsViewModel::changeNextCoinSort,
+            coins = coins
+        )
     }
 
-    return listOf(newsSection, twitterSection)
+    val interestingCoinSection = TabContent(Categorys.InterestingCoin) {
+        // TODO
+    }
+
+    return listOf(coinSection, newsSection, interestingCoinSection)
 }
 
 private fun createArticleIntent(article: Article) {}
