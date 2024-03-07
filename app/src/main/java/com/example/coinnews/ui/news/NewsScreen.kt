@@ -1,5 +1,6 @@
 package com.example.coinnews.ui.news
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -119,11 +121,13 @@ fun NewsTabRowContent(
 
 @Composable
 fun rememberTabContent(newsViewModel: NewsViewModel): List<TabContent> {
+    val context = LocalContext.current
+
     val newsSection = TabContent(Categorys.News) {
         val articles = newsViewModel.articles.collectAsLazyPagingItems()
         ArticleContent(
             articles = articles,
-            onArticleClick = { createArticleIntent(it) }
+            onArticleClick = { createArticleIntent(it, context) }
         )
     }
 
@@ -145,5 +149,7 @@ fun rememberTabContent(newsViewModel: NewsViewModel): List<TabContent> {
     return listOf(coinSection, newsSection, interestingCoinSection)
 }
 
-private fun createArticleIntent(article: Article) {}
+private fun createArticleIntent(article: Article, context: Context) {
+
+}
 

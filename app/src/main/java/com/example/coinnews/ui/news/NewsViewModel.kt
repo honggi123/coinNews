@@ -32,8 +32,7 @@ class NewsViewModel @Inject constructor(
     val coinSortOptions = _coinSortOptions.asStateFlow()
 
     private val _coins = MutableStateFlow<PagingData<Coin>?>(null)
-    val coins: Flow<PagingData<Coin>>
-        get() = _coins.filterNotNull()
+    val coins: Flow<PagingData<Coin>> = _coins.filterNotNull()
 
     val articles = repository.getArticles()
         .cachedIn(viewModelScope)
@@ -55,7 +54,7 @@ class NewsViewModel @Inject constructor(
         option: CoinSortOption,
         newSort: Sort
     ): Map<CoinSortOption, Sort> {
-        val options = defaultSortOptions.toMutableMap()
+        val options = defaultSortOptions.toMutableMap() // todo
         return options.apply { this[option] = newSort }
     }
 }

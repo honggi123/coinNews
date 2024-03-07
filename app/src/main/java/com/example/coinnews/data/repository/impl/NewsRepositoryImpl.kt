@@ -60,20 +60,6 @@ class NewsRepositoryImpl @Inject constructor(
                     service = coinService
                 )
             }
-        ).flow.map {
-            it.map {
-                Coin(
-                    id = it.id,
-                    name = it.name,
-                    rank = it.cmcRank,
-                    symbol = it.symbol,
-                    usdAsset = Asset(
-                        price = it.quote.usd?.price,
-                        priceChange24h = it.quote.usd?.percentChange24h,
-                        totalMarketCap = it.quote.usd?.marketCap
-                    )
-                )
-            }
-        }
+        ).flow.map { it.map { it.toDomain() } }
     }
 }
