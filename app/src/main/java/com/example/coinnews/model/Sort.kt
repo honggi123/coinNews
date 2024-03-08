@@ -1,11 +1,19 @@
 package com.example.coinnews.model
 
-enum class Sort(val step: Int) {
-    None(0),
-    Ascending(1),
-    Descending(2);
+data class Sort(
+    val option: SortOption,
+    val ordering: Ordering
+)
 
-    companion object {
-        fun find(step: Int): Sort = values().find { it.step == step } ?: None
-    }
+enum class SortOption {
+    Rank,
+    MarketCap,
+    Price,
+    PriceChange24h
+}
+
+enum class Ordering {
+    None,
+    Ascending,
+    Descending
 }

@@ -1,6 +1,8 @@
 package com.example.coinnews.ui.news
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -133,11 +135,11 @@ fun rememberTabContent(newsViewModel: NewsViewModel): List<TabContent> {
 
     val coinSection = TabContent(Categorys.Coin) {
         val coins = newsViewModel.coins.collectAsLazyPagingItems()
-        val sortOptions by newsViewModel.coinSortOptions.collectAsStateWithLifecycle()
+        val selectedSort by newsViewModel.selectedSort.collectAsStateWithLifecycle()
 
         CoinContent(
-            sortOptions = sortOptions,
-            onSortingClick = newsViewModel::changeNextCoinSort,
+            selectedSort = selectedSort,
+            onSortingClick = newsViewModel::onSortClick,
             coins = coins
         )
     }
@@ -150,6 +152,10 @@ fun rememberTabContent(newsViewModel: NewsViewModel): List<TabContent> {
 }
 
 private fun createArticleIntent(article: Article, context: Context) {
-
+    context.startActivity(
+        Intent(Intent.ACTION_VIEW)
+            .setData(Uri.parse(article.url))
+            .setPackage("com.google.android.youtube")
+    )
 }
 

@@ -31,16 +31,17 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.coinnews.R
 import com.example.coinnews.model.Asset
 import com.example.coinnews.model.Coin
-import com.example.coinnews.model.CoinSortOption
+import com.example.coinnews.model.Ordering
 import com.example.coinnews.model.Sort
+import com.example.coinnews.model.SortOption
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun CoinContent(
     coins: LazyPagingItems<Coin>, // todo
-    sortOptions: Map<CoinSortOption, Sort>,
-    onSortingClick: (CoinSortOption, Sort) -> Unit,
+    selectedSort: Sort?,
+    onSortingClick: (Sort) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     state: LazyListState = rememberLazyListState()
@@ -52,7 +53,7 @@ fun CoinContent(
     ) {
         item {
             TitleItem(
-                sortOptions = sortOptions,
+                selectedSort = selectedSort,
                 onSortingClick = onSortingClick
             )
             Spacer(modifier = Modifier.height(15.dp))
@@ -73,13 +74,16 @@ fun CoinContent(
 
 @Composable
 private fun TitleItem(
-    sortOptions: Map<CoinSortOption, Sort>,
-    onSortingClick: (CoinSortOption, Sort) -> Unit,
+    selectedSort: Sort?,
+    onSortingClick: (Sort) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val marketCapSort = sortOptions[CoinSortOption.MarketCap] ?: Sort.None
-    val priceSort = sortOptions[CoinSortOption.Price] ?: Sort.None
-    val priceChangeSort = sortOptions[CoinSortOption.PriceChange24h] ?: Sort.None
+    val marketCapOrdering =
+        if (selectedSort?.option == SortOption.MarketCap) selectedSort.ordering else Ordering.None
+    val priceOrdering =
+        if (selectedSort?.option == SortOption.Price) selectedSort.ordering else Ordering.None
+    val priceChangeOrdering =
+        if (selectedSort?.option == SortOption.PriceChange24h) selectedSort.ordering else Ordering.None
 
     Row(
         modifier = modifier,
@@ -95,20 +99,26 @@ private fun TitleItem(
         )
         SortableCoinTitle(
             title = stringResource(id = R.string.market_cap),
-            selectedSort = marketCapSort,
-            onSortingClick = { onSortingClick(CoinSortOption.MarketCap, marketCapSort) },
+            ordering = marketCapOrdering,
+            onSortingClick = {
+                onSortingClick(Sort(SortOption.MarketCap, marketCapOrdering))
+            },
             modifier = Modifier.weight(1f),
         )
         SortableCoinTitle(
             title = stringResource(id = R.string.price),
-            selectedSort = priceSort,
-            onSortingClick = { onSortingClick(CoinSortOption.Price, priceSort) },
+            ordering = priceOrdering,
+            onSortingClick = {
+                onSortingClick(Sort(SortOption.Price, priceOrdering))
+            },
             modifier = Modifier.weight(1f),
         )
         SortableCoinTitle(
             title = stringResource(id = R.string.percent_change_24h),
-            selectedSort = priceChangeSort,
-            onSortingClick = { onSortingClick(CoinSortOption.Price, priceChangeSort) },
+            ordering = priceChangeOrdering,
+            onSortingClick = {
+                onSortingClick(Sort(SortOption.Price, priceChangeOrdering))
+            },
             modifier = Modifier.weight(1f),
         )
     }
@@ -119,7 +129,7 @@ private fun SortableCoinTitle(
     title: String,
     onSortingClick: () -> Unit,
     modifier: Modifier = Modifier,
-    selectedSort: Sort = Sort.None
+    ordering: Ordering = Ordering.None
 ) {
     Row(
         modifier = modifier.clickable { onSortingClick() },
@@ -129,7 +139,7 @@ private fun SortableCoinTitle(
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Normal,
         )
-        SortableArrow(selectedSort)
+        SortableArrow(ordering)
     }
 }
 
@@ -208,8 +218,8 @@ fun PreviewCoinContent() {
     CoinNewsAppTheme {
         CoinContent(
             coins = flow.collectAsLazyPagingItems(),
-            sortOptions = mutableMapOf(CoinSortOption.Price to Sort.Descending),
-            onSortingClick = { _,_ -> },
+            selectedSort = Sort(SortOption.MarketCap, Ordering.Descending),
+            onSortingClick = { _ -> },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(10.dp)

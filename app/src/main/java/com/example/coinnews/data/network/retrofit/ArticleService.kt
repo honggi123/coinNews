@@ -3,11 +3,9 @@ package com.example.coinnews.data.network.retrofit
 import com.example.coinnews.data.network.model.NetworkArticlesResponse
 import retrofit2.http.GET
 import retrofit2.http.Header
-import retrofit2.http.Headers
-import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface NewsService {
+interface ArticleService {
 
     @GET("/v1/search/news.json")
     suspend fun getArticles(

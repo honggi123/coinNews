@@ -26,16 +26,8 @@ class CoinPagingSource @Inject constructor(
             )
             LoadResult.Page(
                 data = response.items,
-                prevKey = if (page == INITIAL_PAGE) {
-                    null
-                } else {
-                    page - 1
-                },
-                nextKey = if (response.items.isEmpty()) {
-                    null
-                } else {
-                    page + 1
-                }
+                prevKey = if (page == INITIAL_PAGE) null else page - 1,
+                nextKey = if (response.items.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

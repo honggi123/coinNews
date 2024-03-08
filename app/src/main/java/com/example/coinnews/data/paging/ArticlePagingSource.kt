@@ -1,17 +1,16 @@
 package com.example.coinnews.data.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.coinnews.data.network.model.NetworkArticle
-import com.example.coinnews.data.network.retrofit.NewsService
+import com.example.coinnews.data.network.retrofit.ArticleService
 import javax.inject.Inject
 
 
 private const val INITIAL_PAGE = 1
 
-class NewsPagingSource @Inject constructor(
-    private val service: NewsService,
+class ArticlePagingSource @Inject constructor(
+    private val service: ArticleService,
     private val query: String
 ) : PagingSource<Int, NetworkArticle>() {
 
@@ -26,16 +25,8 @@ class NewsPagingSource @Inject constructor(
             )
             LoadResult.Page(
                 data = response.items,
-                prevKey = if (page == INITIAL_PAGE) {
-                    null
-                } else {
-                    page - 1
-                },
-                nextKey = if (response.items.isEmpty()) {
-                    null
-                } else {
-                    page + 1
-                }
+                prevKey = if (page == INITIAL_PAGE) null  else page - 1,
+                nextKey = if (response.items.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
