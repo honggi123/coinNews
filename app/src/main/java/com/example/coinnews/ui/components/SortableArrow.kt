@@ -1,4 +1,4 @@
-package com.example.coinnews.ui.news.components
+package com.example.coinnews.ui.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable

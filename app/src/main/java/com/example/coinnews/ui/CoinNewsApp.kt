@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.coinnews.ui.news.NewsRoute
+import com.example.coinnews.ui.home.HomeRoute
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
 
 @Composable
@@ -28,7 +28,7 @@ fun CoinNewsNavGraph(
         modifier = modifier,
     ) {
         composable(CoinNewsDestinations.NEWS_ROUTE) {
-            NewsRoute(
+            HomeRoute(
                 modifier = Modifier.fillMaxSize()
             )
         }

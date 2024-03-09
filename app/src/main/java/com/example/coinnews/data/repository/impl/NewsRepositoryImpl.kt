@@ -27,7 +27,7 @@ class NewsRepositoryImpl @Inject constructor(
 
     override fun getArticles(): Flow<PagingData<Article>> {
         return Pager(
-            config = PagingConfig(enablePlaceholders = false, pageSize = 5),
+            config = PagingConfig(enablePlaceholders = false, pageSize = 10),
             pagingSourceFactory = { ArticlePagingSource(articleService, DEFAULT_CRYPTO_QUERY) }
         ).flow.map { it.map { it.toDomain() } }
     }
@@ -38,7 +38,7 @@ class NewsRepositoryImpl @Inject constructor(
         val sortOption = sort.option.toNetwork()
         val ordering = sort.ordering.toNetwork()
         return Pager(
-            config = PagingConfig(enablePlaceholders = false, pageSize = 5),
+            config = PagingConfig(enablePlaceholders = false, pageSize = 10),
             pagingSourceFactory = { CoinPagingSource(sortOption, ordering, coinService) }
         ).flow.map { it.map { it.toDomain() } }
     }

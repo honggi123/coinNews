@@ -1,5 +1,6 @@
-package com.example.coinnews.ui.news.components
+package com.example.coinnews.ui.coinlist
 
+import android.text.style.AlignmentSpan
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +26,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -34,12 +40,30 @@ import com.example.coinnews.model.Coin
 import com.example.coinnews.model.Ordering
 import com.example.coinnews.model.Sort
 import com.example.coinnews.model.SortOption
+import com.example.coinnews.ui.components.SortableArrow
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
+import com.example.coinnews.ui.utils.formatDoubleWithUnit
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
-fun CoinContent(
-    coins: LazyPagingItems<Coin>, // todo
+fun CoinListScreen(
+    viewModel: CoinListViewModel = hiltViewModel()
+) {
+    val coins = viewModel.coins.collectAsLazyPagingItems()
+    val selectedSort by viewModel.selectedSort.collectAsStateWithLifecycle()
+
+    CoinListScreen(
+        selectedSort = selectedSort,
+        onSortingClick = viewModel::onSortClick,
+        coins = coins
+    )
+}
+
+@Composable
+private fun CoinListScreen(
+    coins: LazyPagingItems<Coin>,
     selectedSort: Sort?,
     onSortingClick: (Sort) -> Unit,
     modifier: Modifier = Modifier,
@@ -112,14 +136,16 @@ private fun TitleItem(
                 onSortingClick(Sort(SortOption.Price, priceOrdering))
             },
             modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.End
         )
         SortableCoinTitle(
             title = stringResource(id = R.string.percent_change_24h),
             ordering = priceChangeOrdering,
             onSortingClick = {
-                onSortingClick(Sort(SortOption.Price, priceChangeOrdering))
+                onSortingClick(Sort(SortOption.PriceChange24h, priceChangeOrdering))
             },
             modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.End
         )
     }
 }
@@ -129,10 +155,12 @@ private fun SortableCoinTitle(
     title: String,
     onSortingClick: () -> Unit,
     modifier: Modifier = Modifier,
-    ordering: Ordering = Ordering.None
+    ordering: Ordering = Ordering.None,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
 ) {
     Row(
         modifier = modifier.clickable { onSortingClick() },
+        horizontalArrangement = horizontalArrangement
     ) {
         Text(
             text = title,
@@ -164,27 +192,28 @@ private fun ContentItem(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = coin.name,
-                style = MaterialTheme.typography.bodyLarge,
+                text = coin.symbol,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = coin.usdAsset.totalMarketCap.toString(),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Normal
             )
         }
         Text(
-            text = coin.usdAsset.price.toString(),
-            style = MaterialTheme.typography.bodyLarge,
+            text = formatDoubleWithUnit(coin.usdAsset.price) ?: "정보 없음",
+            style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             textAlign = TextAlign.Right,
             modifier = Modifier.weight(1f)
         )
         Text(
-            text = coin.usdAsset.priceChange24h.toString(),
-            style = MaterialTheme.typography.bodyLarge,
+            text = formatDoubleWithUnit(coin.usdAsset.priceChange24h, "") ?: "정보 없음",
+            style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             textAlign = TextAlign.Right,
@@ -195,29 +224,12 @@ private fun ContentItem(
 
 @Preview
 @Composable
-fun PreviewCoinContent() {
-    val items = mutableListOf<Coin>()
-
-    for (i in 1..10) {
-        val coin = Coin(
-            id = i,
-            rank = i,
-            symbol = "sym",
-            name = "coin name",
-            usdAsset = Asset(
-                price = (1..100).random().toDouble(),
-                priceChange24h = (-50..50).random().toDouble(),
-                totalMarketCap = (1000000..1000000000).random().toDouble()
-            )
-        )
-        items.add(coin)
-    }
-
-    val flow = MutableStateFlow(PagingData.from(items))
-
+fun PreviewCoinContent(
+    @PreviewParameter(CoinContentPreviewParamProvider::class) coins: Flow<PagingData<Coin>>
+) {
     CoinNewsAppTheme {
-        CoinContent(
-            coins = flow.collectAsLazyPagingItems(),
+        CoinListScreen(
+            coins = coins.collectAsLazyPagingItems(),
             selectedSort = Sort(SortOption.MarketCap, Ordering.Descending),
             onSortingClick = { _ -> },
             modifier = Modifier
@@ -226,4 +238,40 @@ fun PreviewCoinContent() {
                 .background(Color.White)
         )
     }
+}
+
+private class CoinContentPreviewParamProvider :
+    PreviewParameterProvider<Flow<PagingData<Coin>>> {
+
+    override val values: Sequence<Flow<PagingData<Coin>>> =
+        sequenceOf(
+            flowOf(
+                PagingData.from(
+                    listOf(
+                        Coin(
+                            id = 1,
+                            rank = 1,
+                            symbol = "BTC",
+                            name = "Bitcoin",
+                            usdAsset = Asset(
+                                price = 60000.0,
+                                priceChange24h = 13.5,
+                                totalMarketCap = (1000000..1000000000).random().toDouble()
+                            )
+                        ),
+                        Coin(
+                            id = 2,
+                            rank = 2,
+                            symbol = "ETH",
+                            name = "Ethereum",
+                            usdAsset = Asset(
+                                price = 2000.10,
+                                priceChange24h = 2.5,
+                                totalMarketCap = (1000000..1000000000).random().toDouble()
+                            )
+                        )
+                    )
+                )
+            )
+        )
 }

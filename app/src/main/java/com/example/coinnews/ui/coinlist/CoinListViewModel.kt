@@ -1,4 +1,4 @@
-package com.example.coinnews.ui.news
+package com.example.coinnews.ui.coinlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,9 +15,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 @HiltViewModel
-class NewsViewModel @Inject constructor(
+class CoinListViewModel @Inject constructor(
     private val repository: NewsRepository
 ) : ViewModel() {
 
@@ -27,12 +26,9 @@ class NewsViewModel @Inject constructor(
     private val _selectedSort = MutableStateFlow<Sort?>(null)
     val selectedSort = _selectedSort
 
-    val articles = repository.getArticles()
-        .cachedIn(viewModelScope)
-
     init {
         refreshCoins(
-            Sort(SortOption.Rank, Ordering.Descending)
+            Sort(SortOption.Price, Ordering.Descending)
         )
     }
 
@@ -59,7 +55,3 @@ class NewsViewModel @Inject constructor(
         }
     }
 }
-
-
-
-

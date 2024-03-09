@@ -1,4 +1,4 @@
-package com.example.coinnews.ui.news
+package com.example.coinnews.ui.home
 
 import android.content.Context
 import android.content.Intent
@@ -28,23 +28,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.coinnews.R
 import com.example.coinnews.model.Article
-import com.example.coinnews.ui.news.components.ArticleContent
-import com.example.coinnews.ui.news.components.CoinContent
+import com.example.coinnews.ui.articlelist.ArticleListScreen
+import com.example.coinnews.ui.coinlist.CoinListScreen
 
-enum class Categorys(@StringRes val titleResId: Int) {
+enum class Sections(@StringRes val titleResId: Int) {
     News(R.string.news),
     Coin(R.string.coin),
     InterestingCoin(R.string.interesting_coin),
 }
 
-class TabContent(val category: Categorys, val content: @Composable () -> Unit)
+class TabContent(val section: Sections, val content: @Composable () -> Unit)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewsScreen(
+fun HomeScreen(
     tabs: List<TabContent>,
-    selectedCategory: Categorys,
-    onCategoryChange: (Categorys) -> Unit,
+    selectedSection: Sections,
+    onSectionChange: (Sections) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -63,10 +63,10 @@ fun NewsScreen(
         },
         modifier = modifier
     ) { contentPadding ->
-        NewsScreenContent(
+        HomeScreenContent(
             tabs = tabs,
-            selectedCategory = selectedCategory,
-            onCategoryChange = onCategoryChange,
+            selectedSection = selectedSection,
+            onSectionChange = onSectionChange,
             modifier = Modifier.padding(horizontal = 16.dp),
             contentPadding = contentPadding
         )
@@ -74,14 +74,14 @@ fun NewsScreen(
 }
 
 @Composable
-fun NewsScreenContent(
+fun HomeScreenContent(
     tabs: List<TabContent>,
-    selectedCategory: Categorys,
-    onCategoryChange: (Categorys) -> Unit,
+    selectedSection: Sections,
+    onSectionChange: (Sections) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
-    val selectedTabIndex = tabs.indexOfFirst { it.category == selectedCategory }
+    val selectedTabIndex = tabs.indexOfFirst { it.section == selectedSection }
 
     Column(
         modifier = modifier.padding(contentPadding)
@@ -90,10 +90,10 @@ fun NewsScreenContent(
             selectedTabIndex = selectedTabIndex,
             contentColor = MaterialTheme.colorScheme.primary
         ) {
-            NewsTabRowContent(
+            HomeTabRowContent(
                 tabs,
                 selectedTabIndex,
-                onCategoryChange
+                onSectionChange
             )
         }
         Spacer(modifier = Modifier.height(15.dp))
@@ -102,19 +102,19 @@ fun NewsScreenContent(
 }
 
 @Composable
-fun NewsTabRowContent(
+fun HomeTabRowContent(
     tabs: List<TabContent>,
     selectedTabIndex: Int,
-    onCategoryChange: (Categorys) -> Unit
+    onSectionChange: (Sections) -> Unit,
 ) {
     tabs.forEachIndexed { index, content ->
         Tab(
             selected = selectedTabIndex == index,
-            onClick = { onCategoryChange(content.category) },
+            onClick = { onSectionChange(content.section) },
             modifier = Modifier.height(50.dp)
         ) {
             Text(
-                text = stringResource(id = content.category.titleResId),
+                text = stringResource(id = content.section.titleResId),
                 style = MaterialTheme.typography.titleMedium,
             )
         }
@@ -122,40 +122,21 @@ fun NewsTabRowContent(
 }
 
 @Composable
-fun rememberTabContent(newsViewModel: NewsViewModel): List<TabContent> {
-    val context = LocalContext.current
-
-    val newsSection = TabContent(Categorys.News) {
-        val articles = newsViewModel.articles.collectAsLazyPagingItems()
-        ArticleContent(
-            articles = articles,
-            onArticleClick = { createArticleIntent(it, context) }
-        )
+fun rememberTabContent(): List<TabContent> {
+    val articleSection = TabContent(Sections.News) {
+        ArticleListScreen()
     }
 
-    val coinSection = TabContent(Categorys.Coin) {
-        val coins = newsViewModel.coins.collectAsLazyPagingItems()
-        val selectedSort by newsViewModel.selectedSort.collectAsStateWithLifecycle()
-
-        CoinContent(
-            selectedSort = selectedSort,
-            onSortingClick = newsViewModel::onSortClick,
-            coins = coins
-        )
+    val coinSection = TabContent(Sections.Coin) {
+        CoinListScreen()
     }
 
-    val interestingCoinSection = TabContent(Categorys.InterestingCoin) {
+    val interestingCoinSection = TabContent(Sections.InterestingCoin) {
         // TODO
     }
 
-    return listOf(coinSection, newsSection, interestingCoinSection)
+    return listOf(coinSection, articleSection, interestingCoinSection)
 }
 
-private fun createArticleIntent(article: Article, context: Context) {
-    context.startActivity(
-        Intent(Intent.ACTION_VIEW)
-            .setData(Uri.parse(article.url))
-            .setPackage("com.google.android.youtube")
-    )
-}
+
 
