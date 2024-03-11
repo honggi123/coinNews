@@ -1,5 +1,6 @@
 package com.example.coinnews.data.mapper
 
+import com.example.coinnews.database.CoinEntity
 import com.example.coinnews.network.model.NetworkCoinListItem
 import com.example.coinnews.model.Asset
 import com.example.coinnews.model.Coin
@@ -28,5 +29,26 @@ fun NetworkCoinInfo.toDomain(): Coin {
         symbol = this.symbol,
         slug = this.slug,
         usdAsset = null
+    )
+}
+
+fun CoinEntity.toDomain(): Coin {
+    return Coin(
+        id = this.id.toInt(),
+        name = this.name,
+        rank = null,
+        symbol = this.symbol,
+        slug = this.slug,
+        usdAsset = null
+    )
+}
+
+fun Coin.toEntity(): CoinEntity {
+    return CoinEntity(
+        name = this.name,
+        rank = null,
+        symbol = this.symbol,
+        slug = this.slug,
+        coinId = this.id.toString()
     )
 }

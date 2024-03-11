@@ -10,12 +10,14 @@ fun CoinDetailRoute(
     onBackClick: () -> Unit,
     viewModel: CoinDetailViewModel = hiltViewModel()
 ) {
-    val coinInfo by viewModel.coinInfo.collectAsStateWithLifecycle(null)
+    val isInterested by viewModel.isInterested.collectAsStateWithLifecycle(false)
+    val coin by viewModel.coinInfo.collectAsStateWithLifecycle(null)
 
     // todo add loading state
 
     CoinDetailScreen(
-        coinInfo = coinInfo,
+        isInterested = isInterested,
+        coin = coin,
         onBackClick = onBackClick,
         onToggleClick = viewModel::toggleInterest
     )

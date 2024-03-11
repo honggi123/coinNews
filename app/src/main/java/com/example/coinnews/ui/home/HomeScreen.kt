@@ -30,7 +30,7 @@ import com.example.coinnews.R
 import com.example.coinnews.model.Article
 import com.example.coinnews.ui.articlelist.ArticleListScreen
 import com.example.coinnews.ui.coinlist.CoinListScreen
-import com.example.coinnews.ui.interest.InterestCoinListScreen
+import com.example.coinnews.ui.interest.InterestCoinScreen
 
 enum class Sections(@StringRes val titleResId: Int) {
     News(R.string.news),
@@ -135,7 +135,7 @@ fun rememberTabContent(
     }
 
     val interestingCoinSection = TabContent(Sections.InterestingCoin) {
-        InterestCoinListScreen()
+        InterestCoinScreen()
     }
 
     return listOf(coinSection, articleSection, interestingCoinSection)

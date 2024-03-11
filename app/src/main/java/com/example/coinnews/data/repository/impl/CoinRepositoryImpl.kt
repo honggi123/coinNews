@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.example.coinnews.data.mapper.toDomain
+import com.example.coinnews.data.mapper.toEntity
 import com.example.coinnews.data.mapper.toNetwork
 import com.example.coinnews.network.retrofit.ArticleService
 import com.example.coinnews.network.retrofit.CoinService
@@ -12,6 +13,7 @@ import com.example.coinnews.data.paging.ArticlePagingSource
 import com.example.coinnews.data.paging.CoinPagingSource
 import com.example.coinnews.data.repository.CoinRepository
 import com.example.coinnews.data.repository.NewsRepository
+import com.example.coinnews.database.CoinInterestedDao
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.Coin
 import com.example.coinnews.model.Sort
@@ -23,8 +25,20 @@ import javax.inject.Singleton
 
 @Singleton
 class CoinRepositoryImpl @Inject constructor(
-    private val coinService: CoinService
+    private val coinService: CoinService,
+    private val coinInterestedDao: CoinInterestedDao
 ) : CoinRepository {
+
+    override fun isInterested(coinId: String): Flow<Boolean> {
+        return coinInterestedDao.isInterested(coinId)
+    }
+
+    override fun getCoinsInterested(): Flow<List<Coin>> {
+        return coinInterestedDao.getCoinInterestedList()
+            .map { list ->
+                list.map { it.toDomain() }
+            }
+    }
 
     override fun getCoins(
         sort: Sort,
@@ -34,13 +48,24 @@ class CoinRepositoryImpl @Inject constructor(
         return Pager(
             config = PagingConfig(enablePlaceholders = false, pageSize = 10),
             pagingSourceFactory = { CoinPagingSource(sortOption, ordering, coinService) }
-        ).flow.map { it.map { it.toDomain() } }
+        ).flow.map { list ->
+            list.map { it.toDomain() }
+        }
     }
 
     override fun getCoinInfo(id: String): Flow<Coin?> = flow {
+        // todo try catch
         val coinItems = coinService.getCoinInfo(id = id).items
         val coin = coinItems.get(id)?.toDomain()
         emit(coin)
-        // todo try catch
+    }
+
+    override suspend fun addInterest(coin: Coin) {
+        val coinEntity = coin.toEntity()
+        coinInterestedDao.insertCoinInterested(coinEntity)
+    }
+
+    override suspend fun deleteInterest(coin: Coin) {
+        coinInterestedDao.deleteCoinInterested(coin.id.toString())
     }
 }

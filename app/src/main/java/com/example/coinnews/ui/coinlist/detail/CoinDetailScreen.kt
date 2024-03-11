@@ -34,36 +34,64 @@ import com.example.coinnews.ui.utils.formatDoubleWithUnit
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CoinDetailScreen(
-    coinInfo: Coin?,
+    isInterested: Boolean,  // todo check recomposition
+    coin: Coin?,
     onBackClick: () -> Unit,
-    onToggleClick: () -> Unit
+    onToggleClick: (Boolean, Coin) -> Unit
 ) {
     Scaffold(
         topBar = {
-            Row(
+            TopAppBar(
+                coin = coin,
+                isInterested = isInterested,
+                onBackClick = onBackClick,
+                onToggleClick = onToggleClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_back),
-                    contentDescription = null,
-                    modifier = Modifier.clickable { onBackClick() },
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_star_border),
-                    contentDescription = null,
-                    modifier = Modifier.clickable { onToggleClick() },
-                )
-            }
+            )
         }
     ) { paddingValues ->
         CoinDetailContent(
-            coin = coinInfo,
+            coin = coin,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+        )
+    }
+}
+
+@Composable
+private fun TopAppBar(
+    coin: Coin?,
+    isInterested: Boolean,
+    onBackClick: () -> Unit,
+    onToggleClick: (Boolean, Coin) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val interestIconPainter = if (isInterested) {
+        painterResource(id = R.drawable.ic_star_fill)
+    } else {
+        painterResource(id = R.drawable.ic_star_border)
+    }
+
+    Row(
+        modifier = modifier
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_arrow_back),
+            contentDescription = null,
+            modifier = Modifier.clickable { onBackClick() },
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            painter = interestIconPainter,
+            contentDescription = null,
+            modifier = Modifier.clickable {
+                if (coin != null) {
+                    onToggleClick(isInterested, coin)
+                }
+            }
         )
     }
 }
