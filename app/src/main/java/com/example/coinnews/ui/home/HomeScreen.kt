@@ -30,6 +30,7 @@ import com.example.coinnews.R
 import com.example.coinnews.model.Article
 import com.example.coinnews.ui.articlelist.ArticleListScreen
 import com.example.coinnews.ui.coinlist.CoinListScreen
+import com.example.coinnews.ui.interest.InterestCoinListScreen
 
 enum class Sections(@StringRes val titleResId: Int) {
     News(R.string.news),
@@ -122,17 +123,19 @@ fun HomeTabRowContent(
 }
 
 @Composable
-fun rememberTabContent(): List<TabContent> {
+fun rememberTabContent(
+    onCoinClick: (String) -> Unit
+): List<TabContent> {
     val articleSection = TabContent(Sections.News) {
         ArticleListScreen()
     }
 
     val coinSection = TabContent(Sections.Coin) {
-        CoinListScreen()
+        CoinListScreen(onCoinClick = onCoinClick)
     }
 
     val interestingCoinSection = TabContent(Sections.InterestingCoin) {
-        // TODO
+        InterestCoinListScreen()
     }
 
     return listOf(coinSection, articleSection, interestingCoinSection)

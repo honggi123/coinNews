@@ -2,10 +2,11 @@ package com.example.coinnews.model
 
 data class Coin(
     val id: Int,
-    val rank: Int,
-    val symbol: String,
+    val rank: Int?,
+    val symbol: String?,
     val name: String,
-    val usdAsset: Asset,
+    val slug: String,
+    val usdAsset: Asset?,
 )
 
 data class Asset(

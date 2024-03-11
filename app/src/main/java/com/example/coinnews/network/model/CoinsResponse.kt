@@ -1,21 +1,21 @@
-package com.example.coinnews.data.network.model
+package com.example.coinnews.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkCoinsResponse(
-    @SerialName("data") val items: List<NetworkCoin>,
+data class CoinsResponse(
+    @SerialName("data") val items: List<NetworkCoinListItem>,
     val status: NetworkStatus
 )
 
 @Serializable
-data class NetworkCoin(
+data class NetworkCoinListItem(
     val id: Int,
     val name: String,
     val symbol: String,
     val slug: String,
-    @SerialName("cmc_rank") val cmcRank: Int,
+    @SerialName("cmc_rank") val marketCapRank: Int,
     @SerialName("num_market_pairs") val numMarketPairs: Int?,
     @SerialName("circulating_supply") val circulatingSupply: Double?,
     @SerialName("total_supply") val totalSupply: Double?,
@@ -27,11 +27,11 @@ data class NetworkCoin(
 //    val platform: String?,
     @SerialName("self_reported_circulating_supply") val selfReportedCirculatingSupply: Double?,
     @SerialName("self_reported_market_cap") val selfReportedMarketCap: Double?,
-    val quote: NetworkQuote
+    val quote: Quote
 )
 
 @Serializable
-data class NetworkQuote(
+data class Quote(
     @SerialName("USD") val usd: NetworkQuoteDetails?,
 )
 
@@ -47,14 +47,4 @@ data class NetworkQuoteDetails(
     @SerialName("market_cap_dominance") val marketCapDominance: Double,
     @SerialName("fully_diluted_market_cap") val fullyDilutedMarketCap: Double,
     @SerialName("last_updated") val lastUpdated: String
-)
-
-@Serializable
-data class NetworkStatus(
-    val timestamp: String,
-    @SerialName("error_code") val errorCode: Int,
-    @SerialName("error_message") val errorMessage: String?,
-    val elapsed: Int,
-    @SerialName("credit_count") val creditCount: Int,
-    val notice: String?
 )

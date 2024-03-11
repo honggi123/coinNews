@@ -1,5 +1,6 @@
 package com.example.coinnews.ui.home
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -7,9 +8,9 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun HomeRoute(
-    modifier: Modifier = Modifier,
+    onCoinClick: (String) -> Unit
 ) {
-    val tabContent = rememberTabContent()
+    val tabContent = rememberTabContent(onCoinClick = onCoinClick)
     val (section, onSectionChange) = rememberSaveable {
         mutableStateOf(tabContent.first().section)
     }
@@ -18,6 +19,6 @@ fun HomeRoute(
         tabs = tabContent,
         selectedSection = section,
         onSectionChange = onSectionChange,
-        modifier = modifier
+        modifier = Modifier.fillMaxSize()
     )
 }

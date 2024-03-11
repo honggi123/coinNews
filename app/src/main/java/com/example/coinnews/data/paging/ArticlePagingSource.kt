@@ -2,8 +2,8 @@ package com.example.coinnews.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.coinnews.data.network.model.NetworkArticle
-import com.example.coinnews.data.network.retrofit.ArticleService
+import com.example.coinnews.network.model.NetworkArticle
+import com.example.coinnews.network.retrofit.ArticleService
 import javax.inject.Inject
 
 

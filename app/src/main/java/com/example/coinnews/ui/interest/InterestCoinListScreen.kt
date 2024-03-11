@@ -9,3 +9,12 @@ fun InterestCoinListScreen(
 ) {
 
 }
+
+@Composable
+private fun InterestCoinListScreen(
+
+){
+
+}
+
+

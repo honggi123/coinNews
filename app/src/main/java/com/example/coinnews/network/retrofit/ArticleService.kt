@@ -1,6 +1,6 @@
-package com.example.coinnews.data.network.retrofit
+package com.example.coinnews.network.retrofit
 
-import com.example.coinnews.data.network.model.NetworkArticlesResponse
+import com.example.coinnews.network.model.ArticlesResponse
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
@@ -14,5 +14,5 @@ interface ArticleService {
         @Query("query") query: String,
         @Query("start") page: Int,
         @Query("display") pageSize: Int,
-    ): NetworkArticlesResponse
+    ): ArticlesResponse
 }

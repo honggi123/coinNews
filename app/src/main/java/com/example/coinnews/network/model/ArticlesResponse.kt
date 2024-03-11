@@ -1,10 +1,10 @@
-package com.example.coinnews.data.network.model
+package com.example.coinnews.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkArticlesResponse(
+data class ArticlesResponse(
     val total: Int,
     val items: List<NetworkArticle>,
     @SerialName("start") val page: Int,

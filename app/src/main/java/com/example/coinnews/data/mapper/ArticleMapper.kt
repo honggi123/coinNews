@@ -1,6 +1,6 @@
 package com.example.coinnews.data.mapper
 
-import com.example.coinnews.data.network.model.NetworkArticle
+import com.example.coinnews.network.model.NetworkArticle
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.ArticleMetaData
 import java.time.LocalDateTime
@@ -9,12 +9,12 @@ import java.time.format.DateTimeFormatter
 fun NetworkArticle.toDomain(): Article {
     return Article(
         id = "",
-        title = this.title,
+        title = this.title.replaceHtmlTags(),
         url = this.url,
-        description = this.description,
+        description = this.description.replaceHtmlTags(),
         metaData = ArticleMetaData(
             parseAuthorFromUrl(this.originalUrl),
-            parseDateTime(this.createdAt)
+            formatToDateTime(this.createdAt)
         )
     )
 }
@@ -30,7 +30,15 @@ private fun parseAuthorFromUrl(url: String): String? {
     return authors.find { (key, _) -> url.contains(key) }?.second
 }
 
-private fun parseDateTime(dateTimeString: String): LocalDateTime {
+private fun formatToDateTime(dateTimeString: String): LocalDateTime {
     val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")
     return LocalDateTime.parse(dateTimeString, formatter)
+}
+
+private fun String.replaceHtmlTags(): String {
+    return this.replace(Regex("<.*?>"), "")
+        .replace("&quot;", "\"")
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
 }

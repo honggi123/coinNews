@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.coinnews.data.repository.NewsRepository
+import com.example.coinnews.data.repository.CoinRepository
 import com.example.coinnews.model.Coin
 import com.example.coinnews.model.Ordering
 import com.example.coinnews.model.Sort
@@ -15,9 +15,10 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class CoinListViewModel @Inject constructor(
-    private val repository: NewsRepository
+    private val repository: CoinRepository
 ) : ViewModel() {
 
     private val _coins = MutableStateFlow<PagingData<Coin>?>(null)
@@ -41,7 +42,6 @@ class CoinListViewModel @Inject constructor(
 
     private fun refreshCoins(sort: Sort) {
         viewModelScope.launch {
-            // todo result
             _coins.value = repository.getCoins(sort).cachedIn(viewModelScope).first()
             _selectedSort.value = sort
         }

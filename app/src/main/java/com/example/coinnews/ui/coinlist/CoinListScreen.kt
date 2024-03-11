@@ -1,6 +1,5 @@
 package com.example.coinnews.ui.coinlist
 
-import android.text.style.AlignmentSpan
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,11 +43,11 @@ import com.example.coinnews.ui.components.SortableArrow
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
 import com.example.coinnews.ui.utils.formatDoubleWithUnit
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun CoinListScreen(
+    onCoinClick: (String) -> Unit,
     viewModel: CoinListViewModel = hiltViewModel()
 ) {
     val coins = viewModel.coins.collectAsLazyPagingItems()
@@ -56,7 +55,8 @@ fun CoinListScreen(
 
     CoinListScreen(
         selectedSort = selectedSort,
-        onSortingClick = viewModel::onSortClick,
+        onSortClick = viewModel::onSortClick,
+        onCoinClick = onCoinClick,
         coins = coins
     )
 }
@@ -65,7 +65,8 @@ fun CoinListScreen(
 private fun CoinListScreen(
     coins: LazyPagingItems<Coin>,
     selectedSort: Sort?,
-    onSortingClick: (Sort) -> Unit,
+    onSortClick: (Sort) -> Unit,
+    onCoinClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     state: LazyListState = rememberLazyListState()
@@ -78,17 +79,18 @@ private fun CoinListScreen(
         item {
             TitleItem(
                 selectedSort = selectedSort,
-                onSortingClick = onSortingClick
+                onSortClick = onSortClick
             )
             Spacer(modifier = Modifier.height(15.dp))
         }
         items(coins.itemCount) { index ->
             coins[index]?.let { coin ->
                 ContentItem(
-                    coin,
+                    coin = coin,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
+                        .clickable { onCoinClick(coin.id.toString()) }
                 )
                 Spacer(modifier = Modifier.height(10.dp))
             }
@@ -99,7 +101,7 @@ private fun CoinListScreen(
 @Composable
 private fun TitleItem(
     selectedSort: Sort?,
-    onSortingClick: (Sort) -> Unit,
+    onSortClick: (Sort) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val marketCapOrdering =
@@ -124,16 +126,16 @@ private fun TitleItem(
         SortableCoinTitle(
             title = stringResource(id = R.string.market_cap),
             ordering = marketCapOrdering,
-            onSortingClick = {
-                onSortingClick(Sort(SortOption.MarketCap, marketCapOrdering))
+            onSortClick = {
+                onSortClick(Sort(SortOption.MarketCap, marketCapOrdering))
             },
             modifier = Modifier.weight(1f),
         )
         SortableCoinTitle(
             title = stringResource(id = R.string.price),
             ordering = priceOrdering,
-            onSortingClick = {
-                onSortingClick(Sort(SortOption.Price, priceOrdering))
+            onSortClick = {
+                onSortClick(Sort(SortOption.Price, priceOrdering))
             },
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.End
@@ -141,8 +143,8 @@ private fun TitleItem(
         SortableCoinTitle(
             title = stringResource(id = R.string.percent_change_24h),
             ordering = priceChangeOrdering,
-            onSortingClick = {
-                onSortingClick(Sort(SortOption.PriceChange24h, priceChangeOrdering))
+            onSortClick = {
+                onSortClick(Sort(SortOption.PriceChange24h, priceChangeOrdering))
             },
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.End
@@ -153,13 +155,13 @@ private fun TitleItem(
 @Composable
 private fun SortableCoinTitle(
     title: String,
-    onSortingClick: () -> Unit,
+    onSortClick: () -> Unit,
     modifier: Modifier = Modifier,
     ordering: Ordering = Ordering.None,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
 ) {
     Row(
-        modifier = modifier.clickable { onSortingClick() },
+        modifier = modifier.clickable { onSortClick() },
         horizontalArrangement = horizontalArrangement
     ) {
         Text(
@@ -192,19 +194,19 @@ private fun ContentItem(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = coin.symbol,
+                text = coin.symbol ?: "정보 없음",
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = coin.usdAsset.totalMarketCap.toString(),
+                text = formatDoubleWithUnit(coin.usdAsset?.totalMarketCap) ?: "정보 없음",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Normal
             )
         }
         Text(
-            text = formatDoubleWithUnit(coin.usdAsset.price) ?: "정보 없음",
+            text = formatDoubleWithUnit(coin.usdAsset?.price) ?: "정보 없음",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
@@ -212,7 +214,7 @@ private fun ContentItem(
             modifier = Modifier.weight(1f)
         )
         Text(
-            text = formatDoubleWithUnit(coin.usdAsset.priceChange24h, "") ?: "정보 없음",
+            text = formatDoubleWithUnit(coin.usdAsset?.priceChange24h, "") ?: "정보 없음",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
@@ -231,7 +233,8 @@ fun PreviewCoinContent(
         CoinListScreen(
             coins = coins.collectAsLazyPagingItems(),
             selectedSort = Sort(SortOption.MarketCap, Ordering.Descending),
-            onSortingClick = { _ -> },
+            onSortClick = { _ -> },
+            onCoinClick = { _ -> },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(10.dp)
@@ -253,6 +256,7 @@ private class CoinContentPreviewParamProvider :
                             rank = 1,
                             symbol = "BTC",
                             name = "Bitcoin",
+                            slug = "",
                             usdAsset = Asset(
                                 price = 60000.0,
                                 priceChange24h = 13.5,
@@ -264,6 +268,7 @@ private class CoinContentPreviewParamProvider :
                             rank = 2,
                             symbol = "ETH",
                             name = "Ethereum",
+                            slug = "",
                             usdAsset = Asset(
                                 price = 2000.10,
                                 priceChange24h = 2.5,

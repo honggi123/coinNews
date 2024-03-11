@@ -1,7 +1,7 @@
 package com.example.coinnews.di
 
-import com.example.coinnews.data.network.retrofit.CoinService
-import com.example.coinnews.data.network.retrofit.ArticleService
+import com.example.coinnews.network.retrofit.CoinService
+import com.example.coinnews.network.retrofit.ArticleService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
