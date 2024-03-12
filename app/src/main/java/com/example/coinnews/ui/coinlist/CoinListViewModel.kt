@@ -27,22 +27,23 @@ class CoinListViewModel @Inject constructor(
     private val _selectedSort = MutableStateFlow<Sort?>(null)
     val selectedSort = _selectedSort
 
+    private var currentSort = Sort(SortOption.Price, Ordering.Descending)
+
     init {
-        refreshCoins(
-            Sort(SortOption.Price, Ordering.Descending)
-        )
+        refreshCoins(currentSort)
     }
 
     fun onSortClick(sort: Sort) {
         val newOrdering = getNextOrdering(sort.ordering)
         val newSort = sort.copy(ordering = newOrdering)
+        currentSort = newSort
 
         refreshCoins(newSort)
     }
 
     private fun refreshCoins(sort: Sort) {
         viewModelScope.launch {
-            _coins.value = repository.getCoins(sort).cachedIn(viewModelScope).first()
+            _coins.value = repository.getCoins(sort).cachedIn(viewModelScope).first() // todo
             _selectedSort.value = sort
         }
     }

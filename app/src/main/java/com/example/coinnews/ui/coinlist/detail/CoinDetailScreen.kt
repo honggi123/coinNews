@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.coinnews.R
 import com.example.coinnews.model.Coin
+import com.example.coinnews.model.CoinWithInterest
 import com.example.coinnews.ui.utils.formatDoubleWithUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +38,7 @@ fun CoinDetailScreen(
     isInterested: Boolean,  // todo check recomposition
     coin: Coin?,
     onBackClick: () -> Unit,
-    onToggleClick: (Boolean, Coin) -> Unit
+    onToggleClick: (CoinWithInterest) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -66,7 +67,7 @@ private fun TopAppBar(
     coin: Coin?,
     isInterested: Boolean,
     onBackClick: () -> Unit,
-    onToggleClick: (Boolean, Coin) -> Unit,
+    onToggleClick: (CoinWithInterest) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val interestIconPainter = if (isInterested) {
@@ -89,7 +90,7 @@ private fun TopAppBar(
             contentDescription = null,
             modifier = Modifier.clickable {
                 if (coin != null) {
-                    onToggleClick(isInterested, coin)
+                    onToggleClick(CoinWithInterest(coin, isInterested))
                 }
             }
         )

@@ -47,7 +47,7 @@ import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun CoinListScreen(
-    onCoinClick: (String) -> Unit,
+    onCoinClick: (Coin) -> Unit,
     viewModel: CoinListViewModel = hiltViewModel()
 ) {
     val coins = viewModel.coins.collectAsLazyPagingItems()
@@ -66,7 +66,7 @@ private fun CoinListScreen(
     coins: LazyPagingItems<Coin>,
     selectedSort: Sort?,
     onSortClick: (Sort) -> Unit,
-    onCoinClick: (String) -> Unit,
+    onCoinClick: (Coin) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     state: LazyListState = rememberLazyListState()
@@ -90,7 +90,7 @@ private fun CoinListScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
-                        .clickable { onCoinClick(coin.id.toString()) }
+                        .clickable { onCoinClick(coin) }
                 )
                 Spacer(modifier = Modifier.height(10.dp))
             }

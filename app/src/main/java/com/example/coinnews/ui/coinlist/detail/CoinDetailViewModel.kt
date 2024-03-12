@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.coinnews.data.repository.CoinRepository
 import com.example.coinnews.model.Coin
+import com.example.coinnews.model.CoinWithInterest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,15 +22,15 @@ class CoinDetailViewModel @Inject constructor(
     val isInterested = repository.isInterested(coinId)
     val coinInfo = repository.getCoinInfo(
         id = coinId,
-        onError = { _ -> }
+        onError = { message -> Timber.d(message) }
     )
 
-    fun toggleInterest(isInterested: Boolean, coin: Coin) {
+    fun toggleInterest(coinWithInterest: CoinWithInterest) {
         viewModelScope.launch {
-            if (isInterested) {
-                repository.deleteInterest(coin)
+            if (coinWithInterest.isInterested) {
+                repository.deleteInterest(coinWithInterest.coin)
             } else {
-                repository.addInterest(coin)
+                repository.addInterest(coinWithInterest.coin)
             }
         }
     }

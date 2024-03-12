@@ -53,7 +53,7 @@ private fun InterestCoinScreen(
     Scaffold(
         modifier = modifier
     ) { contentPadding ->
-        LazyColumn(
+        LazyColumn( // todo add key
             contentPadding = contentPadding,
             modifier = modifier.padding(horizontal = 10.dp),
             state = state

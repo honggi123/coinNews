@@ -3,6 +3,7 @@ package com.example.coinnews.ui
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.coinnews.model.Coin
 
 sealed class Screen(
     val route: String,
@@ -16,6 +17,6 @@ sealed class Screen(
             type = NavType.StringType
         })
     ) {
-        fun createRoute(coinId: String) = "coinDetail/${coinId}"
+        fun createRoute(coin: Coin) = "coinDetail/${coin.id}"
     }
 }

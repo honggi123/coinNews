@@ -1,8 +1,5 @@
 package com.example.coinnews.ui.home
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,16 +15,12 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.coinnews.R
-import com.example.coinnews.model.Article
+import com.example.coinnews.model.Coin
 import com.example.coinnews.ui.articlelist.ArticleListScreen
 import com.example.coinnews.ui.coinlist.CoinListScreen
 import com.example.coinnews.ui.interest.InterestCoinScreen
@@ -124,7 +117,7 @@ fun HomeTabRowContent(
 
 @Composable
 fun rememberTabContent(
-    onCoinClick: (String) -> Unit
+    onCoinClick: (Coin) -> Unit
 ): List<TabContent> {
     val articleSection = TabContent(Sections.News) {
         ArticleListScreen()
