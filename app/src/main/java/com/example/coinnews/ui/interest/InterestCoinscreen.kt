@@ -2,12 +2,12 @@ package com.example.coinnews.ui.interest
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -28,12 +28,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.coinnews.R
 import com.example.coinnews.model.Coin
-import com.example.coinnews.ui.utils.formatDoubleWithUnit
 
 @Composable
 fun InterestCoinScreen(
     viewModel: InterestCoinViewModel = hiltViewModel()
-){
+) {
     val coins by viewModel.coins.collectAsStateWithLifecycle(emptyList())
 
     InterestCoinScreen(
@@ -42,7 +41,6 @@ fun InterestCoinScreen(
         modifier = Modifier.fillMaxSize()
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +55,7 @@ private fun InterestCoinScreen(
     ) { contentPadding ->
         LazyColumn(
             contentPadding = contentPadding,
-            modifier = modifier,
+            modifier = modifier.padding(horizontal = 10.dp),
             state = state
         ) {
             items(coins.size) { index ->
@@ -88,32 +86,21 @@ private fun CoinItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = coin.rank.toString(),
-            style = MaterialTheme.typography.bodyLarge,
+            text = coin.symbol ?: "정보 없음",
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(0.5f)
-        )
-        Column(
             modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = coin.symbol ?: "정보 없음",
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = formatDoubleWithUnit(coin.usdAsset?.totalMarketCap) ?: "정보 없음",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Normal
-            )
-            Icon(
-                painter = painterResource(id = R.drawable.ic_vertical_dots),
-                contentDescription = null,
-            )
-        }
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.ic_delete),
+            contentDescription = null,
+            modifier = Modifier.clickable { onDeleteClick(coin) }
+                .weight(0.5f)
+        )
     }
 }
+
+
 
 

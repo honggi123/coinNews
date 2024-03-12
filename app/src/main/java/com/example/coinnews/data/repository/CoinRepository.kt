@@ -13,7 +13,10 @@ interface CoinRepository {
 
     fun getCoins(sort: Sort): Flow<PagingData<Coin>>
 
-    fun getCoinInfo(id: String): Flow<Coin?>
+    fun getCoinInfo(
+        id: String,
+        onError: (String) -> Unit
+    ): Flow<Coin?>
 
     suspend fun addInterest(coin: Coin)
 

@@ -1,5 +1,6 @@
 package com.example.coinnews.data.repository.impl
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -18,8 +19,10 @@ import com.example.coinnews.model.Article
 import com.example.coinnews.model.Coin
 import com.example.coinnews.model.Sort
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,12 +56,14 @@ class CoinRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCoinInfo(id: String): Flow<Coin?> = flow {
-        // todo try catch
+    override fun getCoinInfo(
+        id: String,
+        onError: (String) -> Unit
+    ): Flow<Coin?> = flow {
         val coinItems = coinService.getCoinInfo(id = id).items
         val coin = coinItems.get(id)?.toDomain()
         emit(coin)
-    }
+    }.catch { onError(it.message.toString()) }
 
     override suspend fun addInterest(coin: Coin) {
         val coinEntity = coin.toEntity()

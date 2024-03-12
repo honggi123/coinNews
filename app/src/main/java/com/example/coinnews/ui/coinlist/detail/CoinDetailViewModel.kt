@@ -18,7 +18,10 @@ class CoinDetailViewModel @Inject constructor(
     private val coinId: String = savedStateHandle.get<String>(COIN_ID_SAVED_STATE_KEY)!!
 
     val isInterested = repository.isInterested(coinId)
-    val coinInfo = repository.getCoinInfo(coinId)
+    val coinInfo = repository.getCoinInfo(
+        id = coinId,
+        onError = { _ -> }
+    )
 
     fun toggleInterest(isInterested: Boolean, coin: Coin) {
         viewModelScope.launch {

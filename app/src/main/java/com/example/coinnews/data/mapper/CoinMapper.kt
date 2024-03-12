@@ -34,9 +34,9 @@ fun NetworkCoinInfo.toDomain(): Coin {
 
 fun CoinEntity.toDomain(): Coin {
     return Coin(
-        id = this.id.toInt(),
+        id = this.coinId.toInt(),
         name = this.name,
-        rank = null,
+        rank = this.rank,
         symbol = this.symbol,
         slug = this.slug,
         usdAsset = null
@@ -46,7 +46,7 @@ fun CoinEntity.toDomain(): Coin {
 fun Coin.toEntity(): CoinEntity {
     return CoinEntity(
         name = this.name,
-        rank = null,
+        rank = this.rank,
         symbol = this.symbol,
         slug = this.slug,
         coinId = this.id.toString()
