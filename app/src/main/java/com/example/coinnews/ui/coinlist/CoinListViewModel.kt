@@ -10,42 +10,37 @@ import com.example.coinnews.model.Ordering
 import com.example.coinnews.model.Sort
 import com.example.coinnews.model.SortOption
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class CoinListViewModel @Inject constructor(
     private val repository: CoinRepository
 ) : ViewModel() {
 
-    private val _coins = MutableStateFlow<PagingData<Coin>?>(null)
-    val coins = _coins.filterNotNull()
-
     private val _selectedSort = MutableStateFlow<Sort?>(null)
     val selectedSort = _selectedSort
 
-    private var currentSort = Sort(SortOption.Price, Ordering.Descending)
+    private var currentSort = MutableStateFlow(
+        Sort(SortOption.Price, Ordering.Descending)
+    )
 
-    init {
-        refreshCoins(currentSort)
-    }
+    val coins = currentSort
+        .flatMapLatest { sort -> repository.getCoins(sort) }
+        .cachedIn(viewModelScope)
 
     fun onSortClick(sort: Sort) {
         val newOrdering = getNextOrdering(sort.ordering)
         val newSort = sort.copy(ordering = newOrdering)
-        currentSort = newSort
-
-        refreshCoins(newSort)
-    }
-
-    private fun refreshCoins(sort: Sort) {
-        viewModelScope.launch {
-            _coins.value = repository.getCoins(sort).cachedIn(viewModelScope).first() // todo
-            _selectedSort.value = sort
-        }
+        currentSort.value = newSort
+        _selectedSort.value = newSort
     }
 
     private fun getNextOrdering(ordering: Ordering): Ordering {

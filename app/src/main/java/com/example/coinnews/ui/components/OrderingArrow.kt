@@ -5,14 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.coinnews.model.Sort
 import com.example.coinnews.R
 import com.example.coinnews.model.Ordering
 
 @Composable
-fun SortableArrow(
+fun OrderingArrow(
     ordering: Ordering,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val arrowPainter = if (ordering == Ordering.Ascending) {
         painterResource(id = R.drawable.ic_arrow_drop_up)
@@ -34,5 +33,5 @@ fun SortableArrow(
 @Preview
 @Composable
 fun PreviewSortableArrow() {
-    SortableArrow(Ordering.Ascending)
+    OrderingArrow(Ordering.Ascending)
 }

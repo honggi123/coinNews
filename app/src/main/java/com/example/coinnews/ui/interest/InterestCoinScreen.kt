@@ -18,9 +18,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.coinnews.R
 import com.example.coinnews.model.Coin
+import com.example.coinnews.model.Sort
+import com.example.coinnews.model.SortOption
+import com.example.coinnews.ui.components.SortableTitle
+import com.example.coinnews.ui.utils.formatDoubleWithUnit
 
 @Composable
 fun InterestCoinScreen(
@@ -53,12 +59,20 @@ private fun InterestCoinScreen(
     Scaffold(
         modifier = modifier
     ) { contentPadding ->
-        LazyColumn( // todo add key
+        LazyColumn(
             contentPadding = contentPadding,
             modifier = modifier.padding(horizontal = 10.dp),
             state = state
         ) {
-            items(coins.size) { index ->
+            item {
+                ListTitleItem(
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            items(
+                count = coins.size,
+                key = { index -> coins[index].id }
+            ) { index ->
                 coins[index].let { coin ->
                     CoinItem(
                         onDeleteClick = onDeleteClick,
@@ -75,6 +89,22 @@ private fun InterestCoinScreen(
 }
 
 @Composable
+private fun ListTitleItem(
+    modifier: Modifier = Modifier
+){
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SortableTitle(
+            title = stringResource(id = R.string.name),
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
 private fun CoinItem(
     coin: Coin,
     onDeleteClick: (coin: Coin) -> Unit,
@@ -86,7 +116,7 @@ private fun CoinItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = coin.symbol ?: "정보 없음",
+            text = "${coin.name} (${coin.symbol})",
             style = MaterialTheme.typography.bodyMedium,
             maxLines = 1,
             fontWeight = FontWeight.Bold,
@@ -95,7 +125,8 @@ private fun CoinItem(
         Icon(
             painter = painterResource(id = R.drawable.ic_delete),
             contentDescription = null,
-            modifier = Modifier.clickable { onDeleteClick(coin) }
+            modifier = Modifier
+                .clickable { onDeleteClick(coin) }
                 .weight(0.5f)
         )
     }

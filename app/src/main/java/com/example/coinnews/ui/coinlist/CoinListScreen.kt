@@ -39,7 +39,7 @@ import com.example.coinnews.model.Coin
 import com.example.coinnews.model.Ordering
 import com.example.coinnews.model.Sort
 import com.example.coinnews.model.SortOption
-import com.example.coinnews.ui.components.SortableArrow
+import com.example.coinnews.ui.components.SortableTitle
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
 import com.example.coinnews.ui.utils.formatDoubleWithUnit
 import kotlinx.coroutines.flow.Flow
@@ -123,27 +123,27 @@ private fun TitleItem(
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(0.5f)
         )
-        SortableCoinTitle(
+        SortableTitle(
             title = stringResource(id = R.string.market_cap),
             ordering = marketCapOrdering,
-            onSortClick = {
+            onClick = {
                 onSortClick(Sort(SortOption.MarketCap, marketCapOrdering))
             },
             modifier = Modifier.weight(1f),
         )
-        SortableCoinTitle(
+        SortableTitle(
             title = stringResource(id = R.string.price),
             ordering = priceOrdering,
-            onSortClick = {
+            onClick = {
                 onSortClick(Sort(SortOption.Price, priceOrdering))
             },
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.End
         )
-        SortableCoinTitle(
+        SortableTitle(
             title = stringResource(id = R.string.percent_change_24h),
             ordering = priceChangeOrdering,
-            onSortClick = {
+            onClick = {
                 onSortClick(Sort(SortOption.PriceChange24h, priceChangeOrdering))
             },
             modifier = Modifier.weight(1f),
@@ -152,26 +152,6 @@ private fun TitleItem(
     }
 }
 
-@Composable
-private fun SortableCoinTitle(
-    title: String,
-    onSortClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    ordering: Ordering = Ordering.None,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
-) {
-    Row(
-        modifier = modifier.clickable { onSortClick() },
-        horizontalArrangement = horizontalArrangement
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Normal,
-        )
-        SortableArrow(ordering)
-    }
-}
 
 @Composable
 private fun ContentItem(
@@ -261,7 +241,7 @@ private class CoinContentPreviewParamProvider :
                                 price = 60000.0,
                                 priceChange24h = 13.5,
                                 totalMarketCap = (1000000..1000000000).random().toDouble()
-                            )
+                            ),
                         ),
                         Coin(
                             id = 2,
@@ -273,7 +253,7 @@ private class CoinContentPreviewParamProvider :
                                 price = 2000.10,
                                 priceChange24h = 2.5,
                                 totalMarketCap = (1000000..1000000000).random().toDouble()
-                            )
+                            ),
                         )
                     )
                 )

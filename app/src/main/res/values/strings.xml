@@ -5,6 +5,7 @@
     <string name="interesting_coin">관심 코인</string>
 
     <string name="hash_tag">#</string>
+    <string name="name">이름</string>
     <string name="market_cap">시가 총액</string>
     <string name="price">가격</string>
     <string name="percent_change_24h">24시간 %</string>

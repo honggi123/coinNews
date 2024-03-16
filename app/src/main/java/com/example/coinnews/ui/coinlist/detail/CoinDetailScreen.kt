@@ -1,7 +1,5 @@
 package com.example.coinnews.ui.coinlist.detail
 
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,19 +21,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.coinnews.R
 import com.example.coinnews.model.Coin
 import com.example.coinnews.model.CoinWithInterest
+import com.example.coinnews.model.UrlType
+import com.example.coinnews.ui.theme.CoinNewsAppTheme
 import com.example.coinnews.ui.utils.formatDoubleWithUnit
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CoinDetailScreen(
-    isInterested: Boolean,  // todo check recomposition
+    isInterested: Boolean,
     coin: Coin?,
     onBackClick: () -> Unit,
     onToggleClick: (CoinWithInterest) -> Unit
@@ -58,6 +63,7 @@ fun CoinDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .padding(10.dp)
         )
     }
 }
@@ -105,20 +111,62 @@ private fun CoinDetailContent(
     if (coin == null) {
         EmptyContent(modifier)
     } else {
-        AndroidView(
-            factory = { context ->
-                WebView(context).apply {
-                    webViewClient = WebViewClient()
-
-                    settings.loadWithOverviewMode = true
-                    settings.useWideViewPort = true
-                    settings.setSupportZoom(true)
-                }
-            },
+        Column(
             modifier = modifier,
-            update = { webView ->
-                webView.loadUrl("https://coinmarketcap.com/ko/currencies/${coin.slug}")
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = coin.name,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                textAlign = TextAlign.Right,
+            )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Text(
+                    text = coin.description.toString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                UrlsContent(
+                    coin = coin,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun UrlsContent(
+    coin: Coin?,
+    modifier: Modifier = Modifier
+) {
+    val webSiteUrl = coin?.urls?.get(UrlType.Website)
+    val githubUrl = coin?.urls?.get(UrlType.Gtihub)
+    val techDocUrl = coin?.urls?.get(UrlType.TechicalDoc)
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text(
+            text = "webSite : ${webSiteUrl}",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = "github : ${githubUrl}",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = "techDoc : ${techDocUrl}",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
         )
     }
 }
@@ -138,6 +186,25 @@ private fun EmptyContent(
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewCoinContent() {
+    CoinNewsAppTheme {
+        CoinDetailScreen(
+            isInterested = true,
+            coin = Coin(
+                id = 1,
+                name = "bitcoin",
+                description = "Bitcoin is a decentralized digital currency that operates without a central authority or intermediary. " +
+                        "It enables peer-to-peer transactions, allowing users to send and receive payments directly without the need for a financial institution. ",
+                slug = "btc"
+            ),
+            onBackClick = {},
+            onToggleClick = { _ -> }
         )
     }
 }
