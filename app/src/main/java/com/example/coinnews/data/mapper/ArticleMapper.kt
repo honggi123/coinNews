@@ -3,17 +3,20 @@ package com.example.coinnews.data.mapper
 import com.example.coinnews.network.model.NetworkArticle
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.ArticleMetaData
+import com.example.coinnews.model.Coin
+import com.example.coinnews.model.CoinFilter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun NetworkArticle.toDomain(): Article {
+fun NetworkArticle.toDomain(filter: CoinFilter): Article {
     return Article(
-        id = "",
+        id = this.url,
         title = this.title.replaceHtmlTags(),
         url = this.url,
         description = this.description.replaceHtmlTags(),
         metaData = ArticleMetaData(
             parseAuthorFromUrl(this.originalUrl),
+            Coin(id = "", name = filter.coinName, slug = filter.slug, symbol = filter.symbol),
             formatToDateTime(this.createdAt)
         )
     )
@@ -24,7 +27,10 @@ private fun parseAuthorFromUrl(url: String): String? {
         "news1" to "연합뉴스",
         "sisaweek" to "시사위크",
         "fortunekorea" to "포츈코리아",
-        "coinreaders" to "코인리더스"
+        "coinreaders" to "코인리더스",
+        "newstapa" to "뉴스타파",
+        "hankyung" to "한경신문",
+        "gukjenews" to "국제뉴스"
     )
 
     return authors.find { (key, _) -> url.contains(key) }?.second

@@ -2,7 +2,7 @@ package com.example.coinnews.data.mapper
 
 import com.example.coinnews.database.CoinEntity
 import com.example.coinnews.network.model.NetworkCoinListItem
-import com.example.coinnews.model.Asset
+import com.example.coinnews.model.CoinAsset
 import com.example.coinnews.model.Coin
 import com.example.coinnews.model.UrlType
 import com.example.coinnews.network.model.NetworkCoinInfo
@@ -10,12 +10,12 @@ import kotlinx.collections.immutable.toImmutableMap
 
 fun NetworkCoinListItem.toDomain(): Coin {
     return Coin(
-        id = this.id,
+        id = this.id.toString(),
         name = this.name,
         rank = this.marketCapRank,
         symbol = this.symbol,
         slug = this.slug,
-        usdAsset = Asset(
+        usdAsset = CoinAsset(
             price = this.quote.usd?.price,
             priceChange24h = this.quote.usd?.percentChange24h,
             totalMarketCap = this.quote.usd?.marketCap
@@ -27,7 +27,7 @@ fun NetworkCoinListItem.toDomain(): Coin {
 
 fun NetworkCoinInfo.toDomain(): Coin {
     return Coin(
-        id = this.id,
+        id = this.id.toString(),
         name = this.name,
         rank = null,
         symbol = this.symbol,
@@ -44,10 +44,10 @@ fun NetworkCoinInfo.toDomain(): Coin {
 
 fun CoinEntity.toDomain(): Coin {
     return Coin(
-        id = this.coinId.toInt(),
+        id = this.coinId,
         name = this.name,
         rank = this.rank,
-        symbol = this.symbol,
+        symbol = this.symbol ?: "",
         slug = this.slug,
         usdAsset = null,
         urls = null,

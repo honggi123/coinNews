@@ -5,13 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import com.example.coinnews.model.Article
 import com.example.coinnews.model.Coin
 
 @Composable
 fun HomeRoute(
-    onCoinClick: (Coin) -> Unit
+    onArticleClick: (Article) -> Unit
 ) {
-    val tabContent = rememberTabContent(onCoinClick = onCoinClick)
+    val tabContent = rememberTabContent(onArticleClick = onArticleClick)
     val (section, onSectionChange) = rememberSaveable {
         mutableStateOf(tabContent.first().section)
     }

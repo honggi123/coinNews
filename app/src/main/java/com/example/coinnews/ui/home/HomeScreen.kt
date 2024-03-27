@@ -1,34 +1,41 @@
 package com.example.coinnews.ui.home
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.coinnews.R
-import com.example.coinnews.model.Coin
+import com.example.coinnews.model.Article
 import com.example.coinnews.ui.articlelist.ArticleListScreen
-import com.example.coinnews.ui.coinlist.CoinListScreen
-import com.example.coinnews.ui.interest.InterestCoinScreen
+import com.example.coinnews.ui.extensions.customTabIndicatorOffset
+import com.example.coinnews.ui.scrap.ScrapNewsScreen
+import com.example.coinnews.ui.theme.Grey1000
+import com.example.coinnews.ui.theme.Grey200
+import com.example.coinnews.ui.videolist.VideoListScreen
 
 enum class Sections(@StringRes val titleResId: Int) {
     News(R.string.news),
-    Coin(R.string.coin),
-    InterestingCoin(R.string.interesting_coin),
+    Video(R.string.video),
+    Scrap(R.string.scrap),
 }
 
 class TabContent(val section: Sections, val content: @Composable () -> Unit)
@@ -76,13 +83,34 @@ fun HomeScreenContent(
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val selectedTabIndex = tabs.indexOfFirst { it.section == selectedSection }
+    val tabWidths: List<Dp> = listOf(40.dp, 60.dp, 90.dp) // todo
 
     Column(
-        modifier = modifier.padding(contentPadding)
+        modifier = modifier.padding(contentPadding),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         TabRow(
             selectedTabIndex = selectedTabIndex,
-            contentColor = MaterialTheme.colorScheme.primary
+            contentColor = MaterialTheme.colorScheme.primary,
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    modifier = Modifier
+                        .customTabIndicatorOffset(
+                            tabPositions[selectedTabIndex],
+                            tabWidths[selectedTabIndex]
+                        )
+                        .graphicsLayer {
+                            shape = RoundedCornerShape(
+                                topStart = 16.dp,
+                                topEnd = 16.dp,
+                                bottomStart = 16.dp,
+                                bottomEnd = 16.dp
+                            )
+                            clip = true
+                        },
+                    color = Grey1000
+                )
+            },
         ) {
             HomeTabRowContent(
                 tabs,
@@ -90,7 +118,6 @@ fun HomeScreenContent(
                 onSectionChange
             )
         }
-        Spacer(modifier = Modifier.height(15.dp))
         tabs[selectedTabIndex].content()
     }
 }
@@ -102,13 +129,20 @@ fun HomeTabRowContent(
     onSectionChange: (Sections) -> Unit,
 ) {
     tabs.forEachIndexed { index, content ->
+        val colorText = if (selectedTabIndex == index) {
+            Grey1000
+        } else {
+            Grey200
+        }
         Tab(
             selected = selectedTabIndex == index,
             onClick = { onSectionChange(content.section) },
-            modifier = Modifier.height(50.dp)
-        ) {
+            modifier = Modifier.height(40.dp),
+
+            ) {
             Text(
                 text = stringResource(id = content.section.titleResId),
+                color = colorText,
                 style = MaterialTheme.typography.titleMedium,
             )
         }
@@ -117,21 +151,23 @@ fun HomeTabRowContent(
 
 @Composable
 fun rememberTabContent(
-    onCoinClick: (Coin) -> Unit
+    onArticleClick: (Article) -> Unit
 ): List<TabContent> {
     val articleSection = TabContent(Sections.News) {
-        ArticleListScreen()
+        ArticleListScreen(
+            onArticleClick = onArticleClick
+        )
     }
 
-    val coinSection = TabContent(Sections.Coin) {
-        CoinListScreen(onCoinClick = onCoinClick)
+    val videoSection = TabContent(Sections.Video) {
+        VideoListScreen()
     }
 
-    val interestingCoinSection = TabContent(Sections.InterestingCoin) {
-        InterestCoinScreen()
+    val scrapNewsSection = TabContent(Sections.Scrap) {
+        ScrapNewsScreen()
     }
 
-    return listOf(coinSection, articleSection, interestingCoinSection)
+    return listOf(articleSection, videoSection, scrapNewsSection)
 }
 
 

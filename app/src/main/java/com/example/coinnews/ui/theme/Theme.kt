@@ -83,9 +83,9 @@ fun CoinNewsAppTheme(
     val colorScheme =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            dynamicLightColorScheme(context)
         } else {
-            if (darkTheme) DarkColors else LightColors
+            LightColors
         }
 
     MaterialTheme(

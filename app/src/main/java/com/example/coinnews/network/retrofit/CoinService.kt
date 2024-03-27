@@ -20,6 +20,7 @@ interface CoinService {
     @GET("/v2/cryptocurrency/info")
     suspend fun getCoinInfo(
         @Header("X-CMC_PRO_API_KEY") key: String = "a164184f-4e7f-4424-94ec-cc5437304222",
-        @Query("id") id: String,
+//        @Query("id") id: String,
+        @Query("symbol") symbol: String
     ): CoinInfoResponse
 }

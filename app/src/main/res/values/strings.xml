@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">CoinMarketCapNewsApp</string>
     <string name="news">뉴스</string>
-    <string name="coin">코인</string>
-    <string name="interesting_coin">관심 코인</string>
+    <string name="video">비디오</string>
+    <string name="scrap">스크랩</string>
 
-    <string name="hash_tag">#</string>
-    <string name="name">이름</string>
-    <string name="market_cap">시가 총액</string>
-    <string name="price">가격</string>
-    <string name="percent_change_24h">24시간 %</string>
+<!--    <string name="hash_tag">#</string>-->
+<!--    <string name="name">이름</string>-->
+<!--    <string name="market_cap">시가 총액</string>-->
+<!--    <string name="price">가격</string>-->
+<!--    <string name="percent_change_24h">24시간 %</string>-->
 </resources>

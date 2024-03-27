@@ -3,6 +3,7 @@ package com.example.coinnews.ui.articlelist
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,9 +18,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,12 +31,16 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.ArticleMetaData
+import com.example.coinnews.model.CoinFilter
+import com.example.coinnews.ui.components.SelectableChip
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
+import com.example.coinnews.ui.utils.DateUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import java.time.LocalDateTime
@@ -41,36 +48,66 @@ import java.time.temporal.ChronoUnit
 
 @Composable
 fun ArticleListScreen(
+    onArticleClick: (Article) -> Unit,
     viewModel: ArticleListViewModel = hiltViewModel()
-){
+) {
     val articles = viewModel.articles.collectAsLazyPagingItems()
+    val selectedFilter by viewModel.selectedCoinFilter.collectAsStateWithLifecycle()
+
+    val coinFilters = listOf(
+        CoinFilter.Bitcoin,
+        CoinFilter.Ethereum
+    )
 
     ArticleListScreen(
         articles = articles,
-        onArticleClick = {}
+        selectedFilter = selectedFilter,
+        filters = coinFilters,
+        onFilterClick = viewModel::updateFilter,
+        onArticleClick = onArticleClick
     )
 }
 
 @Composable
 fun ArticleListScreen(
     articles: LazyPagingItems<Article>,
+    selectedFilter: CoinFilter?,
+    filters: List<CoinFilter>,
+    onFilterClick: (CoinFilter) -> Unit,
     onArticleClick: (Article) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     state: LazyListState = rememberLazyListState()
 ) {
-    LazyColumn(
-        contentPadding = contentPadding,
+    Column(
         modifier = modifier,
-        state = state
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        items(articles.itemCount) { index ->
-            articles[index]?.let {
-                ArticleContentItem(
-                    article = it,
-                    onArticleClick = onArticleClick,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            filters.forEach {
+                SelectableChip(
+                    selected = it == selectedFilter,
+                    text = it.coinName,
+                    onClick = { onFilterClick(it) }
                 )
-                Spacer(modifier = Modifier.height(20.dp))
+            }
+        }
+        LazyColumn(
+            contentPadding = contentPadding,
+            modifier = Modifier.fillMaxSize(),
+            state = state
+        ) {
+            items(articles.itemCount) { index ->
+                articles[index]?.let {
+                    ArticleContentItem(
+                        article = it,
+                        onArticleClick = onArticleClick,
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
             }
         }
     }
@@ -92,13 +129,6 @@ private fun ArticleContentItem(
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
         )
-        Text(
-            text = article.description,
-            style = MaterialTheme.typography.bodyLarge,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            fontWeight = FontWeight.Normal,
-        )
         ArticleMetaData(
             article = article,
             modifier = Modifier.fillMaxWidth()
@@ -116,7 +146,7 @@ private fun ArticleMetaData(
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = article.metaData.author ?: "알 수 없는 출처",
+            text = article.metaData?.author ?: "알 수 없는 출처",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Normal
         )
@@ -125,11 +155,13 @@ private fun ArticleMetaData(
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Normal
         )
-        Text(
-            text = getTimeAgo(article.metaData.createdAt, LocalDateTime.now()),
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Normal
-        )
+        article.metaData?.let {
+            Text(
+                text = DateUtils.timeToHourMinString(article.metaData.createdAt) ?: "", // todo
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Normal
+            )
+        }
     }
 }
 
@@ -139,14 +171,19 @@ fun PreviewArticleContent(
     @PreviewParameter(ArticleContentPreviewParamProvider::class) articles: Flow<PagingData<Article>>
 ) {
     CoinNewsAppTheme {
-        ArticleListScreen(
-            articles = articles.collectAsLazyPagingItems(),
-            onArticleClick = {},
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp)
-                .background(White)
-        )
+//        ArticleListScreen(
+//            articles = articles.collectAsLazyPagingItems(),
+//            filters = listOf(
+//                CoinFilter.Bitcoin,
+//                CoinFilter.Ethereum
+//            ),
+//            selectedFilter = CoinFilter.Bitcoin,
+//            onArticleClick = {},
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(10.dp)
+//                .background(White)
+//        )
     }
 }
 
@@ -172,16 +209,4 @@ private class ArticleContentPreviewParamProvider :
                 )
             )
         )
-}
-
-private fun getTimeAgo(fromTime: LocalDateTime, toTime: LocalDateTime = LocalDateTime.now()): String {
-    val minutes = ChronoUnit.MINUTES.between(fromTime, toTime)
-    val hours = ChronoUnit.HOURS.between(fromTime, toTime)
-    val days = ChronoUnit.DAYS.between(fromTime, toTime)
-
-    return when {
-        minutes < 60 -> "$minutes 분 전"
-        hours < 24 -> "$hours 시간 전"
-        else -> "$days 일 전"
-    }
 }

@@ -13,8 +13,10 @@ import com.example.coinnews.data.paging.ArticlePagingSource
 import com.example.coinnews.data.repository.NewsRepository
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.Coin
+import com.example.coinnews.model.CoinFilter
 import com.example.coinnews.model.Sort
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,12 +25,25 @@ import javax.inject.Singleton
 class NewsRepositoryImpl @Inject constructor(
     private val articleService: ArticleService,
 ) : NewsRepository {
+    override fun isInterested(id: String): Flow<Boolean> = flow {
+        emit(false)
+    }
 
-    override fun getArticles(): Flow<PagingData<Article>> {
+    override fun getArticles(
+        filter: CoinFilter
+    ): Flow<PagingData<Article>> {
         return Pager(
             config = PagingConfig(enablePlaceholders = false, pageSize = 10),
-            pagingSourceFactory = { ArticlePagingSource(articleService, DEFAULT_CRYPTO_QUERY) }
-        ).flow.map { it.map { it.toDomain() } }
+            pagingSourceFactory = { ArticlePagingSource(articleService, filter.coinName) }
+        ).flow.map { it.map { it.toDomain(filter)} }
+    }
+
+    override suspend fun addInterest(article: Article) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteInterest(article: Article) {
+        TODO("Not yet implemented")
     }
 
     companion object {
