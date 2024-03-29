@@ -5,6 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.coinnews.worker.CoinFilterDatabaseWorker
 
 @Database(entities = [CoinFilterEntity::class], version = 1, exportSchema = false)
 @TypeConverters(Converter::class)
@@ -24,6 +28,16 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun buildDatabase(context: Context): AppDatabase {
             return Room.databaseBuilder(context, AppDatabase::class.java, "coin_db")
+                .addCallback(
+                    object : RoomDatabase.Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            val request = OneTimeWorkRequestBuilder<CoinFilterDatabaseWorker>()
+                                .build()
+                            WorkManager.getInstance(context).enqueue(request)
+                        }
+                    }
+                )
                 .build()
         }
     }

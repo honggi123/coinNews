@@ -1,5 +1,7 @@
 package com.example.coinnews.ui
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -42,7 +44,19 @@ fun CoinNewsNavGraph(
         }
         composable(
             route = ArticleDetailNav.routeWithArgName(),
-            arguments = ArticleDetailNav.arguments
+            arguments = ArticleDetailNav.arguments,
+            enterTransition = {
+                slideIntoContainer(
+                    animationSpec = tween(400),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    animationSpec = tween(400),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
         ) { navBackStackEntry ->
             val article = ArticleDetailNav.findArgument(navBackStackEntry)
             ArticleDetailRoute(

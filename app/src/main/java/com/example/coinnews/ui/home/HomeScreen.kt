@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,11 +18,19 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.coinnews.R
 import com.example.coinnews.model.Article
@@ -31,6 +40,7 @@ import com.example.coinnews.ui.scrap.ScrapNewsScreen
 import com.example.coinnews.ui.theme.Grey1000
 import com.example.coinnews.ui.theme.Grey200
 import com.example.coinnews.ui.videolist.VideoListScreen
+import kotlin.math.roundToInt
 
 enum class Sections(@StringRes val titleResId: Int) {
     News(R.string.news),
@@ -40,7 +50,6 @@ enum class Sections(@StringRes val titleResId: Int) {
 
 class TabContent(val section: Sections, val content: @Composable () -> Unit)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     tabs: List<TabContent>,

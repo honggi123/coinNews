@@ -14,5 +14,5 @@ data class CoinFilterEntity(
     @ColumnInfo(name = "symbol")
     val symbol: String,
     @ColumnInfo(name = "is_selected")
-    val isSelected: Boolean
+    val isSelected: Boolean = false
 )

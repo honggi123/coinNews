@@ -71,6 +71,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.1")
 
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.0-alpha03")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("com.google.dagger:hilt-android:2.49")
@@ -94,6 +95,10 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.5")
+
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    implementation("androidx.compose.animation:animation:1.7.0-alpha05")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

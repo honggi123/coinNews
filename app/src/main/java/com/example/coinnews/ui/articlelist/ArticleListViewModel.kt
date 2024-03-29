@@ -52,20 +52,6 @@ class ArticleListViewModel @Inject constructor(
         .flatMapLatest { filter -> newsRepository.getArticles(filter) }
         .cachedIn(viewModelScope)
 
-    init {
-        viewModelScope.launch {
-            if (userRepository.isEmpty()){
-                userRepository.insertFilters(
-                    listOf(
-                        CoinFilter("", "비트코인","BTC", true),
-                        CoinFilter("", "이더리움","ETC", true),
-                        CoinFilter("", "리플","XRP", false)
-                    )
-                )
-            }
-        }
-    }
-
     fun onFilterClick(filter: CoinFilter) {
         // todo
         _selectedFilter.value = filter

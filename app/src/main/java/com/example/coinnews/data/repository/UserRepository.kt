@@ -12,7 +12,5 @@ interface UserRepository {
 
     fun getFilters(): Flow<List<CoinFilter>>
 
-    suspend fun insertFilters(filters: List<CoinFilter>)
-
     suspend fun updateFilterSelect(filters: List<CoinFilter>)
 }

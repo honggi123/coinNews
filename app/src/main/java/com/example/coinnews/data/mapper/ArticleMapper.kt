@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
 
 fun NetworkArticle.toDomain(filter: CoinFilter): Article {
     return Article(
-        id = this.url,
+        id = "",
         title = this.title.replaceHtmlTags(),
         url = this.url,
         description = this.description.replaceHtmlTags(),

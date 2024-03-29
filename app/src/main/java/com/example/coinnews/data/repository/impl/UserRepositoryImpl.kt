@@ -49,20 +49,9 @@ class UserRepositoryImpl @Inject constructor(
             }
     }
 
-    override suspend fun insertFilters(filters: List<CoinFilter>) {
-        val list = filters.map {
-            CoinFilterEntity(
-                coinName = it.coinName,
-                symbol = it.symbol,
-                isSelected = it.isSelected
-            )
-        }
-        coinFilterDao.insertAllFilters(list)
-    }
-
     override suspend fun updateFilterSelect(filters: List<CoinFilter>) {
         filters.forEach {
-            coinFilterDao.updateFilterSelect(it.id, it.isSelected)
+            coinFilterDao.updateFilterSelect(it.id.toString(), it.isSelected)   // todo
         }
     }
 }

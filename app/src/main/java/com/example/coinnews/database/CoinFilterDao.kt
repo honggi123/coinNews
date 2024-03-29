@@ -18,7 +18,7 @@ interface CoinFilterDao {
     fun getSelctedFilters(selected: Boolean = true): Flow<List<CoinFilterEntity>>
 
     @Insert
-    suspend fun insertAllFilters(filters: List<CoinFilterEntity>)
+    suspend fun insertAll(filters: List<CoinFilterEntity>)
 
     @Query("UPDATE coin_filter SET is_selected=:isSelected WHERE id = :id")
     suspend fun updateFilterSelect(id: String, isSelected: Boolean)

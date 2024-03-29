@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -47,7 +48,7 @@ fun ArticleDetailRoute(
         viewModel.updateArticle(article)
     }
 
-    val isInterested by viewModel.isInterested.collectAsStateWithLifecycle()
+    val isInterested by viewModel.isInterested.collectAsState()
 
     ArticleDetailScreen(
         article = article,
@@ -58,7 +59,6 @@ fun ArticleDetailRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ArticleDetailScreen(
     article: Article?,
@@ -84,7 +84,6 @@ private fun ArticleDetailScreen(
             article = article,
             modifier = modifier
                 .padding(paddingValues)
-                .padding(10.dp),
         )
     }
 }
