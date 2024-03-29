@@ -2,7 +2,7 @@ package com.example.coinnews.di
 
 import android.content.Context
 import com.example.coinnews.database.AppDatabase
-import com.example.coinnews.database.CoinInterestedDao
+import com.example.coinnews.database.CoinFilterDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,8 +21,8 @@ class DataBaseModule {
     }
 
     @Provides
-    fun provideCoinInterestedDao(appDatabase: AppDatabase): CoinInterestedDao {
-        return appDatabase.coinFollowedDao()
+    fun provideCoinFilterDao(appDatabase: AppDatabase): CoinFilterDao {
+        return appDatabase.coinFilterDao()
     }
 }
 

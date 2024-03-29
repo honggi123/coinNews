@@ -1,4 +1,4 @@
-package com.example.coinnews.ui.components
+package com.example.coinnews.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,45 +21,26 @@ import androidx.compose.ui.unit.dp
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
 import com.example.coinnews.ui.theme.Grey1000
 import com.example.coinnews.ui.theme.Grey200
+import com.example.coinnews.ui.theme.Grey700
 
 @Composable
-fun SelectableChip(
-    selected: Boolean,
+fun ClickableChip(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colorBackground = if (selected) {
-        Grey1000
-    } else {
-        Grey200
-    }
-
-    val colorText = if (selected) {
-        Grey200
-    } else {
-        Grey1000
-    }
-
-    val fontWeight = if (selected) {
-        FontWeight.Bold
-    } else {
-        FontWeight.Medium
-    }
-
     Box(
         modifier = modifier
-            .background(colorBackground, RoundedCornerShape(20.dp))
             .clip(RoundedCornerShape(20.dp))
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 10.dp, vertical = 5.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
-            color = colorText,
+            color = Grey700,
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = fontWeight
+            fontWeight = FontWeight.Medium
         )
     }
 
@@ -73,9 +54,8 @@ private fun SelectableChipPreview() {
             modifier = Modifier.fillMaxSize()
                 .background(Color.White)
         ) {
-            SelectableChip(
-                selected = false,
-                text = "비트코인",
+            ClickableChip(
+                text = "+",
                 onClick = {},
                 modifier = Modifier
                     .width(100.dp)

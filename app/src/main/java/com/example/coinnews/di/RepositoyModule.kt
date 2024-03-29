@@ -2,8 +2,10 @@ package com.example.coinnews.di
 
 import com.example.coinnews.data.repository.CoinRepository
 import com.example.coinnews.data.repository.NewsRepository
+import com.example.coinnews.data.repository.UserRepository
 import com.example.coinnews.data.repository.impl.CoinRepositoryImpl
 import com.example.coinnews.data.repository.impl.NewsRepositoryImpl
+import com.example.coinnews.data.repository.impl.UserRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,4 +23,8 @@ interface RepositoyModule {
     @Binds
     @Singleton
     fun bindCoinRepository(repository: CoinRepositoryImpl): CoinRepository
+
+    @Binds
+    @Singleton
+    fun bindUserRepository(repository: UserRepositoryImpl): UserRepository
 }

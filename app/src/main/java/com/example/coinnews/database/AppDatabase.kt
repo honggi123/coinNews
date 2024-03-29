@@ -6,11 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [CoinEntity::class], version = 1, exportSchema = false)
+@Database(entities = [CoinFilterEntity::class], version = 1, exportSchema = false)
 @TypeConverters(Converter::class)
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun coinFollowedDao(): CoinInterestedDao
+    abstract fun coinFilterDao(): CoinFilterDao
 
     companion object {
         @Volatile

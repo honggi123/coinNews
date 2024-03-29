@@ -16,8 +16,8 @@ fun NetworkArticle.toDomain(filter: CoinFilter): Article {
         description = this.description.replaceHtmlTags(),
         metaData = ArticleMetaData(
             parseAuthorFromUrl(this.originalUrl),
-            Coin(id = "", name = filter.coinName, slug = filter.slug, symbol = filter.symbol),
-            formatToDateTime(this.createdAt)
+            Coin(id = "", name = filter.coinName, slug = "", symbol = filter.symbol),
+            LocalDateTime.now() // todo
         )
     )
 }

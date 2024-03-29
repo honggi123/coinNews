@@ -82,17 +82,6 @@ private fun ArticleDetailScreen(
     ) { paddingValues ->
         ArticleDetailContent(
             article = article,
-            coin = Coin(
-                id = "",
-                name = "",
-                slug = "",
-                usdAsset = CoinAsset(
-                    price = 1000.0,
-                    priceChange24h = 100.0,
-                    totalMarketCap = 100000.0
-                ),
-                symbol = ""
-            ),  // todo
             modifier = modifier
                 .padding(paddingValues)
                 .padding(10.dp),
@@ -140,18 +129,13 @@ private fun TopAppBar(
 @Composable
 private fun ArticleDetailContent(
     article: Article?,
-    coin: Coin?,
     modifier: Modifier
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        CoinContent(
-            coin = coin,
-            modifier = Modifier.fillMaxWidth()
-        )
-        if (article != null) { // todo
+        if (article != null) { // todo handle not found
             ArticleContent(
                 article = article,
                 modifier = Modifier.fillMaxWidth()
