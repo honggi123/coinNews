@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,11 +32,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.coinnews.R
 import com.example.coinnews.model.Article
-import com.example.coinnews.model.ArticleMetaData
 import com.example.coinnews.model.ArticleWithInterest
 import com.example.coinnews.model.CoinAsset
 import com.example.coinnews.model.Coin
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
+import java.time.Instant
 import java.time.LocalDateTime
 
 @Composable
@@ -44,7 +45,7 @@ fun ArticleDetailRoute(
     onBackClick: () -> Unit,
     viewModel: ArticleDetailViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(key1 = Unit){
+    LaunchedEffect(key1 = Unit) {
         viewModel.updateArticle(article)
     }
 
@@ -108,19 +109,23 @@ private fun TopAppBar(
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow_back),
             contentDescription = null,
-            modifier = Modifier.clickable { onBackClick() },
+            modifier = Modifier
+                .size(30.dp)
+                .clickable { onBackClick() },
         )
         Spacer(modifier = Modifier.weight(1f))
         Icon(
             painter = interestIconPainter,
             contentDescription = null,
-            modifier = Modifier.clickable {
-                if (article != null) {
-                    onToggleClick(
-                        ArticleWithInterest(article, isInterested)
-                    )
+            modifier = Modifier
+                .size(30.dp)
+                .clickable {
+                    if (article != null) {
+                        onToggleClick(
+                            ArticleWithInterest(article, isInterested)
+                        )
+                    }
                 }
-            }
         )
     }
 }
@@ -140,30 +145,6 @@ private fun ArticleDetailContent(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-    }
-}
-
-@Composable
-private fun CoinContent(
-    coin: Coin?,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = coin?.name.toString(),
-        style = MaterialTheme.typography.bodyMedium,
-        fontWeight = FontWeight.Bold,
-        maxLines = 1,
-        textAlign = TextAlign.Right,
-    )
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        Text(
-            text = coin?.description.toString(),
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-        )
     }
 }
 
@@ -197,23 +178,10 @@ private fun ArticleDetailScreenPreview() {
             article = Article(
                 id = "",
                 title = "",
-                description = "",
+//                description = "",
                 url = "",
-                metaData = ArticleMetaData(
-                    author = "",
-                    coin = Coin(
-                        id = "",
-                        name = "",
-                        slug = "",
-                        usdAsset = CoinAsset(
-                            price = 1000.0,
-                            priceChange24h = 100.0,
-                            totalMarketCap = 100000.0
-                        ),
-                        symbol = ""
-                    ),
-                    createdAt = LocalDateTime.now()
-                )
+                author = "",
+                createdAt = Instant.now().toEpochMilli()
             ),
             isInterested = false,
             onBackClick = {},

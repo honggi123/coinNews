@@ -57,7 +57,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.coinnews.model.Article
-import com.example.coinnews.model.ArticleMetaData
 import com.example.coinnews.model.CoinFilter
 import com.example.coinnews.ui.component.BaseCustomModal
 import com.example.coinnews.ui.component.CheckListItem
@@ -74,6 +73,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,7 +109,7 @@ fun ArticleListScreen(
             onCompleteClick = {
                 viewModel.updateNewFilters(it)
                 showModal = false
-            },
+            }
         )
     }
 }
@@ -129,7 +129,7 @@ private fun ArticleListScreenContent(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
@@ -182,11 +182,11 @@ private fun ArticleContentItem(
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
         )
-        Text(
-            text = article.description,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-        )
+//        Text(
+//            text = article.description,
+//            style = MaterialTheme.typography.bodyLarge,
+//            fontWeight = FontWeight.Medium,
+//        )
         ArticleMetaData(
             article = article,
             modifier = Modifier.fillMaxWidth()
@@ -204,7 +204,7 @@ private fun ArticleMetaData(
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = article.metaData?.author ?: "알 수 없는 출처",
+            text = article.author ?: "알 수 없는 출처",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Normal
         )
@@ -213,13 +213,11 @@ private fun ArticleMetaData(
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Normal
         )
-        article.metaData?.let {
-            Text(
-                text = DateUtils.timeToHourMinString(article.metaData.createdAt) ?: "", // todo
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Normal
-            )
-        }
+        Text(
+            text = DateUtils.timestampToAmPmTimeString(article.createdAt),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Normal
+        )
     }
 }
 
@@ -312,11 +310,9 @@ private class ArticleContentPreviewParamProvider :
                             id = "1",
                             title = "블롬버그 \"버블 조짐 있다\"vs 월스트리트저널 \"과거 만큼은 아니다\"",
                             url = "url",
-                            description = "한편, 한화투자증권은 2021년 2월에 암호화폐 거래소 업비트와 주식 거래 플랫폼 증권플러스 등을 운영하는 두나무 보통주 약 200만주를 583억원에 매수한 바 있다.",
-                            metaData = ArticleMetaData(
-                                author = "블록미디어",
-                                createdAt = LocalDateTime.now()
-                            )
+//                            description = "한편, 한화투자증권은 2021년 2월에 암호화폐 거래소 업비트와 주식 거래 플랫폼 증권플러스 등을 운영하는 두나무 보통주 약 200만주를 583억원에 매수한 바 있다.",
+                            author = "블록미디어",
+                            createdAt = Instant.now().toEpochMilli()
                         )
                     )
                 )

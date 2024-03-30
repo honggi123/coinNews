@@ -6,11 +6,19 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
 
-    suspend fun isEmpty(): Boolean
+    fun getAllNews(): Flow<List<Article>>
+
+    fun isNewsInterested(id: String): Flow<Boolean>
+
+    suspend fun addNewsInterest(article: Article)
+
+    suspend fun deleteNewsInterest(article: Article)
 
     fun getAllFilters(): Flow<List<CoinFilter>>
 
     fun getFilters(): Flow<List<CoinFilter>>
+
+    suspend fun isFilterEmpty(): Boolean
 
     suspend fun updateFilterSelect(filters: List<CoinFilter>)
 }

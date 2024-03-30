@@ -1,24 +1,39 @@
 package com.example.coinnews.data.mapper
 
+import com.example.coinnews.database.NewsEntity
 import com.example.coinnews.network.model.NetworkArticle
 import com.example.coinnews.model.Article
-import com.example.coinnews.model.ArticleMetaData
-import com.example.coinnews.model.Coin
-import com.example.coinnews.model.CoinFilter
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.example.coinnews.ui.utils.DateUtils
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
-fun NetworkArticle.toDomain(filter: CoinFilter): Article {
+fun NetworkArticle.toDomain(): Article {
     return Article(
-        id = "",
+        id = URLEncoder.encode(this.originalUrl, StandardCharsets.UTF_8.toString()),
         title = this.title.replaceHtmlTags(),
         url = this.url,
-        description = this.description.replaceHtmlTags(),
-        metaData = ArticleMetaData(
-            parseAuthorFromUrl(this.originalUrl),
-            Coin(id = "", name = filter.coinName, slug = "", symbol = filter.symbol),
-            LocalDateTime.now() // todo
-        )
+        author = parseAuthorFromUrl(this.originalUrl),
+        createdAt = DateUtils.timeStringToTimestamp(this.createdAt)
+    )
+}
+
+fun Article.toEntity(): NewsEntity {
+    return NewsEntity(
+        newsId = this.id,
+        title = this.title.replaceHtmlTags(),
+        url = this.url,
+        author = this.author,
+        createdAt = DateUtils.timeStampToLocalDateTime(this.createdAt)
+    )
+}
+
+fun NewsEntity.toDomain(): Article {
+    return Article(
+        id = this.newsId,
+        title = this.title.replaceHtmlTags(),
+        url = this.url,
+        author = this.author,
+        createdAt = DateUtils.localDateTimeToTimeStamp(this.createdAt)
     )
 }
 
@@ -30,16 +45,14 @@ private fun parseAuthorFromUrl(url: String): String? {
         "coinreaders" to "코인리더스",
         "newstapa" to "뉴스타파",
         "hankyung" to "한경신문",
-        "gukjenews" to "국제뉴스"
+        "gukjenews" to "국제뉴스",
+        "newsmin" to "뉴스민",
+        "etoday" to "이투데이"
     )
 
     return authors.find { (key, _) -> url.contains(key) }?.second
 }
 
-private fun formatToDateTime(dateTimeString: String): LocalDateTime {
-    val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")
-    return LocalDateTime.parse(dateTimeString, formatter)
-}
 
 private fun String.replaceHtmlTags(): String {
     return this.replace(Regex("<.*?>"), "")

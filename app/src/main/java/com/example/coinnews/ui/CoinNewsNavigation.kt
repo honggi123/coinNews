@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.Coin
+import com.example.coinnews.ui.utils.DateUtils
 import com.example.coinnews.ui.utils.GsonUtils
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -29,7 +30,7 @@ object ArticleDetailNav : DestinationArg<Article> {
 
     override fun navigateWithArg(item: Article): String {
         val newUrl = URLEncoder.encode(item.url, StandardCharsets.UTF_8.toString())
-        val arg = GsonUtils.toJson(item.copy(id = "", url = newUrl))
+        val arg = GsonUtils.toJson(item.copy(id = item.id, url = newUrl))
         return "$route/$arg"
     }
 

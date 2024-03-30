@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.coinnews.data.repository.CoinRepository
 import com.example.coinnews.data.repository.NewsRepository
+import com.example.coinnews.data.repository.UserRepository
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.ArticleWithInterest
 import com.example.coinnews.model.CoinFilter
@@ -19,11 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ArticleDetailViewModel @Inject constructor(
-    private val newsRepository: NewsRepository,
-    private val coinRepository: CoinRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
-
-    // todo add coininfo
 
     private val _isInterested = MutableStateFlow(false)
     val isInterested: StateFlow<Boolean> = _isInterested.asStateFlow()
@@ -31,10 +29,9 @@ class ArticleDetailViewModel @Inject constructor(
     fun updateArticle(article: Article?){
         viewModelScope.launch {
             if (article != null) {
-                newsRepository.isInterested(article.id).collectLatest {
+                userRepository.isNewsInterested(article.id).collectLatest {
                     _isInterested.value = it
                 }
-                article.metaData?.coin?.let { coinRepository.getCoinInfo(it) }
             }
         }
     }
@@ -42,9 +39,9 @@ class ArticleDetailViewModel @Inject constructor(
     fun toggleInterest(articleWithInterest: ArticleWithInterest) {
         viewModelScope.launch {
             if (articleWithInterest.isInterested) {
-                newsRepository.deleteInterest(articleWithInterest.article)
+                userRepository.deleteNewsInterest(articleWithInterest.article)
             } else {
-                newsRepository.addInterest(articleWithInterest.article)
+                userRepository.addNewsInterest(articleWithInterest.article)
             }
         }
     }

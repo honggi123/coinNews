@@ -100,7 +100,6 @@ fun HomeScreenContent(
     ) {
         TabRow(
             selectedTabIndex = selectedTabIndex,
-            contentColor = MaterialTheme.colorScheme.primary,
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
                     modifier = Modifier

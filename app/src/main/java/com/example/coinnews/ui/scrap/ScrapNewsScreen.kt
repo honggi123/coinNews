@@ -3,8 +3,10 @@ package com.example.coinnews.ui.scrap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -25,25 +29,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.coinnews.R
+import com.example.coinnews.model.Article
 import com.example.coinnews.model.Coin
+import com.example.coinnews.ui.utils.DateUtils
 
 @Composable
 fun ScrapNewsScreen(
     viewModel: ScrapNewsViewModel = hiltViewModel()
 ) {
-//    val coins by viewModel.coins.collectAsStateWithLifecycle(emptyList())
-//
-//    InterestNewsScreen(
-//        coins = coins,
-//        onDeleteClick = viewModel::deleteInterest,
-//        modifier = Modifier.fillMaxSize()
-//    )
+    val news by viewModel.news.collectAsState()
+
+    ScrapNewsScreen(
+        news = news,
+        onDeleteClick = {},
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScrapNewsScreen(
-    coins: List<Coin>,
+    news: List<Article>,
     onDeleteClick: (coin: Coin) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState()
@@ -53,53 +58,78 @@ private fun ScrapNewsScreen(
     ) { contentPadding ->
         LazyColumn(
             contentPadding = contentPadding,
-            modifier = modifier.padding(horizontal = 10.dp),
+            modifier = modifier.fillMaxWidth(),
             state = state
         ) {
             items(
-                items = coins,
+                items = news,
                 key = { coin -> coin.id }
-            ) { coin ->
-                CoinItem(
-                    onDeleteClick = onDeleteClick,
-                    coin = coin,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
+            ) {
+                ArticleContentItem(
+                    article = it,
+                    onArticleClick = {},
                 )
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(30.dp))
             }
         }
     }
 }
 
 @Composable
-private fun CoinItem(
-    coin: Coin,
-    onDeleteClick: (coin: Coin) -> Unit,
+private fun ArticleContentItem(
+    article: Article,
+    onArticleClick: (Article) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.clickable { onArticleClick(article) },
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalAlignment = Alignment.Start,
+    ) {
+        Text(
+            text = article.title,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+        )
+//        Text(
+//            text = article.description,
+//            style = MaterialTheme.typography.bodyLarge,
+//            fontWeight = FontWeight.Medium,
+//        )
+        ArticleMetaData(
+            article = article,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun ArticleMetaData(
+    article: Article,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.CenterVertically
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = "${coin.name} (${coin.symbol})",
+            text = article.author ?: "알 수 없는 출처",
             style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.weight(1f)
+            fontWeight = FontWeight.Normal
         )
-        Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
-            contentDescription = null,
-            modifier = Modifier
-                .clickable { onDeleteClick(coin) }
-                .weight(0.5f)
+        Text(
+            text = "・",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Normal
+        )
+        Text(
+            text = DateUtils.timestampToAmPmTimeString(article.createdAt),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Normal
         )
     }
 }
+
 
 
 
