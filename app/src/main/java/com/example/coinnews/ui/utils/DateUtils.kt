@@ -15,7 +15,7 @@ object DateUtils {
     }
 
     fun timestampToAmPmTimeString(timestamp: Long): String {
-        val formatter = DateTimeFormatter.ofPattern("a h시 m분")
+        val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분")
         val localDateTime = LocalDateTime.ofInstant(
             java.time.Instant.ofEpochMilli(timestamp),
             java.util.TimeZone.getDefault().toZoneId()

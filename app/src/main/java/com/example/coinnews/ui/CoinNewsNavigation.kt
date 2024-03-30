@@ -1,5 +1,6 @@
 package com.example.coinnews.ui
 
+import android.util.Log
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
@@ -39,7 +40,6 @@ object ArticleDetailNav : DestinationArg<Article> {
         return GsonUtils.fromJson<Article>(articleString)
     }
 }
-
 
 interface Destination {
     val route: String

@@ -1,6 +1,7 @@
 package com.example.coinnews.ui.home
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,8 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +53,7 @@ enum class Sections(@StringRes val titleResId: Int) {
 
 class TabContent(val section: Sections, val content: @Composable () -> Unit)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     tabs: List<TabContent>,
@@ -57,21 +61,23 @@ fun HomeScreen(
     onSectionChange: (Sections) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.news),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                scrollBehavior = scrollBehavior,
+                modifier = Modifier.background(MaterialTheme.colorScheme.background)
+            )
         },
-        modifier = modifier
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { contentPadding ->
         HomeScreenContent(
             tabs = tabs,
@@ -145,13 +151,13 @@ fun HomeTabRowContent(
         Tab(
             selected = selectedTabIndex == index,
             onClick = { onSectionChange(content.section) },
-            modifier = Modifier.height(40.dp),
-
-            ) {
+            modifier = Modifier.height(40.dp)
+        ) {
             Text(
                 text = stringResource(id = content.section.titleResId),
                 color = colorText,
                 style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
             )
         }
     }

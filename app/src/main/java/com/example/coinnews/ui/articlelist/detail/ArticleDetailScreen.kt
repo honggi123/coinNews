@@ -3,6 +3,7 @@ package com.example.coinnews.ui.articlelist.detail
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +38,8 @@ import com.example.coinnews.model.ArticleWithInterest
 import com.example.coinnews.model.CoinAsset
 import com.example.coinnews.model.Coin
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
+import com.example.coinnews.ui.theme.Grey1000
+import com.example.coinnews.ui.theme.Grey200
 import java.time.Instant
 import java.time.LocalDateTime
 
@@ -81,11 +85,19 @@ private fun ArticleDetailScreen(
             )
         }
     ) { paddingValues ->
-        ArticleDetailContent(
-            article = article,
-            modifier = modifier
-                .padding(paddingValues)
-        )
+        if (article != null) {
+            ArticleDetailContent(
+                article = article,
+                modifier = modifier
+                    .padding(paddingValues)
+            )
+        } else {
+            EmptyArticleContent(
+                text = "해당 뉴스의 URL이 존재하지 않습니다.",
+                modifier = modifier
+                    .padding(paddingValues)
+            )
+        }
     }
 }
 
@@ -112,6 +124,7 @@ private fun TopAppBar(
             modifier = Modifier
                 .size(30.dp)
                 .clickable { onBackClick() },
+            tint = Grey1000
         )
         Spacer(modifier = Modifier.weight(1f))
         Icon(
@@ -125,26 +138,43 @@ private fun TopAppBar(
                             ArticleWithInterest(article, isInterested)
                         )
                     }
-                }
+                },
+            tint = Grey1000
         )
     }
 }
 
 @Composable
 private fun ArticleDetailContent(
-    article: Article?,
+    article: Article,
     modifier: Modifier
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        if (article != null) { // todo handle not found
-            ArticleContent(
-                article = article,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        ArticleContent(
+            article = article,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun EmptyArticleContent(
+    text: String,
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 

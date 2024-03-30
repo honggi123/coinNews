@@ -129,40 +129,73 @@ private fun ArticleListScreenContent(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            filters.forEach {
-                SelectableChip(
-                    selected = it == selectedFilter,
-                    text = it.coinName,
-                    onClick = { onFilterClick(it) }
+        if (filters.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                EmptyFiltersContent(text = "보고싶은 뉴스의 코인을 선택해보세요!")
+                Spacer(modifier = Modifier.height(10.dp))
+                ClickableChip(
+                    text = "필터링 설정",
+                    onClick = { onFilterSettingClick() },
                 )
             }
-            ClickableChip(
-                text = "설정",
-                onClick = { onFilterSettingClick() },
-            )
-        }
-        LazyColumn(
-            contentPadding = contentPadding,
-            modifier = Modifier.fillMaxSize(),
-            state = state
-        ) {
-            items(articles.itemCount) { index ->
-                articles[index]?.let {
-                    ArticleContentItem(
-                        article = it,
-                        onArticleClick = onArticleClick,
+        } else {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                filters.forEach {
+                    SelectableChip(
+                        selected = it == selectedFilter,
+                        text = it.coinName,
+                        onClick = { onFilterClick(it) }
                     )
-                    Spacer(modifier = Modifier.height(30.dp))
+                }
+                ClickableChip(
+                    text = "설정",
+                    onClick = { onFilterSettingClick() },
+                )
+            }
+            LazyColumn(
+                contentPadding = contentPadding,
+                modifier = Modifier.fillMaxSize(),
+                state = state
+            ) {
+                items(articles.itemCount) { index ->
+                    articles[index]?.let {
+                        ArticleContentItem(
+                            article = it,
+                            onArticleClick = onArticleClick,
+                        )
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun EmptyFiltersContent(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 

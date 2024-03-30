@@ -41,9 +41,9 @@ private fun parseAuthorFromUrl(url: String): String? {
     val authors = listOf(
         "news1" to "연합뉴스",
         "sisaweek" to "시사위크",
-        "fortunekorea" to "포츈코리아",
-        "coinreaders" to "코인리더스",
-        "newstapa" to "뉴스타파",
+        "fortunekorea" to "포츈 코리아",
+        "coinreaders" to "코인 리더스",
+        "newstapa" to "뉴스 타파",
         "hankyung" to "한경신문",
         "gukjenews" to "국제뉴스",
         "newsmin" to "뉴스민",
