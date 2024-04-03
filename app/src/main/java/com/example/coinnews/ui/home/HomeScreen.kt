@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.example.coinnews.R
 import com.example.coinnews.model.Article
 import com.example.coinnews.ui.articlelist.ArticleListScreen
+import com.example.coinnews.ui.articlelist.ArticleListViewModel
 import com.example.coinnews.ui.extensions.customTabIndicatorOffset
 import com.example.coinnews.ui.scrap.ScrapNewsScreen
 import com.example.coinnews.ui.theme.Grey1000
@@ -165,11 +166,11 @@ fun HomeTabRowContent(
 
 @Composable
 fun rememberTabContent(
-    onArticleClick: (Article) -> Unit
+    onArticleClick: (Article) -> Unit,
 ): List<TabContent> {
     val articleSection = TabContent(Sections.News) {
         ArticleListScreen(
-            onArticleClick = onArticleClick
+            onArticleClick = onArticleClick,
         )
     }
 
@@ -178,7 +179,9 @@ fun rememberTabContent(
     }
 
     val scrapNewsSection = TabContent(Sections.Scrap) {
-        ScrapNewsScreen()
+        ScrapNewsScreen(
+            onArticleClick = onArticleClick
+        )
     }
 
     return listOf(articleSection, videoSection, scrapNewsSection)

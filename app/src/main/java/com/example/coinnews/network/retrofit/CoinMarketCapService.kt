@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
 
-interface CoinService {
+interface CoinMarketCapService {
 
     @GET("/v1/cryptocurrency/listings/latest")
     suspend fun getCoins(

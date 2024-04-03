@@ -30,8 +30,10 @@ object ArticleDetailNav : DestinationArg<Article> {
     )
 
     override fun navigateWithArg(item: Article): String {
+        val title = URLEncoder.encode(item.title, StandardCharsets.UTF_8.toString()).replace("+", "%20")
+        val description = URLEncoder.encode(item.description, StandardCharsets.UTF_8.toString()).replace("+", "%20")
         val newUrl = URLEncoder.encode(item.url, StandardCharsets.UTF_8.toString())
-        val arg = GsonUtils.toJson(item.copy(id = item.id, url = newUrl))
+        val arg = GsonUtils.toJson(item.copy(title = title, url = newUrl, description = description))
         return "$route/$arg"
     }
 

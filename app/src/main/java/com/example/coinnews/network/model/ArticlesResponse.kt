@@ -20,3 +20,4 @@ data class NetworkArticle(
     val description: String,
     @SerialName("pubDate") val createdAt: String
 )
+

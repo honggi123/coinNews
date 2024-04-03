@@ -1,7 +1,8 @@
 package com.example.coinnews.di
 
-import com.example.coinnews.network.retrofit.CoinService
-import com.example.coinnews.network.retrofit.ArticleService
+import com.example.coinnews.network.retrofit.CoinMarketCapService
+import com.example.coinnews.network.retrofit.CryptoNewsService
+import com.example.coinnews.network.retrofit.NaverService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -33,7 +34,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideCoinService(client: OkHttpClient): CoinService {
+    fun provideCoinService(client: OkHttpClient): CoinMarketCapService {
         val json = Json { ignoreUnknownKeys = true }
         val contentType = "application/json".toMediaType()
 
@@ -42,13 +43,13 @@ object NetworkModule {
             .client(client)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
-            .create(CoinService::class.java)
+            .create(CoinMarketCapService::class.java)
     }
 
 
     @Singleton
     @Provides
-    fun provideNewsService(client: OkHttpClient): ArticleService {
+    fun provideNewsService(client: OkHttpClient): NaverService {
         val json = Json { ignoreUnknownKeys = true }
         val contentType = "application/json".toMediaType()
 
@@ -57,6 +58,20 @@ object NetworkModule {
             .client(client)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
-            .create(ArticleService::class.java)
+            .create(NaverService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCryptoNewsService(client: OkHttpClient): CryptoNewsService {
+        val json = Json { ignoreUnknownKeys = true }
+        val contentType = "application/json".toMediaType()
+
+        return Retrofit.Builder()
+            .baseUrl("https://cryptonews-api.com")
+            .client(client)
+            .addConverterFactory(json.asConverterFactory(contentType))
+            .build()
+            .create(CryptoNewsService::class.java)
     }
 }

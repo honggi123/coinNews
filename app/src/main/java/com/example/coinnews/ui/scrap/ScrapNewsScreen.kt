@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.coinnews.R
@@ -35,12 +37,14 @@ import com.example.coinnews.ui.utils.DateUtils
 
 @Composable
 fun ScrapNewsScreen(
+    onArticleClick: (Article) -> Unit,
     viewModel: ScrapNewsViewModel = hiltViewModel()
 ) {
     val news by viewModel.news.collectAsState()
 
     ScrapNewsScreen(
         news = news,
+        onArticleClick = onArticleClick,
         onDeleteClick = {},
         modifier = Modifier.fillMaxSize()
     )
@@ -50,28 +54,57 @@ fun ScrapNewsScreen(
 private fun ScrapNewsScreen(
     news: List<Article>,
     onDeleteClick: (coin: Coin) -> Unit,
+    onArticleClick: (Article) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState()
 ) {
     Scaffold(
         modifier = modifier
     ) { contentPadding ->
-        LazyColumn(
-            contentPadding = contentPadding,
-            modifier = modifier.fillMaxWidth(),
-            state = state
-        ) {
-            items(
-                items = news,
-                key = { coin -> coin.id }
+        if (news.isEmpty()) {
+            EmptyNewsContent(
+                text = "스크랩 뉴스가 존재하지 않습니다.",
+                modifier = modifier.padding(contentPadding)
+            )
+        } else {
+            LazyColumn(
+                contentPadding = contentPadding,
+                modifier = modifier.fillMaxWidth(),
+                state = state
             ) {
-                ArticleContentItem(
-                    article = it,
-                    onArticleClick = {},
-                )
-                Spacer(modifier = Modifier.height(30.dp))
+                items(
+                    items = news,
+                    key = { coin -> coin.id }
+                ) {
+                    ArticleContentItem(
+                        article = it,
+                        onArticleClick = onArticleClick,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(15.dp))
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(15.dp))
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun EmptyNewsContent(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 
@@ -91,11 +124,13 @@ private fun ArticleContentItem(
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
         )
-//        Text(
-//            text = article.description,
-//            style = MaterialTheme.typography.bodyLarge,
-//            fontWeight = FontWeight.Medium,
-//        )
+        Text(
+            text = article.description,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
+        )
         ArticleMetaData(
             article = article,
             modifier = Modifier.fillMaxWidth()
@@ -123,7 +158,7 @@ private fun ArticleMetaData(
             fontWeight = FontWeight.Normal
         )
         Text(
-            text = DateUtils.timestampToAmPmTimeString(article.createdAt),
+            text = article.createdAt?.let { DateUtils.getTimeAgo(it) } ?: "",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Normal
         )

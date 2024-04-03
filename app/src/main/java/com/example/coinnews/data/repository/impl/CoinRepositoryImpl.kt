@@ -1,9 +1,8 @@
 package com.example.coinnews.data.repository.impl
 
 import com.example.coinnews.data.mapper.toDomain
-import com.example.coinnews.network.retrofit.CoinService
+import com.example.coinnews.network.retrofit.CoinMarketCapService
 import com.example.coinnews.data.repository.CoinRepository
-import com.example.coinnews.database.CoinFilterDao
 import com.example.coinnews.model.Coin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -12,8 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CoinRepositoryImpl @Inject constructor(
-    private val coinService: CoinService,
-    private val coinFilterDao: CoinFilterDao
+    private val coinMarketCapService: CoinMarketCapService,
 ) : CoinRepository {
 
 //    override fun isInterested(coinId: String): Flow<Boolean> {
@@ -43,7 +41,7 @@ class CoinRepositoryImpl @Inject constructor(
     override fun getCoinInfo(
         coin: Coin,
     ): Flow<Coin?> = flow {
-        val coinItems = coinService.getCoinInfo(symbol = coin.symbol).items
+        val coinItems = coinMarketCapService.getCoinInfo(symbol = coin.symbol).items
         val coin = coinItems.firstNotNullOf { it.value }.toDomain()
         emit(coin)
     }

@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
 
-interface ArticleService {
+interface NaverService {
 
     @GET("/v1/search/news.json")
     suspend fun getArticles(

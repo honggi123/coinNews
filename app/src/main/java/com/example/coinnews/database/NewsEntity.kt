@@ -14,8 +14,8 @@ data class NewsEntity(
     var newsId: String,
     @ColumnInfo(name = "title")
     val title: String,
-//    @ColumnInfo(name = "description")
-//    val description: String,
+    @ColumnInfo(name = "description")
+    val description: String,
     @ColumnInfo(name = "url")
     val url: String,
     @ColumnInfo(name = "author")

@@ -1,26 +1,34 @@
 package com.example.coinnews.ui.utils
 
+import android.util.Log
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 object DateUtils {
 
-    fun timeStringToTimestamp(timeString: String): Long {
-        val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")
-        val zonedDateTime = ZonedDateTime.parse(timeString, formatter)
-        return zonedDateTime.toInstant().toEpochMilli()
+    fun timeStringToTimestamp(timeString: String): Long? {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")
+            val zonedDateTime = ZonedDateTime.parse(timeString, formatter)
+            zonedDateTime.toEpochSecond() * 1000
+        } catch (e: DateTimeParseException) {
+            null
+        }
     }
 
-    fun timestampToAmPmTimeString(timestamp: Long): String {
-        val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분")
-        val localDateTime = LocalDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(timestamp),
-            java.util.TimeZone.getDefault().toZoneId()
-        )
-        return formatter.format(localDateTime).replace("AM", "오전").replace("PM", "오후")
+    fun getTimeAgo(timestamp: Long): String {
+        val instant = Instant.ofEpochMilli(timestamp)
+        val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        return localDateTime.format(formatter)
     }
 
     fun timeStampToLocalDateTime(value: Long): LocalDateTime {

@@ -3,7 +3,7 @@ package com.example.coinnews.data.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.coinnews.network.model.NetworkCoinListItem
-import com.example.coinnews.network.retrofit.CoinService
+import com.example.coinnews.network.retrofit.CoinMarketCapService
 import javax.inject.Inject
 
 private const val INITIAL_PAGE = 1
@@ -11,7 +11,7 @@ private const val INITIAL_PAGE = 1
 class CoinPagingSource @Inject constructor(
     private val sortOption: String,
     private val sort: String,
-    private val service: CoinService,
+    private val service: CoinMarketCapService,
 ) : PagingSource<Int, NetworkCoinListItem>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, NetworkCoinListItem> {

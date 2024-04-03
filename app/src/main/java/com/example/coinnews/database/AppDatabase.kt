@@ -11,14 +11,14 @@ import androidx.work.WorkManager
 import com.example.coinnews.worker.CoinFilterDatabaseWorker
 
 @Database(
-    entities = [CoinFilterEntity::class, NewsEntity::class],
+    entities = [FilterEntity::class, NewsEntity::class],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(Converter::class)
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun coinFilterDao(): CoinFilterDao
+    abstract fun filterDao(): FilterDao
 
     abstract fun newsDao(): NewsDao
 

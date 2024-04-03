@@ -43,7 +43,6 @@ fun ClickableChip(
             fontWeight = FontWeight.Medium
         )
     }
-
 }
 
 @Preview

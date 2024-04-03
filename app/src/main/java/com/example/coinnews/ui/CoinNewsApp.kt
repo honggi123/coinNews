@@ -1,6 +1,5 @@
 package com.example.coinnews.ui
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
@@ -8,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.coinnews.ui.articlelist.detail.ArticleDetailRoute
+import com.example.coinnews.ui.articledetail.ArticleDetailRoute
 import com.example.coinnews.ui.home.HomeRoute
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
 import com.example.coinnews.ui.utils.NavigationUtils
@@ -36,6 +35,7 @@ fun CoinNewsNavGraph(
         ) {
             HomeRoute(
                 onArticleClick = {
+                    NavigationUtils.saveArticle(it)
                     NavigationUtils.navigate(
                         navController,
                         ArticleDetailNav.navigateWithArg(it)
@@ -58,8 +58,9 @@ fun CoinNewsNavGraph(
                     towards = AnimatedContentTransitionScope.SlideDirection.End
                 )
             }
-        ) { navBackStackEntry ->
-            val article = ArticleDetailNav.findArgument(navBackStackEntry)
+        ) {
+            val article = NavigationUtils.getSavedArticle()
+
             ArticleDetailRoute(
                 article = article,
                 onBackClick = {

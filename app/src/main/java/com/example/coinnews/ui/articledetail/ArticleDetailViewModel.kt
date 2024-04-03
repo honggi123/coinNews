@@ -1,20 +1,15 @@
-package com.example.coinnews.ui.articlelist.detail
+package com.example.coinnews.ui.articledetail
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.coinnews.data.repository.CoinRepository
-import com.example.coinnews.data.repository.NewsRepository
 import com.example.coinnews.data.repository.UserRepository
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.ArticleWithInterest
-import com.example.coinnews.model.CoinFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

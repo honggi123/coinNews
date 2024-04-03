@@ -1,9 +1,9 @@
-package com.example.coinnews.ui.articlelist.detail
+package com.example.coinnews.ui.articledetail
 
+import android.annotation.SuppressLint
+import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -26,22 +26,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.coinnews.R
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.ArticleWithInterest
-import com.example.coinnews.model.CoinAsset
-import com.example.coinnews.model.Coin
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
-import com.example.coinnews.ui.theme.Grey1000
-import com.example.coinnews.ui.theme.Grey200
+import com.example.coinnews.ui.theme.Grey700
 import java.time.Instant
-import java.time.LocalDateTime
 
 @Composable
 fun ArticleDetailRoute(
@@ -81,7 +75,7 @@ private fun ArticleDetailScreen(
                 onToggleClick = onToggleClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
+
             )
         }
     ) { paddingValues ->
@@ -93,7 +87,7 @@ private fun ArticleDetailScreen(
             )
         } else {
             EmptyArticleContent(
-                text = "해당 뉴스의 URL이 존재하지 않습니다.",
+                text = "해당 뉴스가 존재하지 않습니다.",
                 modifier = modifier
                     .padding(paddingValues)
             )
@@ -110,37 +104,42 @@ private fun TopAppBar(
     modifier: Modifier = Modifier
 ) {
     val interestIconPainter = if (isInterested) {
-        painterResource(id = R.drawable.ic_star_fill)
+        painterResource(id = R.drawable.ic_bookmark)
     } else {
-        painterResource(id = R.drawable.ic_star_border)
+        painterResource(id = R.drawable.ic_bookmark_empty)
     }
-
-    Row(
+    Column(
         modifier = modifier
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_back),
-            contentDescription = null,
-            modifier = Modifier
-                .size(30.dp)
-                .clickable { onBackClick() },
-            tint = Grey1000
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Icon(
-            painter = interestIconPainter,
-            contentDescription = null,
-            modifier = Modifier
-                .size(30.dp)
-                .clickable {
-                    if (article != null) {
-                        onToggleClick(
-                            ArticleWithInterest(article, isInterested)
-                        )
-                    }
-                },
-            tint = Grey1000
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_back),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable { onBackClick() },
+                tint = Grey700
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                painter = interestIconPainter,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable {
+                        if (article != null) {
+                            onToggleClick(
+                                ArticleWithInterest(article, isInterested)
+                            )
+                        }
+                    },
+                tint = Grey700
+            )
+        }
+        HorizontalDivider()
     }
 }
 
@@ -178,6 +177,7 @@ private fun EmptyArticleContent(
     }
 }
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 private fun ArticleContent(
     article: Article,
@@ -188,6 +188,7 @@ private fun ArticleContent(
             WebView(context).apply {
                 webViewClient = WebViewClient()
 
+                settings.javaScriptEnabled = true
                 settings.loadWithOverviewMode = true
                 settings.useWideViewPort = true
                 settings.setSupportZoom(true)
@@ -208,7 +209,7 @@ private fun ArticleDetailScreenPreview() {
             article = Article(
                 id = "",
                 title = "",
-//                description = "",
+                description = "",
                 url = "",
                 author = "",
                 createdAt = Instant.now().toEpochMilli()

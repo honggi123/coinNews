@@ -26,7 +26,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -43,9 +45,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -53,15 +57,19 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.CoinFilter
+import com.example.coinnews.model.CountryScope
+import com.example.coinnews.model.Filter
 import com.example.coinnews.ui.component.BaseCustomModal
 import com.example.coinnews.ui.component.CheckListItem
 import com.example.coinnews.ui.component.ClickableChip
 import com.example.coinnews.ui.component.SelectableChip
+import com.example.coinnews.ui.theme.Blue600
 import com.example.coinnews.ui.theme.CoinNewsAppTheme
 import com.example.coinnews.ui.theme.Grey1000
 import com.example.coinnews.ui.theme.Grey200
@@ -86,8 +94,8 @@ fun ArticleListScreen(
     val sheetState = rememberModalBottomSheetState()
     var showModal by rememberSaveable { mutableStateOf(false) }
 
-    val selectedFilter by viewModel.selectedFilter.collectAsState()
-    val userFilters by viewModel.userFilters.collectAsState()
+    val selectedFilter by viewModel.selectedCoinFilter.collectAsState()
+    val userFilter by viewModel.userFilter.collectAsState()
     val allFilters by viewModel.allFilters.collectAsState()
 
     val articles = viewModel.articles.collectAsLazyPagingItems()
@@ -95,19 +103,19 @@ fun ArticleListScreen(
     ArticleListScreenContent(
         articles = articles,
         selectedFilter = selectedFilter,
-        filters = userFilters,
-        onFilterClick = viewModel::onFilterClick,
+        coinFilters = userFilter?.coinFilters ?: emptyList(), // todo
+        onCoinFilterClick = viewModel::onCoinFilterClick,
         onFilterSettingClick = { showModal = true },
         onArticleClick = onArticleClick,
         modifier = Modifier.fillMaxWidth()
     )
-    if (showModal) {
+    if (showModal && allFilters != null) {
         CoinFilterBottomModal(
+            filter = allFilters!!,
             sheetState = sheetState,
-            allCoinFilters = allFilters,
             onCloseClick = { showModal = false },
-            onCompleteClick = {
-                viewModel.updateNewFilters(it)
+            onCompleteClick = { filter ->
+                viewModel.saveCoinFilters(filter)
                 showModal = false
             }
         )
@@ -119,9 +127,9 @@ fun ArticleListScreen(
 private fun ArticleListScreenContent(
     articles: LazyPagingItems<Article>,
     selectedFilter: CoinFilter?,
-    filters: List<CoinFilter>,
+    coinFilters: List<CoinFilter>,
     onFilterSettingClick: () -> Unit,
-    onFilterClick: (CoinFilter) -> Unit,
+    onCoinFilterClick: (CoinFilter) -> Unit,
     onArticleClick: (Article) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -131,7 +139,7 @@ private fun ArticleListScreenContent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        if (filters.isEmpty()) {
+        if (coinFilters.isEmpty()) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -145,39 +153,68 @@ private fun ArticleListScreenContent(
                 )
             }
         } else {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
-            ) {
-                filters.forEach {
-                    SelectableChip(
-                        selected = it == selectedFilter,
-                        text = it.coinName,
-                        onClick = { onFilterClick(it) }
-                    )
-                }
-                ClickableChip(
-                    text = "설정",
-                    onClick = { onFilterSettingClick() },
-                )
-            }
             LazyColumn(
                 contentPadding = contentPadding,
                 modifier = Modifier.fillMaxSize(),
                 state = state
             ) {
+                item {
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        coinFilters.forEach {
+                            SelectableChip(
+                                selected = it == selectedFilter,
+                                text = it.coinName,
+                                onClick = { onCoinFilterClick(it) }
+                            )
+                        }
+                        SettingButton(
+                            text = "설정",
+                            onClick = { onFilterSettingClick() }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(15.dp))
+                }
+
                 items(articles.itemCount) { index ->
                     articles[index]?.let {
                         ArticleContentItem(
                             article = it,
                             onArticleClick = onArticleClick,
+                            modifier = Modifier.fillMaxWidth()
                         )
-                        Spacer(modifier = Modifier.height(30.dp))
+                        Spacer(modifier = Modifier.height(15.dp))
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(15.dp))
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun SettingButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 10.dp, vertical = 5.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            color = Blue600,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
@@ -215,11 +252,13 @@ private fun ArticleContentItem(
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
         )
-//        Text(
-//            text = article.description,
-//            style = MaterialTheme.typography.bodyLarge,
-//            fontWeight = FontWeight.Medium,
-//        )
+        Text(
+            text = article.description,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
+        )
         ArticleMetaData(
             article = article,
             modifier = Modifier.fillMaxWidth()
@@ -247,7 +286,7 @@ private fun ArticleMetaData(
             fontWeight = FontWeight.Normal
         )
         Text(
-            text = DateUtils.timestampToAmPmTimeString(article.createdAt),
+            text = article.createdAt?.let { DateUtils.getTimeAgo(it) } ?: "",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Normal
         )
@@ -258,13 +297,14 @@ private fun ArticleMetaData(
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun CoinFilterBottomModal(
-    allCoinFilters: List<CoinFilter>,
+    filter: Filter,
     onCloseClick: () -> Unit,
-    onCompleteClick: (List<CoinFilter>) -> Unit,
+    onCompleteClick: (filter: Filter) -> Unit,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
-    val filters = rememberSaveable { mutableStateOf(allCoinFilters) }
+    val filters = rememberSaveable { mutableStateOf(filter.coinFilters) }
+    val scope = rememberSaveable { mutableStateOf(filter.scope) }
 
     ModalBottomSheet(
         modifier = Modifier.padding(horizontal = 10.dp),
@@ -283,72 +323,89 @@ private fun CoinFilterBottomModal(
             BaseCustomModal(
                 onDismissClick = onCloseClick,
                 actionButtonText = "등록",
-                onActionClick = { onCompleteClick(filters.value) },
+                onActionClick = { onCompleteClick(filter.copy(coinFilters = filters.value, scope = scope.value)) },
                 modifier = modifier,
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    filters.value.forEachIndexed { index, coinFilter ->
-                        CheckListItem(
-                            checked = coinFilter.isSelected,
-                            text = coinFilter.coinName,
-                            onClick = {
-                                val newFilters = filters.value.toMutableList()
-                                newFilters[index] = coinFilter.copy(isSelected = it)
-                                filters.value = newFilters
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                        )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    CheckListItem(
+                        checked = scope.value != CountryScope.Local,
+                        text = "해외 뉴스",
+                        onClick = {
+                            scope.value = if (it) {
+                                CountryScope.Global
+                            } else {
+                                CountryScope.Local
+                            }
+                        }
+                    )
+                    HorizontalDivider()
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        filters.value.forEachIndexed { index, coinFilter ->
+                            CheckListItem(
+                                checked = coinFilter.isSelected,
+                                text = coinFilter.coinName,
+                                onClick = {
+                                    val newFilters = filters.value.toMutableList()
+                                    newFilters[index] = coinFilter.copy(isSelected = it)
+                                    filters.value = newFilters
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
-
-@Preview
-@Composable
-fun PreviewArticleContent(
-    @PreviewParameter(ArticleContentPreviewParamProvider::class) articles: Flow<PagingData<Article>>
-) {
-    CoinNewsAppTheme {
-        ArticleListScreenContent(
-            articles = articles.collectAsLazyPagingItems(),
-            filters = listOf(
-                CoinFilter("비트코인", "BTC", symbol = ""),
-                CoinFilter("이더리움", "ETC", symbol = "")
-            ),
-            onFilterClick = {},
-            onFilterSettingClick = {},
-            selectedFilter = CoinFilter("비트코인", "BTC", ""),
-            onArticleClick = {},
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp)
-                .background(White)
-        )
-    }
-}
-
-private class ArticleContentPreviewParamProvider :
-    PreviewParameterProvider<Flow<PagingData<Article>>> {
-
-    override val values: Sequence<Flow<PagingData<Article>>> =
-        sequenceOf(
-            flowOf(
-                PagingData.from(
-                    listOf(
-                        Article(
-                            id = "1",
-                            title = "블롬버그 \"버블 조짐 있다\"vs 월스트리트저널 \"과거 만큼은 아니다\"",
-                            url = "url",
-//                            description = "한편, 한화투자증권은 2021년 2월에 암호화폐 거래소 업비트와 주식 거래 플랫폼 증권플러스 등을 운영하는 두나무 보통주 약 200만주를 583억원에 매수한 바 있다.",
-                            author = "블록미디어",
-                            createdAt = Instant.now().toEpochMilli()
-                        )
-                    )
-                )
-            )
-        )
-}
+//
+//@Preview
+//@Composable
+//fun PreviewArticleContent(
+//    @PreviewParameter(ArticleContentPreviewParamProvider::class) articles: Flow<PagingData<Article>>
+//) {
+//    CoinNewsAppTheme {
+//        ArticleListScreenContent(
+//            articles = articles.collectAsLazyPagingItems(),
+//            filters = listOf(
+//                CoinFilter("비트코인", "BTC", symbol = ""),
+//                CoinFilter("이더리움", "ETC", symbol = "")
+//            ),
+//            onCoinFilterClick = {},
+//            onFilterSettingClick = {},
+//            selectedFilter = Filter(CoinFilter("비트코인", "BTC", ""), CountryScope.Local),
+//            onArticleClick = {},
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(10.dp)
+//                .background(White)
+//        )
+//    }
+//}
+//
+//private class ArticleContentPreviewParamProvider :
+//    PreviewParameterProvider<Flow<PagingData<Article>>> {
+//
+//    override val values: Sequence<Flow<PagingData<Article>>> =
+//        sequenceOf(
+//            flowOf(
+//                PagingData.from(
+//                    listOf(
+//                        Article(
+//                            id = "1",
+//                            title = "블롬버그 \"버블 조짐 있다\"vs 월스트리트저널 \"과거 만큼은 아니다\"",
+//                            url = "url",
+////                            description = "한편, 한화투자증권은 2021년 2월에 암호화폐 거래소 업비트와 주식 거래 플랫폼 증권플러스 등을 운영하는 두나무 보통주 약 200만주를 583억원에 매수한 바 있다.",
+//                            author = "블록미디어",
+//                            createdAt = Instant.now().toEpochMilli()
+//                        )
+//                    )
+//                )
+//            )
+//        )
+//}

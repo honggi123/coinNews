@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CoinMarketCapNewsApp"
+rootProject.name = "CoinNews"
 include(":app")
  

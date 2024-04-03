@@ -2,6 +2,8 @@ package com.example.coinnews.data.repository
 
 import com.example.coinnews.model.Article
 import com.example.coinnews.model.CoinFilter
+import com.example.coinnews.model.CountryScope
+import com.example.coinnews.model.Filter
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
@@ -14,11 +16,9 @@ interface UserRepository {
 
     suspend fun deleteNewsInterest(article: Article)
 
-    fun getAllFilters(): Flow<List<CoinFilter>>
-
-    fun getFilters(): Flow<List<CoinFilter>>
+    fun getAllFilters(): Flow<Filter>
 
     suspend fun isFilterEmpty(): Boolean
 
-    suspend fun updateFilterSelect(filters: List<CoinFilter>)
+    suspend fun updateFilter(filter: Filter)
 }
