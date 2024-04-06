@@ -20,6 +20,5 @@ fun HomeRoute(
         tabs = tabContent,
         selectedSection = section,
         onSectionChange = onSectionChange,
-        modifier = Modifier.fillMaxSize()
     )
 }

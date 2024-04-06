@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -61,6 +62,7 @@ import com.hong7.coinnews.ui.component.CheckListItem
 import com.hong7.coinnews.ui.component.ClickableChip
 import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.theme.Blue600
+import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.GreyOpacity400
 import com.hong7.coinnews.ui.utils.DateUtils
 import com.hong7.coinnews.ui.utils.NavigationUtils
@@ -170,6 +172,7 @@ private fun ArticleListScreenContent(
                     state = state
                 ) {
                     item {
+                        Spacer(modifier = Modifier.height(15.dp))
                         LazyRow(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -189,6 +192,11 @@ private fun ArticleListScreenContent(
                             }
                         }
                         Spacer(modifier = Modifier.height(15.dp))
+                        HorizontalDivider(
+                            thickness = 0.7.dp,
+                            color = Grey200
+                        )
+                        Spacer(modifier = Modifier.height(15.dp))
                     }
                     items(articles.itemCount) { index ->
                         articles[index]?.let {
@@ -198,7 +206,10 @@ private fun ArticleListScreenContent(
                                 modifier = Modifier.fillMaxWidth()
                             )
                             Spacer(modifier = Modifier.height(15.dp))
-                            HorizontalDivider()
+                            HorizontalDivider(
+                                thickness = 0.7.dp,
+                                color = Grey200
+                            )
                             Spacer(modifier = Modifier.height(15.dp))
                         }
                     }
@@ -277,19 +288,20 @@ private fun ArticleContentItem(
     Column(
         modifier = modifier.clickable { onArticleClick(article) },
         verticalArrangement = Arrangement.spacedBy(6.dp),
-        horizontalAlignment = Alignment.Start,
     ) {
         Text(
             text = article.title,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
+            maxLines = 2,
+            softWrap = false
         )
         Text(
             text = article.description,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis
+            maxLines = 2,
+            softWrap = false
         )
         ArticleMetaData(
             article = article,

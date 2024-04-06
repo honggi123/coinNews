@@ -108,9 +108,9 @@ private fun TopAppBar(
     modifier: Modifier = Modifier
 ) {
     val interestIconPainter = if (isInterested) {
-        painterResource(id = R.drawable.ic_bookmark)
+        painterResource(id = R.drawable.ic_star_fill)
     } else {
-        painterResource(id = R.drawable.ic_bookmark_empty)
+        painterResource(id = R.drawable.ic_star_border)
     }
     Column(
         modifier = modifier
@@ -118,13 +118,13 @@ private fun TopAppBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .padding(horizontal = 8.dp, vertical = 8.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_back),
+                painter = painterResource(id = R.drawable.ic_cancel),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(26.dp)
                     .clickable { onBackClick() },
                 tint = Grey700
             )

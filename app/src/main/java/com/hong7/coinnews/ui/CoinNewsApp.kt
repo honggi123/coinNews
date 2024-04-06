@@ -41,13 +41,13 @@ fun CoinNewsNavGraph(
             enterTransition = {
                 slideIntoContainer(
                     animationSpec = tween(400),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                    towards = AnimatedContentTransitionScope.SlideDirection.Up
                 )
             },
             exitTransition = {
                 slideOutOfContainer(
                     animationSpec = tween(400),
-                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                    towards = AnimatedContentTransitionScope.SlideDirection.Down
                 )
             }
         ) {

@@ -3,6 +3,7 @@ package com.hong7.coinnews.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -11,6 +12,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             CoinNewsApp()
+
         }
     }
 }

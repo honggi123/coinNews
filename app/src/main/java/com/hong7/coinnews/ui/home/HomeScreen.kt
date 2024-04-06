@@ -42,38 +42,36 @@ enum class Sections(@StringRes val titleResId: Int) {
 
 class TabContent(val section: Sections, val content: @Composable () -> Unit)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     tabs: List<TabContent>,
     selectedSection: Sections,
     onSectionChange: (Sections) -> Unit,
-    modifier: Modifier = Modifier
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.app_name),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                scrollBehavior = scrollBehavior,
-                modifier = Modifier.background(MaterialTheme.colorScheme.background)
-            )
-        },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Text(
+//                        text = stringResource(id = R.string.app_name),
+//                        style = MaterialTheme.typography.headlineSmall,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = MaterialTheme.colorScheme.background
+//                ),
+//                scrollBehavior = scrollBehavior,
+//            )
+//        },
     ) { contentPadding ->
         HomeScreenContent(
             tabs = tabs,
             selectedSection = selectedSection,
             onSectionChange = onSectionChange,
             modifier = Modifier.padding(horizontal = 16.dp),
-            contentPadding = contentPadding
+            contentPadding = contentPadding,
         )
     }
 }
@@ -90,8 +88,8 @@ fun HomeScreenContent(
     val tabWidths: List<Dp> = listOf(40.dp, 60.dp, 90.dp) // todo
 
     Column(
-        modifier = modifier.padding(contentPadding),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        modifier = modifier
+            .padding(contentPadding),
     ) {
         TabRow(
             selectedTabIndex = selectedTabIndex,
@@ -114,6 +112,7 @@ fun HomeScreenContent(
                     color = Grey1000
                 )
             },
+            containerColor = MaterialTheme.colorScheme.background
         ) {
             HomeTabRowContent(
                 tabs,
