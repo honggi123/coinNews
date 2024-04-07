@@ -11,7 +11,7 @@ import java.util.Locale
 
 fun NetworkArticle.toDomain(): Article {
     return Article(
-        id = generateSafeUrlId(this.originalUrl),
+        id = generateId(this.title + this.createdAt),
         title = this.title.replaceHtmlTags(),
         url = this.url,
         description = this.description.replaceHtmlTags(),
@@ -22,7 +22,7 @@ fun NetworkArticle.toDomain(): Article {
 
 fun NetworkGlobalNews.toDomain(): Article {
     return Article(
-        id = generateSafeUrlId(this.newsUrl),
+        id = generateId(this.title + this.createdAt),
         title = this.title,
         url = this.newsUrl,
         description = this.text,
@@ -69,8 +69,8 @@ private fun String.replaceHtmlTags(): String {
         .replace("&gt;", ">")
 }
 
-private fun generateSafeUrlId(url: String): String {
-    val bytes = url.toByteArray()
+private fun generateId(value: String): String {
+    val bytes = value.toByteArray()
     val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
     return digest.fold("", { str, it -> str + "%02x".format(it) })
 }
