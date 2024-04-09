@@ -152,7 +152,7 @@ private fun ArticleListScreenContent(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                EmptyFiltersContent(text = "보고싶은 뉴스의 코인을 선택해보세요!")
+                EmptyFiltersContent(text = "보고싶은 뉴스의 코인을 선택하세요.")
                 Spacer(modifier = Modifier.height(10.dp))
                 ClickableChip(
                     text = "필터링 설정",
@@ -191,12 +191,12 @@ private fun ArticleListScreenContent(
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(15.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         HorizontalDivider(
                             thickness = 0.7.dp,
-                            color = Grey200
+                            color = Grey200,
                         )
-                        Spacer(modifier = Modifier.height(15.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                     }
                     items(articles.itemCount) { index ->
                         articles[index]?.let {
@@ -205,27 +205,11 @@ private fun ArticleListScreenContent(
                                 onArticleClick = onArticleClick,
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            Spacer(modifier = Modifier.height(15.dp))
                             HorizontalDivider(
                                 thickness = 0.7.dp,
-                                color = Grey200
+                                color = Grey200,
+                                modifier = Modifier.padding(vertical = 15.dp)
                             )
-                            Spacer(modifier = Modifier.height(15.dp))
-                        }
-                    }
-                    item {
-                        if (selectedFilter == null || !coinFilters.contains(selectedFilter)) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "보고싶은 뉴스의 코인을 선택하세요!",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            }
                         }
                     }
                 }
@@ -274,7 +258,7 @@ private fun EmptyFiltersContent(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Medium,
         )
     }
 }
@@ -287,22 +271,21 @@ private fun ArticleContentItem(
 ) {
     Column(
         modifier = modifier.clickable { onArticleClick(article) },
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
             text = article.title,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
-            maxLines = 2,
-            softWrap = false
+            maxLines = 3,
         )
-        Text(
-            text = article.description,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-            maxLines = 2,
-            softWrap = false
-        )
+//        Text(
+//            text = article.description,
+//            style = MaterialTheme.typography.bodyLarge,
+//            fontWeight = FontWeight.Medium,
+//            maxLines = 2,
+//            softWrap = false
+//        )
         ArticleMetaData(
             article = article,
             modifier = Modifier.fillMaxWidth()
@@ -321,17 +304,17 @@ private fun ArticleMetaData(
     ) {
         Text(
             text = article.author ?: "알 수 없는 출처",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal
         )
         Text(
             text = "・",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal
         )
         Text(
             text = article.createdAt?.let { DateUtils.getTimeAgo(it) } ?: "",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal
         )
     }

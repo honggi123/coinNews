@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,6 +44,11 @@ class ArticleListViewModel @Inject constructor(
     val userFilter: StateFlow<Filter?> = userRepository.getAllFilters()
         .map { it?.copy(coinFilters = it.coinFilters.filter { it.isSelected }) }
         .filterNotNull()
+        .onEach {
+            if (selectedCoinFilter.value == null) {
+                changeFilter(it.coinFilters.getOrNull(0))
+            }
+        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(3_000),
@@ -70,15 +76,16 @@ class ArticleListViewModel @Inject constructor(
                 PagingData.empty()
             )
 
-
     fun onCoinFilterClick(coinFilter: CoinFilter) {
         viewModelScope.launch {
             changeFilter(coinFilter)
         }
     }
 
-    private fun changeFilter(coinFilter: CoinFilter) {
-        _selectedCoinFilter.value = coinFilter
+    private fun changeFilter(coinFilter: CoinFilter?) {
+        if (coinFilter != null) {
+            _selectedCoinFilter.value = coinFilter
+        }
     }
 
     fun saveCoinFilters(filter: Filter) {

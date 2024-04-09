@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.ui.ArticleDetailNav
+import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.utils.DateUtils
 import com.hong7.coinnews.ui.utils.NavigationUtils
 
@@ -85,9 +86,11 @@ private fun ScrapNewsScreen(
                         onArticleClick = onArticleClick,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(modifier = Modifier.height(15.dp))
-                    HorizontalDivider()
-                    Spacer(modifier = Modifier.height(15.dp))
+                    HorizontalDivider(
+                        thickness = 0.7.dp,
+                        color = Grey200,
+                        modifier = Modifier.padding(vertical = 15.dp)
+                    )
                 }
             }
         }
