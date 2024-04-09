@@ -19,8 +19,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,7 +53,7 @@ class ArticleListViewModel @Inject constructor(
     val selectedCoinFilter: StateFlow<CoinFilter?> = _selectedCoinFilter.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val articles: Flow<PagingData<Article>> =
+    val articles: StateFlow<PagingData<Article>> =
         combine(
             userFilter.filterNotNull(),
             selectedCoinFilter.filterNotNull()
@@ -60,7 +62,14 @@ class ArticleListViewModel @Inject constructor(
                 CountryScope.Local -> newsRepository.getArticles(selectedCoinFilter)
                 CountryScope.Global -> newsRepository.getGlobalArticles(selectedCoinFilter)
             }
-        }.flatMapLatest { it.cachedIn(viewModelScope) }
+        }
+            .flatMapLatest { it.cachedIn(viewModelScope) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Lazily,
+                PagingData.empty()
+            )
+
 
     fun onCoinFilterClick(coinFilter: CoinFilter) {
         viewModelScope.launch {
@@ -78,7 +87,7 @@ class ArticleListViewModel @Inject constructor(
         }
     }
 
-    fun refresh(){
+    fun refresh() {
 
     }
 }

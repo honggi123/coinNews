@@ -1,6 +1,8 @@
 package com.hong7.coinnews.ui.articledetail
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.clickable
@@ -34,6 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.firebase.perf.FirebasePerformance
+import com.google.firebase.perf.metrics.Trace
 import com.hong7.coinnews.R
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.ArticleWithInterest
@@ -79,7 +83,6 @@ private fun ArticleDetailScreen(
                 onToggleClick = onToggleClick,
                 modifier = Modifier
                     .fillMaxWidth()
-
             )
         }
     ) { paddingValues ->
@@ -189,6 +192,8 @@ private fun ArticleContent(
     modifier: Modifier = Modifier
 ) {
     var isLoading by rememberSaveable { mutableStateOf(true) }
+    val trace: Trace =
+        FirebasePerformance.getInstance().newTrace("article_page_loaded")
 
     Box(
         modifier = modifier,
@@ -198,9 +203,14 @@ private fun ArticleContent(
             factory = { context ->
                 WebView(context).apply {
                     webViewClient = object : WebViewClient() {
+                        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                            super.onPageStarted(view, url, favicon)
+                            trace.start()
+                        }
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
                             isLoading = false
+                            trace.stop()
                         }
                     }
                     settings.javaScriptEnabled = true

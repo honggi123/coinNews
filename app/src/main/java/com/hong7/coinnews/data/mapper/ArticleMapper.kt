@@ -1,6 +1,8 @@
 package com.hong7.coinnews.data.mapper
 
 import android.util.Log
+import com.google.firebase.perf.FirebasePerformance
+import com.google.firebase.perf.metrics.Trace
 import com.hong7.coinnews.database.NewsEntity
 import com.hong7.coinnews.network.model.NetworkArticle
 import com.hong7.coinnews.model.Article
@@ -10,7 +12,7 @@ import java.security.MessageDigest
 import java.util.Locale
 
 fun NetworkArticle.toDomain(): Article {
-    return Article(
+    val article = Article(
         id = generateId(this.title + this.createdAt),
         title = this.title.replaceHtmlTags(),
         url = this.url,
@@ -18,6 +20,7 @@ fun NetworkArticle.toDomain(): Article {
         author = parseDomain(this.originalUrl),
         createdAt = DateUtils.stringToDateTime(this.createdAt)
     )
+    return article
 }
 
 fun NetworkGlobalNews.toDomain(): Article {
