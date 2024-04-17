@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -17,6 +19,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -36,35 +39,42 @@ import com.hong7.coinnews.ui.videolist.VideoListScreen
 
 enum class Sections(@StringRes val titleResId: Int) {
     News(R.string.news),
-    Video(R.string.video),
+
+    //    Video(R.string.video),
     Scrap(R.string.scrap),
 }
 
 class TabContent(val section: Sections, val content: @Composable () -> Unit)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     tabs: List<TabContent>,
     selectedSection: Sections,
     onSectionChange: (Sections) -> Unit,
 ) {
+//    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+//        rememberTopAppBarState()
+//    )
 
     Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = {
-//                    Text(
-//                        text = stringResource(id = R.string.app_name),
-//                        style = MaterialTheme.typography.headlineSmall,
-//                        fontWeight = FontWeight.Bold
-//                    )
-//                },
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = MaterialTheme.colorScheme.background
-//                ),
-//                scrollBehavior = scrollBehavior,
-//            )
-//        },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Grey1000
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+//                scrollBehavior = scrollBehavior
+            )
+        },
+//        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { contentPadding ->
         HomeScreenContent(
             tabs = tabs,
@@ -159,15 +169,15 @@ fun rememberTabContent(
         ArticleListScreen(navController)
     }
 
-    val videoSection = TabContent(Sections.Video) {
-        VideoListScreen()
-    }
+//    val videoSection = TabContent(Sections.Video) {
+//        VideoListScreen()
+//    }
 
     val scrapNewsSection = TabContent(Sections.Scrap) {
         ScrapNewsScreen(navController)
     }
 
-    return listOf(articleSection, videoSection, scrapNewsSection)
+    return listOf(articleSection, scrapNewsSection)
 }
 
 

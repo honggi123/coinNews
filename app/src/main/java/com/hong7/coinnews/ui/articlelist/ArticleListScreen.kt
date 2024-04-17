@@ -2,6 +2,7 @@ package com.hong7.coinnews.ui.articlelist
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -22,6 +23,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
@@ -53,6 +55,7 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.hong7.coinnews.model.Article
+import com.hong7.coinnews.model.ArticleWithInterest
 import com.hong7.coinnews.model.CoinFilter
 import com.hong7.coinnews.model.CountryScope
 import com.hong7.coinnews.model.Filter
@@ -61,15 +64,18 @@ import com.hong7.coinnews.ui.component.BaseCustomModal
 import com.hong7.coinnews.ui.component.CheckListItem
 import com.hong7.coinnews.ui.component.ClickableChip
 import com.hong7.coinnews.ui.component.SelectableChip
+import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.GreyOpacity400
 import com.hong7.coinnews.ui.utils.DateUtils
 import com.hong7.coinnews.ui.utils.NavigationUtils
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun ArticleListScreen(
@@ -86,8 +92,22 @@ fun ArticleListScreen(
 
     val articles = viewModel.articles.collectAsLazyPagingItems()
 
+    var refreshing by remember { mutableStateOf(false) }
+    val refreshScope = rememberCoroutineScope()
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = refreshing,
+        onRefresh = {
+            refreshScope.launch {
+                refreshing = true
+                articles.refresh()
+                delay(3000)
+                refreshing = false
+            }
+        })
+
     ArticleListScreenContent(
-        articles = articles,
+        articles = articles.itemSnapshotList.items,
         selectedFilter = selectedFilter,
         coinFilters = userFilter?.coinFilters ?: emptyList(), // todo
         onCoinFilterClick = viewModel::onCoinFilterClick,
@@ -99,6 +119,8 @@ fun ArticleListScreen(
                 ArticleDetailNav.navigateWithArg(it)
             )
         },
+        pullRefreshState = pullRefreshState,
+        isRefreshing = refreshing,
         modifier = Modifier.fillMaxWidth(),
         state = state
     )
@@ -118,30 +140,18 @@ fun ArticleListScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ArticleListScreenContent(
-    articles: LazyPagingItems<Article>,
+    articles: List<Article>,
     selectedFilter: CoinFilter?,
     coinFilters: List<CoinFilter>,
     onFilterSettingClick: () -> Unit,
     onCoinFilterClick: (CoinFilter) -> Unit,
     onArticleClick: (Article) -> Unit,
+    pullRefreshState: PullRefreshState,
+    isRefreshing: Boolean,
+    state: LazyListState,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    state: LazyListState
 ) {
-    var refreshing by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = refreshing,
-        onRefresh = {
-            refreshing = true
-            articles.refresh()
-            scope.launch {
-                delay(5000)
-            }
-            refreshing = false
-        })
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(15.dp)
@@ -155,7 +165,7 @@ private fun ArticleListScreenContent(
                 EmptyFiltersContent(text = "보고싶은 뉴스의 코인을 선택하세요.")
                 Spacer(modifier = Modifier.height(10.dp))
                 ClickableChip(
-                    text = "필터링 설정",
+                    text = "코인 설정",
                     onClick = { onFilterSettingClick() },
                 )
             }
@@ -198,7 +208,10 @@ private fun ArticleListScreenContent(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                     }
-                    items(articles.itemCount) { index ->
+                    items(
+                        articles.size,
+                        key = { articles[it].id }
+                    ) { index ->
                         articles[index]?.let {
                             ArticleContentItem(
                                 article = it,
@@ -214,7 +227,7 @@ private fun ArticleListScreenContent(
                     }
                 }
                 PullRefreshIndicator(
-                    refreshing = refreshing,
+                    refreshing = isRefreshing,
                     state = pullRefreshState,
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
@@ -269,13 +282,19 @@ private fun ArticleContentItem(
     onArticleClick: (Article) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+
     Column(
-        modifier = modifier.clickable { onArticleClick(article) },
+        modifier = modifier.clickableWithoutRipple(
+            interactionSource = interactionSource,
+        ) {
+            onArticleClick(article)
+        },
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
             text = article.title,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             maxLines = 3,
         )
@@ -304,7 +323,7 @@ private fun ArticleMetaData(
     ) {
         Text(
             text = article.author ?: "알 수 없는 출처",
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Normal
         )
         Text(
@@ -366,7 +385,7 @@ private fun CoinFilterBottomModal(
                 ) {
                     CheckListItem(
                         checked = scope.value != CountryScope.Local,
-                        text = "해외 뉴스",
+                        text = "해외 뉴스 (영어)",
                         onClick = {
                             scope.value = if (it) {
                                 CountryScope.Global

@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui.scrap
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,14 +23,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.hong7.coinnews.R
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.ui.ArticleDetailNav
+import com.hong7.coinnews.ui.theme.Blue50
+import com.hong7.coinnews.ui.theme.Blue600
+import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.utils.DateUtils
 import com.hong7.coinnews.ui.utils.NavigationUtils
@@ -94,6 +101,19 @@ private fun ScrapNewsScreen(
                 }
             }
         }
+        Column(
+            modifier = modifier.fillMaxWidth()
+                .height(100.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom,
+        ) {
+            Text(
+                text = "문의 Email : ghdrl7526@gmail.com",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Blue600,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
@@ -113,6 +133,7 @@ private fun EmptyNewsContent(
             fontWeight = FontWeight.Medium,
         )
     }
+
 }
 
 @Composable

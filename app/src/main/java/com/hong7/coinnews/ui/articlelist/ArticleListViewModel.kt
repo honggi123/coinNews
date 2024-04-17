@@ -93,10 +93,6 @@ class ArticleListViewModel @Inject constructor(
             userRepository.updateFilter(filter)
         }
     }
-
-    fun refresh() {
-
-    }
 }
 
 

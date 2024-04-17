@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey700
 
@@ -36,7 +37,7 @@ fun ClickableChip(
     ) {
         Text(
             text = text,
-            color = Grey700,
+            color = Blue600,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium
         )

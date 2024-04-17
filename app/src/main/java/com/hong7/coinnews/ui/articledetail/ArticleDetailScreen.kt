@@ -2,22 +2,24 @@ package com.hong7.coinnews.ui.articledetail
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.util.Log
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,9 +44,11 @@ import com.google.firebase.perf.metrics.Trace
 import com.hong7.coinnews.R
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.ArticleWithInterest
+import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey700
 import java.time.LocalDateTime
+
 
 @Composable
 fun ArticleDetailRoute(
@@ -74,21 +79,36 @@ private fun ArticleDetailScreen(
     onToggleClick: (ArticleWithInterest) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val progress = remember { mutableStateOf(0.0f) }
+    val progressAnimDuration = 1_500
+    val progressAnimation by animateFloatAsState(
+        targetValue = progress.value / 100,
+        animationSpec = tween(durationMillis = progressAnimDuration, easing = FastOutSlowInEasing),
+        label = "",
+    )
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                article = article,
-                isInterested = isInterested,
-                onBackClick = onBackClick,
-                onToggleClick = onToggleClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
+            Column(modifier = Modifier.fillMaxWidth()) {
+                TopAppBar(
+                    article = article,
+                    isInterested = isInterested,
+                    onBackClick = onBackClick,
+                    onToggleClick = onToggleClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                LinearProgressIndicator(
+                    progress = { progressAnimation },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     ) { paddingValues ->
         if (article != null) {
             ArticleDetailContent(
                 article = article,
+                onProgressChange = { progress.value = it.toFloat() },
                 modifier = modifier
                     .padding(paddingValues)
             )
@@ -115,29 +135,37 @@ private fun TopAppBar(
     } else {
         painterResource(id = R.drawable.ic_star_border)
     }
+    val interactionSource = remember { MutableInteractionSource() }
+
     Column(
         modifier = modifier
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_cancel),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(26.dp)
-                    .clickable { onBackClick() },
+                    .size(30.dp)
+                    .clickableWithoutRipple(
+                        interactionSource = interactionSource,
+                    ) {
+                        onBackClick()
+                    },
                 tint = Grey700
             )
-            Spacer(modifier = Modifier.weight(1f))
             Icon(
                 painter = interestIconPainter,
                 contentDescription = null,
                 modifier = Modifier
                     .size(30.dp)
-                    .clickable {
+                    .clickableWithoutRipple(
+                        interactionSource = interactionSource,
+                    ) {
                         if (article != null) {
                             onToggleClick(
                                 ArticleWithInterest(article, isInterested)
@@ -154,6 +182,7 @@ private fun TopAppBar(
 @Composable
 private fun ArticleDetailContent(
     article: Article,
+    onProgressChange: (Int) -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -162,6 +191,7 @@ private fun ArticleDetailContent(
     ) {
         ArticleContent(
             article = article,
+            onProgressChange = onProgressChange,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -189,6 +219,7 @@ private fun EmptyArticleContent(
 @Composable
 private fun ArticleContent(
     article: Article,
+    onProgressChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isLoading by rememberSaveable { mutableStateOf(true) }
@@ -207,6 +238,7 @@ private fun ArticleContent(
                             super.onPageStarted(view, url, favicon)
                             trace.start()
                         }
+
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
                             isLoading = false
@@ -214,14 +246,18 @@ private fun ArticleContent(
                         }
                     }
                     settings.javaScriptEnabled = true
+
+                    this.setWebChromeClient(object : WebChromeClient() {
+                        override fun onProgressChanged(view: WebView, progress: Int) {
+                            onProgressChange(progress)
+                        }
+                    })
+
                     loadUrl(article.url)
                 }
             },
             modifier = Modifier.fillMaxSize()
         )
-        if (isLoading) {
-            CircularProgressIndicator()
-        }
     }
 }
 
