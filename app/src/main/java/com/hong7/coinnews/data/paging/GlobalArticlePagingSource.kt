@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.google.firebase.perf.FirebasePerformance
 import com.google.firebase.perf.metrics.Trace
-import com.hong7.coinnews.model.CoinFilter
+import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.network.model.NetworkGlobalNews
 import com.hong7.coinnews.network.retrofit.CryptoNewsService
 import javax.inject.Inject
@@ -13,7 +13,7 @@ private const val INITIAL_PAGE = 1
 
 class GlobalArticlePagingSource @Inject constructor(
     private val service: CryptoNewsService,
-    private val coinFilter: CoinFilter
+    private val coin: Coin
 ) : PagingSource<Int, NetworkGlobalNews>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, NetworkGlobalNews> {
@@ -23,7 +23,7 @@ class GlobalArticlePagingSource @Inject constructor(
                 FirebasePerformance.getInstance().newTrace("network_global_article_request")
             trace.start()
             val response = service.getCoinNews(
-                tickers = coinFilter.symbol,
+                tickers = coin.symbol,
                 page = page,
                 pageSize = params.loadSize
             )

@@ -1,21 +1,17 @@
 package com.hong7.coinnews.data.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.google.firebase.Firebase
 import com.google.firebase.perf.FirebasePerformance
 import com.google.firebase.perf.metrics.Trace
-import com.google.firebase.perf.performance
 import com.hong7.coinnews.network.model.NetworkArticle
-import com.hong7.coinnews.network.model.NetworkCoinListItem
 import com.hong7.coinnews.network.retrofit.NaverService
 import javax.inject.Inject
 
 
 private const val INITIAL_PAGE = 1
 
-class ArticlePagingSource @Inject constructor(
+class NewsArticlePagingSource @Inject constructor(
     private val service: NaverService,
     private val query: String
 ) : PagingSource<Int, NetworkArticle>() {
@@ -27,7 +23,7 @@ class ArticlePagingSource @Inject constructor(
                 FirebasePerformance.getInstance().newTrace("network_article_request")
             trace.start()
             val response = service.getArticles(
-                query = query,
+                query = "\"$query\"",
                 page = page,
                 pageSize = params.loadSize
             )

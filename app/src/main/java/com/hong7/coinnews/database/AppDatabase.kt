@@ -6,9 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.hong7.coinnews.worker.CoinFilterDatabaseWorker
 
 @Database(
     entities = [FilterEntity::class, NewsEntity::class],
@@ -18,9 +15,9 @@ import com.hong7.coinnews.worker.CoinFilterDatabaseWorker
 @TypeConverters(Converter::class)
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun filterDao(): FilterDao
+    abstract fun filterDao(): UserFilterDao
 
-    abstract fun newsDao(): NewsDao
+    abstract fun newsDao(): UserNewsDao
 
     companion object {
         @Volatile
@@ -37,10 +34,7 @@ abstract class AppDatabase : RoomDatabase() {
                 .addCallback(
                     object : RoomDatabase.Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            val request = OneTimeWorkRequestBuilder<CoinFilterDatabaseWorker>()
-                                .build()
-                            WorkManager.getInstance(context).enqueue(request)
+
                         }
                     }
                 )

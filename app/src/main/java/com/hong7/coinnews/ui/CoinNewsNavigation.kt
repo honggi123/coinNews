@@ -56,9 +56,11 @@ interface DestinationArg<T> : Destination {
 object NavigationRouteName {
     const val MAIN_HOME = "main_home"
     const val ARTICLE_DETAIL = "article_detail"
+    const val ALL_COIN_LIST = "all_coin_list"
 }
 
 object NavigationTitle {
     const val MAIN_HOME = "홈"
     const val ARTICLE_DETAIL = "뉴스 상세페이지"
+    const val ALL_COIN_LIST = "코인 목록"
 }

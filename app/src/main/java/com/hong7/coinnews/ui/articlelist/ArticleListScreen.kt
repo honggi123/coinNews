@@ -56,39 +56,31 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.ArticleWithInterest
-import com.hong7.coinnews.model.CoinFilter
-import com.hong7.coinnews.model.CountryScope
+import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.ui.ArticleDetailNav
-import com.hong7.coinnews.ui.component.BaseCustomModal
-import com.hong7.coinnews.ui.component.CheckListItem
 import com.hong7.coinnews.ui.component.ClickableChip
 import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.Grey200
-import com.hong7.coinnews.ui.theme.GreyOpacity400
 import com.hong7.coinnews.ui.utils.DateUtils
 import com.hong7.coinnews.ui.utils.NavigationUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun ArticleListScreen(
     navController: NavHostController,
     viewModel: ArticleListViewModel = hiltViewModel()
 ) {
-    val sheetState = rememberModalBottomSheetState(true)
     val state = rememberLazyListState()
-    var showModal by rememberSaveable { mutableStateOf(false) }
 
-    val selectedFilter by viewModel.selectedCoinFilter.collectAsStateWithLifecycle()
-    val userFilter by viewModel.userFilter.collectAsStateWithLifecycle()
-    val allFilters by viewModel.allFilters.collectAsStateWithLifecycle()
+    val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
+    val filter by viewModel.filter.collectAsStateWithLifecycle()
 
     val articles = viewModel.articles.collectAsLazyPagingItems()
 
@@ -108,10 +100,10 @@ fun ArticleListScreen(
 
     ArticleListScreenContent(
         articles = articles.itemSnapshotList.items,
-        selectedFilter = selectedFilter,
-        coinFilters = userFilter?.coinFilters ?: emptyList(), // todo
-        onCoinFilterClick = viewModel::onCoinFilterClick,
-        onFilterSettingClick = { showModal = true },
+        selectedCoin = selectedCoin,
+        filter = filter,
+        onCoinClick = viewModel::onCoinClick,
+        onFilterSettingClick = { },
         onArticleClick = {
             NavigationUtils.saveArticle(it)
             NavigationUtils.navigate(
@@ -124,27 +116,16 @@ fun ArticleListScreen(
         modifier = Modifier.fillMaxWidth(),
         state = state
     )
-    if (showModal && allFilters != null) {
-        CoinFilterBottomModal(
-            filter = allFilters!!,
-            sheetState = sheetState,
-            onCloseClick = { showModal = false },
-            onCompleteClick = { filter ->
-                viewModel.saveCoinFilters(filter)
-                showModal = false
-            }
-        )
-    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ArticleListScreenContent(
+    filter: Filter?,
     articles: List<Article>,
-    selectedFilter: CoinFilter?,
-    coinFilters: List<CoinFilter>,
+    selectedCoin: Coin?,
     onFilterSettingClick: () -> Unit,
-    onCoinFilterClick: (CoinFilter) -> Unit,
+    onCoinClick: (Coin) -> Unit,
     onArticleClick: (Article) -> Unit,
     pullRefreshState: PullRefreshState,
     isRefreshing: Boolean,
@@ -156,7 +137,7 @@ private fun ArticleListScreenContent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        if (coinFilters.isEmpty()) {
+        if (filter == null) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -183,23 +164,26 @@ private fun ArticleListScreenContent(
                 ) {
                     item {
                         Spacer(modifier = Modifier.height(15.dp))
-                        LazyRow(
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            items(coinFilters.size) {
-                                SelectableChip(
-                                    selected = coinFilters[it] == selectedFilter,
-                                    text = coinFilters[it].coinName,
-                                    onClick = { onCoinFilterClick(coinFilters[it]) }
-                                )
+                            LazyRow(
+                                modifier = Modifier.weight(1f),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(filter.coins.size) {
+                                    SelectableChip(
+                                        selected = filter.coins[it] == selectedCoin,
+                                        text = filter.coins[it].name,
+                                        onClick = { onCoinClick(filter.coins[it]) }
+                                    )
+                                }
                             }
-                            item {
-                                SettingButton(
-                                    text = "설정",
-                                    onClick = { onFilterSettingClick() }
-                                )
-                            }
+                            SettingButton(
+                                text = "전체",
+                                onClick = { onFilterSettingClick() }
+                            )
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                         HorizontalDivider(
@@ -212,7 +196,7 @@ private fun ArticleListScreenContent(
                         articles.size,
                         key = { articles[it].id }
                     ) { index ->
-                        articles[index]?.let {
+                        articles[index].let {
                             ArticleContentItem(
                                 article = it,
                                 onArticleClick = onArticleClick,
@@ -339,83 +323,6 @@ private fun ArticleMetaData(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedBoxWithConstraintsScope")
-@Composable
-private fun CoinFilterBottomModal(
-    filter: Filter,
-    onCloseClick: () -> Unit,
-    onCompleteClick: (filter: Filter) -> Unit,
-    modifier: Modifier = Modifier,
-    sheetState: SheetState = rememberModalBottomSheetState(),
-) {
-    val filters = rememberSaveable { mutableStateOf(filter.coinFilters) }
-    val scope = rememberSaveable { mutableStateOf(filter.scope) }
-
-    ModalBottomSheet(
-        modifier = Modifier.padding(horizontal = 10.dp),
-        sheetState = sheetState,
-        tonalElevation = 0.dp,
-        scrimColor = GreyOpacity400,
-        onDismissRequest = { onCloseClick() },
-        dragHandle = null,
-        containerColor = Color.Transparent,
-    ) {
-        BoxWithConstraints(
-            Modifier
-                .navigationBarsPadding()
-                .padding(bottom = 30.dp)
-        ) {
-            BaseCustomModal(
-                onDismissClick = onCloseClick,
-                actionButtonText = "등록",
-                onActionClick = {
-                    onCompleteClick(
-                        filter.copy(
-                            coinFilters = filters.value,
-                            scope = scope.value
-                        )
-                    )
-                },
-                modifier = modifier,
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    CheckListItem(
-                        checked = scope.value != CountryScope.Local,
-                        text = "해외 뉴스 (영어)",
-                        onClick = {
-                            scope.value = if (it) {
-                                CountryScope.Global
-                            } else {
-                                CountryScope.Local
-                            }
-                        }
-                    )
-                    HorizontalDivider()
-                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        filters.value.forEachIndexed { index, coinFilter ->
-                            CheckListItem(
-                                checked = coinFilter.isSelected,
-                                text = coinFilter.coinName,
-                                onClick = {
-                                    val newFilters = filters.value.toMutableList()
-                                    newFilters[index] = coinFilter.copy(isSelected = it)
-                                    filters.value = newFilters
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 //
 //@Preview
 //@Composable

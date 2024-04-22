@@ -2,7 +2,7 @@ package com.hong7.coinnews.ui.articledetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hong7.coinnews.data.repository.UserRepository
+import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.ArticleWithInterest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ArticleDetailViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val newsRepository: NewsRepository
 ) : ViewModel() {
 
     private val _isInterested = MutableStateFlow(false)
@@ -24,7 +24,7 @@ class ArticleDetailViewModel @Inject constructor(
     fun updateArticle(article: Article?){
         viewModelScope.launch {
             if (article != null) {
-                userRepository.isNewsInterested(article.id).collectLatest {
+                newsRepository.isNewsScraped(article.id).collectLatest {
                     _isInterested.value = it
                 }
             }
@@ -34,9 +34,9 @@ class ArticleDetailViewModel @Inject constructor(
     fun toggleInterest(articleWithInterest: ArticleWithInterest) {
         viewModelScope.launch {
             if (articleWithInterest.isInterested) {
-                userRepository.deleteNewsInterest(articleWithInterest.article)
+                newsRepository.deleteNewsScraped(articleWithInterest.article)
             } else {
-                userRepository.addNewsInterest(articleWithInterest.article)
+                newsRepository.addNewsScraped(articleWithInterest.article)
             }
         }
     }

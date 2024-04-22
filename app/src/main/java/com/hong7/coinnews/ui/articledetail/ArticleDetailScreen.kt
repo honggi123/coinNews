@@ -91,16 +91,13 @@ private fun ArticleDetailScreen(
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 TopAppBar(
+                    progress = progressAnimation,
                     article = article,
                     isInterested = isInterested,
                     onBackClick = onBackClick,
                     onToggleClick = onToggleClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
-                LinearProgressIndicator(
-                    progress = { progressAnimation },
-                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -124,6 +121,7 @@ private fun ArticleDetailScreen(
 
 @Composable
 private fun TopAppBar(
+    progress: Float,
     article: Article?,
     isInterested: Boolean,
     onBackClick: () -> Unit,
@@ -153,9 +151,7 @@ private fun TopAppBar(
                     .size(30.dp)
                     .clickableWithoutRipple(
                         interactionSource = interactionSource,
-                    ) {
-                        onBackClick()
-                    },
+                    ) { onBackClick() },
                 tint = Grey700
             )
             Icon(
@@ -175,7 +171,10 @@ private fun TopAppBar(
                 tint = Grey700
             )
         }
-        HorizontalDivider()
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -246,6 +245,7 @@ private fun ArticleContent(
                         }
                     }
                     settings.javaScriptEnabled = true
+                    settings.javaScriptCanOpenWindowsAutomatically = false
 
                     this.setWebChromeClient(object : WebChromeClient() {
                         override fun onProgressChanged(view: WebView, progress: Int) {

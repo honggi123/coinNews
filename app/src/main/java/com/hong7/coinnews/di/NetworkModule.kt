@@ -1,6 +1,5 @@
 package com.hong7.coinnews.di
 
-import com.hong7.coinnews.network.retrofit.CoinMarketCapService
 import com.hong7.coinnews.network.retrofit.CryptoNewsService
 import com.hong7.coinnews.network.retrofit.NaverService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -31,21 +30,6 @@ object NetworkModule {
             .addInterceptor(loggingInterceptor)
             .build()
     }
-
-    @Provides
-    @Singleton
-    fun provideCoinService(client: OkHttpClient): CoinMarketCapService {
-        val json = Json { ignoreUnknownKeys = true }
-        val contentType = "application/json".toMediaType()
-
-        return Retrofit.Builder()
-            .baseUrl("https://pro-api.coinmarketcap.com")
-            .client(client)
-            .addConverterFactory(json.asConverterFactory(contentType))
-            .build()
-            .create(CoinMarketCapService::class.java)
-    }
-
 
     @Singleton
     @Provides

@@ -81,7 +81,9 @@ private fun ScrapNewsScreen(
         } else {
             LazyColumn(
                 contentPadding = contentPadding,
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(top = 15.dp),
                 state = state
             ) {
                 items(
@@ -102,14 +104,15 @@ private fun ScrapNewsScreen(
             }
         }
         Column(
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
                 .height(100.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.Bottom,
         ) {
             Text(
                 text = "문의 Email : ghdrl7526@gmail.com",
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodySmall,
                 color = Blue600,
                 fontWeight = FontWeight.Bold
             )
@@ -149,12 +152,12 @@ private fun ArticleContentItem(
     ) {
         Text(
             text = article.title,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
         )
         Text(
             text = article.description,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Medium,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
@@ -177,17 +180,17 @@ private fun ArticleMetaData(
     ) {
         Text(
             text = article.author ?: "알 수 없는 출처",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Normal
         )
         Text(
             text = "・",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Normal
         )
         Text(
             text = article.createdAt?.let { DateUtils.getTimeAgo(it) } ?: "",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Normal
         )
     }

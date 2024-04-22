@@ -1,11 +1,11 @@
 package com.hong7.coinnews.data.repository
 
+import androidx.paging.PagingData
+import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
 import kotlinx.coroutines.flow.Flow
 
 interface CoinRepository {
 
-    fun getCoinInfo(
-        coin: Coin,
-    ): Flow<Coin?>
+    fun getAllCoins(): Flow<List<Coin?>>
 }

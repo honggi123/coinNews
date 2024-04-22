@@ -1,43 +1,33 @@
 package com.hong7.coinnews.data.mapper
 
-import com.hong7.coinnews.network.model.NetworkCoinListItem
-import com.hong7.coinnews.model.CoinAsset
+import com.hong7.coinnews.database.CoinEntity
 import com.hong7.coinnews.model.Coin
-import com.hong7.coinnews.model.UrlType
-import com.hong7.coinnews.network.model.NetworkCoinInfo
-import kotlinx.collections.immutable.toImmutableMap
+import com.hong7.coinnews.network.model.NetworkCoin
 
-fun NetworkCoinListItem.toDomain(): Coin {
-    return Coin(
-        id = this.id.toString(),
+fun Coin.toEntity(): CoinEntity {
+    return CoinEntity(
+        id = this.id,
         name = this.name,
-        rank = this.marketCapRank,
-        symbol = this.symbol,
-        slug = this.slug,
-        usdAsset = CoinAsset(
-            price = this.quote.usd?.price,
-            priceChange24h = this.quote.usd?.percentChange24h,
-            totalMarketCap = this.quote.usd?.marketCap
-        ),
-        urls = null,
-        description = null
+        relatedSearchWord = this.relatedSearchWord,
+        symbol = this.symbol
     )
 }
 
-fun NetworkCoinInfo.toDomain(): Coin {
+fun NetworkCoin.toDomain(): Coin {
     return Coin(
-        id = this.id.toString(),
+        id = this.id,
         name = this.name,
-        rank = null,
         symbol = this.symbol,
-        slug = this.slug,
-        usdAsset = null,
-        description = this.description,
-        urls = mapOf(
-            Pair(UrlType.Website, this.urls.websiteUrls.firstOrNull()),
-            Pair(UrlType.Reddit, this.urls.redditUrls.firstOrNull()),
-            Pair(UrlType.Gtihub, this.urls.sourceCode.firstOrNull())
-        ).toImmutableMap()
+        relatedSearchWord = this.relatedSearchWords
+    )
+}
+
+fun NetworkCoin.toEntity(): CoinEntity {
+    return CoinEntity(
+        id = this.id,
+        name = this.name,
+        symbol = this.symbol,
+        relatedSearchWord = this.relatedSearchWords
     )
 }
 

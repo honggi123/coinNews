@@ -8,51 +8,57 @@ import com.google.firebase.perf.FirebasePerformance
 import com.google.firebase.perf.metrics.Trace
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.network.retrofit.NaverService
-import com.hong7.coinnews.data.paging.ArticlePagingSource
+import com.hong7.coinnews.data.paging.NewsArticlePagingSource
 import com.hong7.coinnews.data.paging.GlobalArticlePagingSource
 import com.hong7.coinnews.data.repository.NewsRepository
+import com.hong7.coinnews.database.NewsEntity
+import com.hong7.coinnews.database.UserNewsDao
 import com.hong7.coinnews.model.Article
-import com.hong7.coinnews.model.CoinFilter
+import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.network.retrofit.CryptoNewsService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class NewsRepositoryImpl @Inject constructor(
     private val naverService: NaverService,
-    private val cryptoNewsService: CryptoNewsService
+    private val cryptoNewsService: CryptoNewsService,
+    private val userNewsDao: UserNewsDao
 ) : NewsRepository {
 
     override fun getArticles(
-        filter: CoinFilter?
+        coin: Coin
     ): Flow<PagingData<Article>> {
         return Pager(
             config = PagingConfig(enablePlaceholders = false, pageSize = 10),
             pagingSourceFactory = {
-                ArticlePagingSource(
+                NewsArticlePagingSource(
                     naverService,
-                    filter?.coinName ?: DEFAULT_CRYPTO_QUERY
+                    coin?.name ?: DEFAULT_CRYPTO_QUERY
                 )
             }
         ).flow.map {
+            it.map { it.toDomain() }
             val trace: Trace =
                 FirebasePerformance.getInstance().newTrace("network_article_mapping")
             trace.start()
-            val items = it.map { it.toDomain() }
-            trace.stop()
-            items
+            it.map { it.toDomain() }
+
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getGlobalArticles(filter: CoinFilter): Flow<PagingData<Article>> {
+    override fun getGlobalArticles(
+        coin: Coin
+    ): Flow<PagingData<Article>> {
         return Pager(
             config = PagingConfig(enablePlaceholders = false, pageSize = 5),
             pagingSourceFactory = {
-                GlobalArticlePagingSource(cryptoNewsService, filter)
+                GlobalArticlePagingSource(cryptoNewsService, coin)
             }
         ).flow.map {
             val trace: Trace =
@@ -64,6 +70,31 @@ class NewsRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getScrapedNews(): Flow<List<Article>> {
+        return userNewsDao.getAllNews()
+            .map { it.map { it.toDomain() } }
+    }
+
+    override fun isNewsScraped(id: String): Flow<Boolean> {
+        return userNewsDao.isInterested(id)
+    }
+
+    override suspend fun addNewsScraped(article: Article) {
+        userNewsDao.insert(
+            NewsEntity(
+                newsId = article.id,
+                title = article.title,
+                description = article.description,
+                url = article.url,
+                author = article.author,
+                createdAt = article.createdAt ?: LocalDateTime.now()
+            )
+        )
+    }
+
+    override suspend fun deleteNewsScraped(article: Article) {
+        userNewsDao.delete(article.id)
+    }
 
     companion object {
         private const val DEFAULT_CRYPTO_QUERY = "암호화폐"
