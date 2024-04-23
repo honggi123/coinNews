@@ -44,8 +44,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
-import com.hong7.coinnews.model.CountryScope
-import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.ui.articlelist.ArticleListScreen
 import com.hong7.coinnews.ui.articlelist.ArticleListViewModel
 import com.hong7.coinnews.ui.component.BaseCustomModal

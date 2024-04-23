@@ -24,10 +24,13 @@ class CoinListViewModel @Inject constructor(
         coinRepository.getAllCoins(),
         filterRepository.getFilter()
     ) { allCoins, filter ->
-        val filterCoinIds = filter.coins.map { it.id }
-        allCoins.map { coin ->
-            coin?.copy(isSelected = coin.id in filterCoinIds)
+        if (filter != null){
+            val filterCoinIds = filter.coins.map { it.id }
+            allCoins.map { coin ->
+                coin?.copy(isSelected = coin.id in filterCoinIds)
+            }
         }
+        allCoins
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(3_000),

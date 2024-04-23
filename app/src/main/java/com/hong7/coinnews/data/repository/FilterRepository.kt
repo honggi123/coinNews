@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface FilterRepository {
 
-     fun getFilter(): Flow<Filter>
+     fun getFilter(): Flow<Filter?>
 
      suspend fun isFilterEmpty(): Boolean
 

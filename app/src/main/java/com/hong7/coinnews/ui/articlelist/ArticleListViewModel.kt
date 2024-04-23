@@ -32,7 +32,7 @@ class ArticleListViewModel @Inject constructor(
 
     val filter: StateFlow<Filter?> = filterRepository.getFilter()
         .onEach {
-            if (selectedCoin.value != null) {
+            if (selectedCoin.value != null && it != null) {
                 changeSelectedCoin(it.coins.getOrNull(0))
             }
         }

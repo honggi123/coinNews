@@ -6,8 +6,9 @@ import com.google.firebase.ktx.Firebase
 import com.hong7.coinnews.network.model.NetworkCoin
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
+import javax.inject.Inject
 
-class CoinDataSource {
+class CoinDataSource @Inject constructor() {
 
     private val firestore = Firebase.firestore
 

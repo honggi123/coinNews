@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface UserFilterDao {
 
     @Query("SELECT * FROM filter ORDER BY id DESC LIMIT 1")
-    suspend fun getRecentFilter(): FilterEntity
+    suspend fun getRecentFilter(): FilterEntity?
 
     @Query("SELECT * FROM filter WHERE id = :filterId")
     suspend fun getFilterById(filterId: String): FilterEntity
