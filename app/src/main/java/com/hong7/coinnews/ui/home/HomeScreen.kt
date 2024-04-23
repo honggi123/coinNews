@@ -11,9 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -21,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -50,6 +53,7 @@ import com.hong7.coinnews.ui.component.BaseCustomModal
 import com.hong7.coinnews.ui.component.CheckListItem
 import com.hong7.coinnews.ui.extensions.customTabIndicatorOffset
 import com.hong7.coinnews.ui.scrap.ScrapNewsScreen
+import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.GreyOpacity400
@@ -57,6 +61,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 
 enum class Sections(@StringRes val titleResId: Int) {
     News(R.string.news),
+
     //    Video(R.string.video),
     Scrap(R.string.scrap),
 }
@@ -138,21 +143,8 @@ fun HomeScreenContent(
         TabRow(
             selectedTabIndex = selectedTabIndex,
             indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
-                    modifier = Modifier
-                        .customTabIndicatorOffset(
-                            tabPositions[selectedTabIndex],
-                            tabWidths[selectedTabIndex]
-                        )
-                        .graphicsLayer {
-                            shape = RoundedCornerShape(
-                                topStart = 16.dp,
-                                topEnd = 16.dp,
-                                bottomStart = 16.dp,
-                                bottomEnd = 16.dp
-                            )
-                            clip = true
-                        },
+                TabRowDefaults.SecondaryIndicator(
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
                     color = Grey1000
                 )
             },
