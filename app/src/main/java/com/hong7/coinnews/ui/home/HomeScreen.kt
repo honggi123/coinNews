@@ -56,6 +56,7 @@ import com.hong7.coinnews.ui.scrap.ScrapNewsScreen
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
+import com.hong7.coinnews.ui.theme.Grey700
 import com.hong7.coinnews.ui.theme.GreyOpacity400
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -86,9 +87,9 @@ fun HomeScreen(
                 title = {
                     Text(
                         text = "코인뉴스",
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Grey1000
+                        color = Grey700
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

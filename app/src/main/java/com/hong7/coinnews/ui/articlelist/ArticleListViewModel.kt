@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui.articlelist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -30,17 +31,8 @@ class ArticleListViewModel @Inject constructor(
     private val filterRepository: FilterRepository
 ) : ViewModel() {
 
-    val filter: StateFlow<Filter?> = filterRepository.getFilter()
-        .onEach {
-            if (selectedCoin.value != null && it != null) {
-                changeSelectedCoin(it.coins.getOrNull(0))
-            }
-        }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(3_000),
-            null
-        )
+    private val _filter = MutableStateFlow<Filter?>(null)
+    val filter: StateFlow<Filter?> = _filter.asStateFlow()
 
     private val _isGlobalNews = MutableStateFlow<Boolean>(false)
     val isGlobalNews: StateFlow<Boolean> = _isGlobalNews.asStateFlow()
@@ -48,15 +40,16 @@ class ArticleListViewModel @Inject constructor(
     private val _selectedCoin = MutableStateFlow<Coin?>(null)
     val selectedCoin: StateFlow<Coin?> = _selectedCoin.asStateFlow()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val articles: StateFlow<PagingData<Article>> =
         combine(
             filter.filterNotNull(),
             selectedCoin.filterNotNull()
         ) { filter, selectedCoin ->
             if (isGlobalNews.value) {
-                newsRepository.getArticles(selectedCoin)
-            } else {
                 newsRepository.getGlobalArticles(selectedCoin)
+            } else {
+                newsRepository.getArticles(selectedCoin)
             }
         }
             .flatMapLatest { it.cachedIn(viewModelScope) }
@@ -65,6 +58,16 @@ class ArticleListViewModel @Inject constructor(
                 SharingStarted.Lazily,
                 PagingData.empty()
             )
+
+    fun initFilter() {
+        viewModelScope.launch {
+            val filter = filterRepository.getFilter()
+            if (selectedCoin.value != null && filter != null) {
+                changeSelectedCoin(filter.coins.getOrNull(0))
+            }
+            _filter.value = filter
+        }
+    }
 
     fun onCoinClick(coin: Coin?) {
         viewModelScope.launch {

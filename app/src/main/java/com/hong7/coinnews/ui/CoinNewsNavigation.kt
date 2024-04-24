@@ -39,6 +39,11 @@ object ArticleDetailNav : DestinationArg<Article> {
     }
 }
 
+object CoinListNav : Destination {
+    override val route: String = NavigationRouteName.ALL_COIN_LIST
+    override val title: String = NavigationTitle.ALL_COIN_LIST
+}
+
 interface Destination {
     val route: String
     val title: String

@@ -35,6 +35,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +60,7 @@ import com.hong7.coinnews.model.ArticleWithInterest
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.ui.ArticleDetailNav
+import com.hong7.coinnews.ui.CoinListNav
 import com.hong7.coinnews.ui.component.ClickableChip
 import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
@@ -77,6 +79,12 @@ fun ArticleListScreen(
     navController: NavHostController,
     viewModel: ArticleListViewModel = hiltViewModel()
 ) {
+
+    // todo check
+    LaunchedEffect(key1 = Unit) {
+        viewModel.initFilter()
+    }
+
     val state = rememberLazyListState()
 
     val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
@@ -103,7 +111,12 @@ fun ArticleListScreen(
         selectedCoin = selectedCoin,
         filter = filter,
         onCoinClick = viewModel::onCoinClick,
-        onFilterSettingClick = { },
+        onFilterSettingClick = {
+            NavigationUtils.navigate(
+                navController,
+                CoinListNav.route
+            )
+        },
         onArticleClick = {
             NavigationUtils.saveArticle(it)
             NavigationUtils.navigate(
@@ -137,6 +150,7 @@ private fun ArticleListScreenContent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
+        // todo add when coins empty
         if (filter == null) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -194,7 +208,7 @@ private fun ArticleListScreenContent(
                     }
                     items(
                         articles.size,
-                        key = { articles[it].id }
+//                        key = { articles[it].id } todo
                     ) { index ->
                         articles[index].let {
                             ArticleContentItem(

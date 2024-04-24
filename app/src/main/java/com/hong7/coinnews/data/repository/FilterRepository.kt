@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface FilterRepository {
 
-     fun getFilter(): Flow<Filter?>
+     suspend fun getFilter(): Filter?
 
      suspend fun isFilterEmpty(): Boolean
 
-     suspend fun setCoins(coins: List<Coin>)
+     suspend fun setCoins(selectedCoins: List<Coin>)
 }

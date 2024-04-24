@@ -1,5 +1,6 @@
 package com.hong7.coinnews.data.repository.impl
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -34,12 +35,15 @@ class NewsRepositoryImpl @Inject constructor(
     override fun getArticles(
         coin: Coin
     ): Flow<PagingData<Article>> {
+
+        val searchWordsWithPlus = coin.relatedSearchWord.joinToString(separator = " + ")
+        val query = "${searchWordsWithPlus}+${coin.name}"
         return Pager(
             config = PagingConfig(enablePlaceholders = false, pageSize = 10),
             pagingSourceFactory = {
                 NewsArticlePagingSource(
                     naverService,
-                    coin?.name ?: DEFAULT_CRYPTO_QUERY
+                    query
                 )
             }
         ).flow.map {

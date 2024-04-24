@@ -1,5 +1,6 @@
 package com.hong7.coinnews.data.repository.impl
 
+import android.util.Log
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.repository.CoinRepository
@@ -20,25 +21,28 @@ class FilterRepositoryImpl @Inject constructor(
     private val userFilterDao: UserFilterDao
 ) : FilterRepository {
 
-    override fun getFilter(): Flow<Filter?> = flow {
+    override suspend fun getFilter(): Filter? {
         val filter = userFilterDao.getRecentFilter()
         val mappedFilter =
             if (filter != null) filter.toDomain()
             else null
-        emit(mappedFilter)
+        return mappedFilter
     }
 
     override suspend fun isFilterEmpty(): Boolean {
         return userFilterDao.isEmpty()
     }
 
-    override suspend fun setCoins(coins: List<Coin>) {
+    override suspend fun setCoins(selectedCoins: List<Coin>) {
         val filter = userFilterDao.getRecentFilter()
-        if (filter != null) {
-            val coinEntities = coins.map { it.toEntity() }
-            val newFilter = filter.copy(coins = coinEntities)
-            userFilterDao.deleteFilter()
-            userFilterDao.insert(newFilter)
+        val coinEntities = selectedCoins.map { it.toEntity() }
+
+        val newFilter = if (filter != null) {
+            filter.copy(coins = coinEntities)
+        } else {
+             FilterEntity(coins = coinEntities)
         }
+        userFilterDao.deleteFilter()
+        userFilterDao.insert(newFilter)
     }
 }
