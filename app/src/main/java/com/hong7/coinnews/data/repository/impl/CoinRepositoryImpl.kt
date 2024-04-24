@@ -15,7 +15,7 @@ class CoinRepositoryImpl @Inject constructor(
     private val dataSource: CoinDataSource
 ) : CoinRepository {
 
-    override fun getAllCoins(): Flow<List<Coin?>> = flow {
+    override fun getAllCoins(): Flow<List<Coin>> = flow {
         val list = dataSource.getAllCoins().map { it.toDomain() }
         emit(list)
     }

@@ -17,6 +17,8 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -58,6 +61,7 @@ import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey700
 import com.hong7.coinnews.ui.theme.GreyOpacity400
+import com.hong7.coinnews.ui.utils.NavigationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 enum class Sections(@StringRes val titleResId: Int) {
@@ -91,6 +95,17 @@ fun HomeScreen(
                         fontWeight = FontWeight.Bold,
                         color = Grey700
                     )
+                },
+                actions = {
+                    IconButton(
+                        onClick = {},
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_setting),
+                            contentDescription = "",
+                            tint = Grey700
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background

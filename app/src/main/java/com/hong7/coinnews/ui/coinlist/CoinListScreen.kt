@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -23,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -46,6 +49,9 @@ import com.hong7.coinnews.ui.theme.Grey100
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Salmon600
 import com.hong7.coinnews.ui.utils.NavigationUtils
+import com.hong7.coinnews.R
+import com.hong7.coinnews.ui.theme.Grey200
+import com.hong7.coinnews.ui.theme.Grey700
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +63,10 @@ fun CoinListScreen(
     val coins by viewModel.coins.collectAsState()
     val selectedCoins = rememberSaveable { mutableStateOf<Set<Coin>>(mutableSetOf()) }
 
+    LaunchedEffect(key1 = coins) {
+        selectedCoins.value = coins.filter { it.isSelected }.toMutableSet()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -67,6 +77,17 @@ fun CoinListScreen(
                         fontWeight = FontWeight.Bold,
                         color = Grey1000
                     )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_back),
+                            contentDescription = "",
+                            tint = Grey700
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
@@ -86,24 +107,22 @@ fun CoinListScreen(
                     .padding(horizontal = 16.dp)
                     .weight(1f)
             ) {
-                coins?.forEach { coin ->
-                    coin?.let {
-                        CheckListItem(
-                            checked = selectedCoins.value.contains(coin),
-                            onClick = {
-                                if (it) {
-                                    val currentSet = selectedCoins.value.toMutableSet()
-                                    currentSet.add(coin)
-                                    selectedCoins.value = currentSet
-                                } else {
-                                    val currentSet = selectedCoins.value.toMutableSet()
-                                    currentSet.remove(coin)
-                                    selectedCoins.value = currentSet
-                                }
-                            },
-                            text = coin.name
-                        )
-                    }
+                coins.forEach { coin ->
+                    CheckListItem(
+                        checked = selectedCoins.value.contains(coin),
+                        onClick = {
+                            if (it) {
+                                val currentSet = selectedCoins.value.toMutableSet()
+                                currentSet.add(coin)
+                                selectedCoins.value = currentSet
+                            } else {
+                                val currentSet = selectedCoins.value.toMutableSet()
+                                currentSet.remove(coin)
+                                selectedCoins.value = currentSet
+                            }
+                        },
+                        text = coin.name
+                    )
                 }
             }
             registerCoinButton(

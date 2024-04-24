@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.hong7.coinnews.ui.articledetail.ArticleDetailRoute
 import com.hong7.coinnews.ui.coinlist.CoinListScreen
 import com.hong7.coinnews.ui.home.HomeRoute
+import com.hong7.coinnews.ui.setting.SettingScreen
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.utils.NavigationUtils
 
@@ -78,6 +79,26 @@ fun CoinNewsNavGraph(
             }
         ) {
             CoinListScreen(
+                navController,
+                modifier.fillMaxSize()
+            )
+        }
+        composable(
+            route = SettingNav.route,
+            enterTransition = {
+                slideIntoContainer(
+                    animationSpec = tween(400),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    animationSpec = tween(400),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right
+                )
+            }
+        ) {
+            SettingScreen(
                 navController,
                 modifier.fillMaxSize()
             )

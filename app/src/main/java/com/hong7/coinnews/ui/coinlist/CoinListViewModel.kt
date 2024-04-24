@@ -31,7 +31,7 @@ class CoinListViewModel @Inject constructor(
             if (filter != null) {
                 val filterCoinIds = filter.coins.map { it.id }
                 allCoins.map { coin ->
-                    coin?.copy(isSelected = coin.id in filterCoinIds)
+                    coin.copy(isSelected = coin.id in filterCoinIds)
                 }
             } else {
                 allCoins
@@ -39,7 +39,7 @@ class CoinListViewModel @Inject constructor(
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(3_000),
-            null
+            emptyList()
         )
 
     fun onCompleteSelect(selectedCoins: List<Coin>) {
