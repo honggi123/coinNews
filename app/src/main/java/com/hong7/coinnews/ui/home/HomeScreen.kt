@@ -57,6 +57,7 @@ import com.hong7.coinnews.ui.component.CheckListItem
 import com.hong7.coinnews.ui.extensions.customTabIndicatorOffset
 import com.hong7.coinnews.ui.scrap.ScrapNewsScreen
 import com.hong7.coinnews.ui.theme.Blue600
+import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey700
@@ -119,7 +120,6 @@ fun HomeScreen(
             tabs = tabs,
             selectedSection = selectedSection,
             onSectionChange = onSectionChange,
-            modifier = Modifier.padding(horizontal = 16.dp),
             contentPadding = contentPadding,
         )
     }
@@ -153,7 +153,8 @@ fun HomeScreenContent(
     val tabWidths: List<Dp> = listOf(40.dp, 60.dp, 90.dp) // todo
 
     Column(
-        modifier = modifier
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(contentPadding),
     ) {
         TabRow(
@@ -161,15 +162,15 @@ fun HomeScreenContent(
             indicator = { tabPositions ->
                 TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                    color = Grey1000
+                    color = Blue800
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
         ) {
             HomeTabRowContent(
                 tabs,
                 selectedTabIndex,
-                onSectionChange
+                onSectionChange,
             )
         }
         tabs[selectedTabIndex].content()

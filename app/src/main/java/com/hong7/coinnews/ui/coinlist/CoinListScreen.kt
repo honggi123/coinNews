@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -50,6 +52,7 @@ import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Salmon600
 import com.hong7.coinnews.ui.utils.NavigationUtils
 import com.hong7.coinnews.R
+import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey700
 
@@ -123,6 +126,7 @@ fun CoinListScreen(
                         },
                         text = coin.name
                     )
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
             }
             registerCoinButton(
@@ -155,7 +159,7 @@ private fun registerCoinButton(
                 modifier = Modifier
                     .weight(1F)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Salmon600)
+                    .background(Blue800)
                     .clickable(onClick = onActionClick)
                     .padding(vertical = 16.dp),
                 color = White,

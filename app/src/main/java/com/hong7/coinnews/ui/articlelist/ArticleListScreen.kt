@@ -47,9 +47,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -66,6 +68,7 @@ import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.Grey200
+import com.hong7.coinnews.ui.theme.defaultTextStyle
 import com.hong7.coinnews.ui.utils.DateUtils
 import com.hong7.coinnews.ui.utils.NavigationUtils
 import kotlinx.collections.immutable.ImmutableList
@@ -157,7 +160,9 @@ private fun ArticleListScreenContent(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                EmptyFiltersContent(text = "보고싶은 뉴스의 코인을 선택하세요.")
+                EmptyFiltersContent(
+                    text = "보고싶은 뉴스의 코인을 선택하세요."
+                )
                 Spacer(modifier = Modifier.height(10.dp))
                 ClickableChip(
                     text = "코인 설정",
@@ -179,8 +184,10 @@ private fun ArticleListScreenContent(
                     item {
                         Spacer(modifier = Modifier.height(15.dp))
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             LazyRow(
                                 modifier = Modifier.weight(1f),
@@ -214,7 +221,9 @@ private fun ArticleListScreenContent(
                             ArticleContentItem(
                                 article = it,
                                 onArticleClick = onArticleClick,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
                             )
                             HorizontalDivider(
                                 thickness = 0.7.dp,
@@ -292,16 +301,21 @@ private fun ArticleContentItem(
     ) {
         Text(
             text = article.title,
-            style = MaterialTheme.typography.bodyMedium,
+            style = defaultTextStyle.copy(
+                fontSize = 16.sp,
+                lineHeight = 16.sp,
+            ),
             fontWeight = FontWeight.Bold,
             maxLines = 3,
         )
 //        Text(
 //            text = article.description,
-//            style = MaterialTheme.typography.bodyLarge,
+//            style = defaultTextStyle.copy(
+//                fontSize = 14.sp,
+//                lineHeight = 14.sp,
+//            ),
 //            fontWeight = FontWeight.Medium,
-//            maxLines = 2,
-//            softWrap = false
+//            maxLines = 3,
 //        )
         ArticleMetaData(
             article = article,
@@ -321,18 +335,27 @@ private fun ArticleMetaData(
     ) {
         Text(
             text = article.author ?: "알 수 없는 출처",
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Normal
+            style = defaultTextStyle.copy(
+                fontSize = 14.sp,
+                lineHeight = 14.sp,
+            ),
+            color = Color(0xFF777777)
         )
         Text(
             text = "・",
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Normal
+            style = defaultTextStyle.copy(
+                fontSize = 14.sp,
+                lineHeight = 14.sp,
+            ),
+            color = Color(0xFF777777)
         )
         Text(
             text = article.createdAt?.let { DateUtils.getTimeAgo(it) } ?: "",
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Normal
+            style = defaultTextStyle.copy(
+                fontSize = 14.sp,
+                lineHeight = 14.sp,
+            ),
+            color = Color(0xFF777777)
         )
     }
 }
