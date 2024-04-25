@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
+import com.hong7.coinnews.ui.SettingNav
 import com.hong7.coinnews.ui.articlelist.ArticleListScreen
 import com.hong7.coinnews.ui.articlelist.ArticleListViewModel
 import com.hong7.coinnews.ui.component.BaseCustomModal
@@ -79,6 +80,7 @@ class TabContent(val section: Sections, val content: @Composable () -> Unit)
 fun HomeScreen(
     tabs: List<TabContent>,
     selectedSection: Sections,
+    onSettingClick: () -> Unit,
     onSectionChange: (Sections) -> Unit,
     viewModel: ArticleListViewModel = hiltViewModel()
 ) {
@@ -99,7 +101,7 @@ fun HomeScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = {},
+                        onClick = { onSettingClick() },
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_setting),

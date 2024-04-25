@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.hong7.coinnews.ui.SettingNav
+import com.hong7.coinnews.ui.utils.NavigationUtils
 
 @Composable
 fun HomeRoute(
@@ -19,6 +21,9 @@ fun HomeRoute(
     HomeScreen(
         tabs = tabContent,
         selectedSection = section,
+        onSettingClick = {
+            NavigationUtils.navigate(navController, SettingNav.route)
+        },
         onSectionChange = onSectionChange,
     )
 }

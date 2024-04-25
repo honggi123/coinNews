@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
@@ -36,8 +37,10 @@ import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.ui.ArticleDetailNav
 import com.hong7.coinnews.ui.theme.Blue50
 import com.hong7.coinnews.ui.theme.Blue600
+import com.hong7.coinnews.ui.theme.Grey
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
+import com.hong7.coinnews.ui.theme.defaultTextStyle
 import com.hong7.coinnews.ui.utils.DateUtils
 import com.hong7.coinnews.ui.utils.NavigationUtils
 
@@ -83,7 +86,7 @@ private fun ScrapNewsScreen(
                 contentPadding = contentPadding,
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(top = 15.dp),
+                    .padding(top = 15.dp,start = 12.dp, end = 12.dp),
                 state = state
             ) {
                 items(
@@ -102,20 +105,6 @@ private fun ScrapNewsScreen(
                     )
                 }
             }
-        }
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Bottom,
-        ) {
-            Text(
-                text = "문의 Email : ghdrl7526@gmail.com",
-                style = MaterialTheme.typography.bodySmall,
-                color = Blue600,
-                fontWeight = FontWeight.Bold
-            )
         }
     }
 }
@@ -152,13 +141,19 @@ private fun ArticleContentItem(
     ) {
         Text(
             text = article.title,
-            style = MaterialTheme.typography.bodyMedium,
+            style = defaultTextStyle.copy(
+                fontSize = 16.sp,
+                lineHeight = 20.sp,
+            ),
             fontWeight = FontWeight.Bold,
         )
         Text(
             text = article.description,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium,
+            style = defaultTextStyle.copy(
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
+            ),
+            color = Color(0xFF777777),
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
@@ -181,17 +176,21 @@ private fun ArticleMetaData(
         Text(
             text = article.author ?: "알 수 없는 출처",
             style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Normal
+            fontWeight = FontWeight.Normal,
+            color = Color(0xFFAAAAAA)
+
         )
         Text(
             text = "・",
             style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Normal
+            fontWeight = FontWeight.Normal,
+            color = Color(0xFFAAAAAA)
         )
         Text(
             text = article.createdAt?.let { DateUtils.getTimeAgo(it) } ?: "",
             style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Normal
+            fontWeight = FontWeight.Normal,
+            color = Color(0xFFAAAAAA)
         )
     }
 }

@@ -147,19 +147,18 @@ private fun ArticleListScreenContent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        // todo add when coins empty
-        if (filter == null) {
+        if (filter == null || filter.coins.isEmpty()) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 EmptyFiltersContent(
-                    text = "보고싶은 뉴스의 코인을 선택하세요."
+                    text = "보고싶은 뉴스의 코인을 선택해보세요!"
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 ClickableChip(
-                    text = "코인 설정",
+                    text = "코인 선택",
                     onClick = { onFilterSettingClick() },
                 )
             }
@@ -297,7 +296,7 @@ private fun ArticleContentItem(
             text = article.title,
             style = defaultTextStyle.copy(
                 fontSize = 16.sp,
-                lineHeight = 16.sp,
+                lineHeight = 20.sp,
             ),
             fontWeight = FontWeight.Bold,
             maxLines = 3,
@@ -333,7 +332,7 @@ private fun ArticleMetaData(
                 fontSize = 14.sp,
                 lineHeight = 14.sp,
             ),
-            color = Color(0xFF777777)
+            color = Color(0xFFAAAAAA)
         )
         Text(
             text = "・",
@@ -341,7 +340,7 @@ private fun ArticleMetaData(
                 fontSize = 14.sp,
                 lineHeight = 14.sp,
             ),
-            color = Color(0xFF777777)
+            color = Color(0xFFAAAAAA)
         )
         Text(
             text = article.createdAt?.let { DateUtils.getTimeAgo(it) } ?: "",
@@ -349,7 +348,7 @@ private fun ArticleMetaData(
                 fontSize = 14.sp,
                 lineHeight = 14.sp,
             ),
-            color = Color(0xFF777777)
+            color = Color(0xFFAAAAAA)
         )
     }
 }
