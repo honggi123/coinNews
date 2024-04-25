@@ -21,6 +21,16 @@ class FilterRepositoryImpl @Inject constructor(
     private val userFilterDao: UserFilterDao
 ) : FilterRepository {
 
+    override fun getFilterStream(): Flow<Filter?> {
+        val filter = userFilterDao.getRecentFilterStream()
+            .map { filter ->
+                if (filter != null) filter.toDomain()
+                else null
+            }
+
+        return filter
+    }
+
     override suspend fun getFilter(): Filter? {
         val filter = userFilterDao.getRecentFilter()
         val mappedFilter =
@@ -40,7 +50,7 @@ class FilterRepositoryImpl @Inject constructor(
         val newFilter = if (filter != null) {
             filter.copy(coins = coinEntities)
         } else {
-             FilterEntity(coins = coinEntities)
+            FilterEntity(coins = coinEntities)
         }
         userFilterDao.deleteFilter()
         userFilterDao.insert(newFilter)

@@ -82,12 +82,6 @@ fun ArticleListScreen(
     navController: NavHostController,
     viewModel: ArticleListViewModel = hiltViewModel()
 ) {
-
-    // todo check
-    LaunchedEffect(key1 = Unit) {
-        viewModel.initFilter()
-    }
-
     val state = rememberLazyListState()
 
     val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()

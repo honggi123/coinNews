@@ -31,8 +31,17 @@ class ArticleListViewModel @Inject constructor(
     private val filterRepository: FilterRepository
 ) : ViewModel() {
 
-    private val _filter = MutableStateFlow<Filter?>(null)
-    val filter: StateFlow<Filter?> = _filter.asStateFlow()
+    val filter: StateFlow<Filter?> = filterRepository.getFilterStream()
+        .onEach { filter ->
+            if (selectedCoin.value == null && filter != null) {
+                changeSelectedCoin(filter.coins.getOrNull(0))
+            }
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            null
+        )
+
 
     private val _isGlobalNews = MutableStateFlow<Boolean>(false)
     val isGlobalNews: StateFlow<Boolean> = _isGlobalNews.asStateFlow()
@@ -58,16 +67,6 @@ class ArticleListViewModel @Inject constructor(
                 SharingStarted.Lazily,
                 PagingData.empty()
             )
-
-    fun initFilter() {
-        viewModelScope.launch {
-            val filter = filterRepository.getFilter()
-            if (selectedCoin.value != null && filter != null) {
-                changeSelectedCoin(filter.coins.getOrNull(0))
-            }
-            _filter.value = filter
-        }
-    }
 
     fun onCoinClick(coin: Coin?) {
         viewModelScope.launch {
