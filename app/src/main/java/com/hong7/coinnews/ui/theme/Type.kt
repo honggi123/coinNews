@@ -12,8 +12,9 @@ import androidx.compose.ui.unit.sp
 import com.hong7.coinnews.R
 
 private val Montserrat = FontFamily(
-    Font(R.font.noto_sans_kr_regular),
-    Font(R.font.noto_sans_kr_medium, FontWeight.W500)
+    Font(R.font.pretendard_bold),
+    Font(R.font.pretendard_regular),
+    Font(R.font.pretendard_medium, FontWeight.W500)
 )
 
 @Suppress("DEPRECATION")

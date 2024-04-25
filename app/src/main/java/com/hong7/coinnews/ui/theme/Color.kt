@@ -79,6 +79,8 @@ val Green600 = Color(0xFF36C244)
 val Blue50 = Color(0xFFF3F9FF)
 val Blue600 = Color(0xFF2781FF)
 
+val Blue800 = Color(0xFF003EBB)
+
 val Orange100 = Color(0xFFFFF6E7)
 val DeepOrange = Color(0xFFF28005)
 
