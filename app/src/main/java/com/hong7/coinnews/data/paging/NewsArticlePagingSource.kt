@@ -23,7 +23,7 @@ class NewsArticlePagingSource @Inject constructor(
                 FirebasePerformance.getInstance().newTrace("network_article_request")
             trace.start()
             val response = service.getArticles(
-                query = "\"$query\"",
+                query = query,
                 page = page,
                 pageSize = params.loadSize
             )

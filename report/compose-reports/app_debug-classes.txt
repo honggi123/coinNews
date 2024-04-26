@@ -1,0 +1,3 @@
+stable class DateUtils {
+  <runtime stability> = Stable
+}

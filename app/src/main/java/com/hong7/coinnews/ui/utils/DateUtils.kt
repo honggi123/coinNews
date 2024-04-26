@@ -28,11 +28,15 @@ object DateUtils {
         val minutes = ChronoUnit.MINUTES.between(fromTime, toTime)
         val hours = ChronoUnit.HOURS.between(fromTime, toTime)
         val days = ChronoUnit.DAYS.between(fromTime, toTime)
+        val months = ChronoUnit.MONTHS.between(fromTime, toTime)
+        val years = ChronoUnit.YEARS.between(fromTime, toTime)
 
         return when {
             minutes < 60 -> "${minutes}분전"
             hours < 24 -> "${hours}시간전"
-            else -> "${days}일전"
+            days < 30 -> "${days}일전"
+            months < 12 -> "${months}개월전"
+            else -> "${years}년전"
         }
     }
 
