@@ -1,0 +1,30 @@
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ArticleDetailRoute(
+  article: Article?
+  stable onBackClick: Function0<Unit>
+  viewModel: ArticleDetailViewModel? = @dynamic hiltViewModel(null, null, $composer, 0, 0b0011)
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ArticleDetailScreen(
+  article: Article?
+  stable isInterested: Boolean
+  stable onBackClick: Function0<Unit>
+  stable onToggleClick: Function1<ArticleWithInterest, Unit>
+  stable modifier: Modifier? = @static Companion
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun TopAppBar(
+  stable progressProvider: Function0<Float>
+  article: Article?
+  stable isInterested: Boolean
+  stable onBackClick: Function0<Unit>
+  stable onToggleClick: Function1<ArticleWithInterest, Unit>
+  stable modifier: Modifier? = @static Companion
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun EmptyArticleContent(
+  stable text: String
+  stable modifier: Modifier
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ArticleContent(
+  stable url: String
+  stable onProgressChange: Function1<Int, Unit>
+  stable modifier: Modifier? = @static Companion
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ArticleDetailScreenPreview()

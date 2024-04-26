@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hong7.coinnews.R
@@ -73,10 +74,11 @@ fun SettingScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "준비중 입니다. \n [문의] Email : ghdrl7526@gmail.com",
+                    text = "서비스 준비중 입니다. \n[문의] Email : ghdrl7526@gmail.com",
                     style = MaterialTheme.typography.titleMedium,
                     color = Grey,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
                 )
             }
         }

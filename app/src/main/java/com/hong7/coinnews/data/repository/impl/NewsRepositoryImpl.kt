@@ -37,7 +37,7 @@ class NewsRepositoryImpl @Inject constructor(
     ): Flow<PagingData<Article>> {
 
         val searchWordsWithPlus = coin.relatedSearchWord.joinToString(separator = " + ")
-        val query = "${searchWordsWithPlus}+${coin.name}"
+        val query = "${searchWordsWithPlus} | ${coin.name}"
         return Pager(
             config = PagingConfig(enablePlaceholders = false, pageSize = 10),
             pagingSourceFactory = {

@@ -93,7 +93,7 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "코인뉴스",
+                        text = "코인왓치",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Grey700

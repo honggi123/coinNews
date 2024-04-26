@@ -3,6 +3,7 @@ package com.hong7.coinnews.ui.articledetail
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.webkit.WebChromeClient
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -91,7 +92,7 @@ private fun ArticleDetailScreen(
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 TopAppBar(
-                    progress = progressAnimation,
+                    progressProvider = { progressAnimation },
                     article = article,
                     isInterested = isInterested,
                     onBackClick = onBackClick,
@@ -103,8 +104,8 @@ private fun ArticleDetailScreen(
         }
     ) { paddingValues ->
         if (article != null) {
-            ArticleDetailContent(
-                article = article,
+            ArticleContent(
+                url = article.url,
                 onProgressChange = { progress.value = it.toFloat() },
                 modifier = modifier
                     .padding(paddingValues)
@@ -121,7 +122,7 @@ private fun ArticleDetailScreen(
 
 @Composable
 private fun TopAppBar(
-    progress: Float,
+    progressProvider: () -> Float,
     article: Article?,
     isInterested: Boolean,
     onBackClick: () -> Unit,
@@ -172,26 +173,8 @@ private fun TopAppBar(
             )
         }
         LinearProgressIndicator(
-            progress = { progress },
+            progress = { progressProvider() },
             modifier = Modifier.fillMaxWidth(),
-        )
-    }
-}
-
-@Composable
-private fun ArticleDetailContent(
-    article: Article,
-    onProgressChange: (Int) -> Unit,
-    modifier: Modifier
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        ArticleContent(
-            article = article,
-            onProgressChange = onProgressChange,
-            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -217,7 +200,7 @@ private fun EmptyArticleContent(
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 private fun ArticleContent(
-    article: Article,
+    url: String,
     onProgressChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -253,7 +236,7 @@ private fun ArticleContent(
                         }
                     })
 
-                    loadUrl(article.url)
+                    loadUrl(url)
                 }
             },
             modifier = Modifier.fillMaxSize()
