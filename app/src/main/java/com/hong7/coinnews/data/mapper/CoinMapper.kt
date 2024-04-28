@@ -30,26 +30,3 @@ fun NetworkCoin.toEntity(): CoinEntity {
         relatedSearchWord = this.relatedSearchWords
     )
 }
-
-//fun CoinEntity.toDomain(): Coin {
-//    return Coin(
-//        id = this.coinId,
-//        name = this.name,
-//        rank = this.rank,
-//        symbol = this.symbol ?: "",
-//        slug = this.slug,
-//        usdAsset = null,
-//        urls = null,
-//        description = null
-//    )
-//}
-//
-//fun Coin.toEntity(): CoinEntity {
-//    return CoinEntity(
-//        name = this.name,
-//        rank = this.rank,
-//        symbol = this.symbol,
-//        slug = this.slug,
-//        coinId = this.id.toString()
-//    )
-//}

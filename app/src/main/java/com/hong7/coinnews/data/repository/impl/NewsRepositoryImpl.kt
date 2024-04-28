@@ -2,6 +2,7 @@ package com.hong7.coinnews.data.repository.impl
 
 import android.util.Log
 import com.hong7.coinnews.data.mapper.toDomain
+import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.database.NewsEntity
 import com.hong7.coinnews.database.UserNewsDao
@@ -70,7 +71,10 @@ class NewsRepositoryImpl @Inject constructor(
 
         val request = Request.Builder()
             .url(rssUrl)
-            .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
+            .header(
+                "User-Agent",
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
+            )
             .addHeader("Cookie", "CONSENT=YES+cb.20220419-08-p0.cs+FX+111")
             .build()
 
@@ -92,11 +96,7 @@ class NewsRepositoryImpl @Inject constructor(
     }
 
     private suspend fun getNaverNews(query: String): List<NetworkArticle> {
-        val response = naverService.getArticles(
-            query = query,
-            page = 1,
-            pageSize = 10
-        )
+        val response = naverService.getArticles(query = query, page = 1, pageSize = 10)
         return response.items
     }
 
@@ -124,16 +124,7 @@ class NewsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addNewsScraped(article: Article) {
-        userNewsDao.insert(
-            NewsEntity(
-                newsId = article.id,
-                title = article.title,
-                description = article.description,
-                url = article.url,
-                author = article.author,
-                createdAt = article.createdAt ?: LocalDateTime.now()
-            )
-        )
+        userNewsDao.insert(article.toEntity())
     }
 
     override suspend fun deleteNewsScraped(article: Article) {

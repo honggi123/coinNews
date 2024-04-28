@@ -10,6 +10,7 @@ import com.hong7.coinnews.network.model.NetworkGlobalNews
 import com.hong7.coinnews.ui.utils.DateUtils
 import com.hong7.coinnews.ui.utils.NumberUtils.getHashValue
 import java.security.MessageDigest
+import java.time.LocalDateTime
 import java.util.Locale
 
 fun NetworkArticle.toDomain(): Article {
@@ -32,6 +33,17 @@ fun NewsEntity.toDomain(): Article {
         description = this.description,
         author = this.author,
         createdAt = this.createdAt
+    )
+}
+
+fun Article.toEntity(): NewsEntity {
+    return NewsEntity(
+        newsId = this.id,
+        title = this.title,
+        description = this.description,
+        url = this.url,
+        author = this.author,
+        createdAt = this.createdAt ?: LocalDateTime.now()
     )
 }
 

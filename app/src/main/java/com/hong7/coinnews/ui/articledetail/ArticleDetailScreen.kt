@@ -155,7 +155,7 @@ private fun TopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
-                .padding(horizontal = 10.dp, vertical = 12.dp),
+                .padding(horizontal = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -169,11 +169,10 @@ private fun TopAppBar(
                     ) { onBackClick() },
                 tint = Grey700
             )
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(24.dp))
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight()
                     .background(
                         color = Grey100,
                         shape = RoundedCornerShape(24.dp),
@@ -186,10 +185,10 @@ private fun TopAppBar(
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Normal,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 10.dp)
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                 )
             }
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(24.dp))
             Icon(
                 painter = interestIconPainter,
                 contentDescription = null,

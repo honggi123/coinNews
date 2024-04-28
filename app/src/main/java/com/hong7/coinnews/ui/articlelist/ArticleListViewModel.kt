@@ -45,18 +45,11 @@ class ArticleListViewModel @Inject constructor(
     private val _selectedCoin = MutableStateFlow<Coin?>(null)
     val selectedCoin: StateFlow<Coin?> = _selectedCoin.asStateFlow()
 
-    val articles: StateFlow<List<Article>> =
-        combine(
-            filter.filterNotNull(),
-            selectedCoin.filterNotNull()
-        ) { filter, selectedCoin ->
-            newsRepository.getRecentArticles(selectedCoin)
-        }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Lazily,
-                emptyList()
-            )
+    private val _articles = MutableStateFlow<List<Article>>(emptyList())
+    val articles: StateFlow<List<Article>> = _articles.asStateFlow()
+
+    private val _loading = MutableStateFlow<Boolean>(false)
+    val loading: StateFlow<Boolean> = _loading.asStateFlow()
 
     fun onCoinClick(coin: Coin?) {
         viewModelScope.launch {
@@ -65,8 +58,13 @@ class ArticleListViewModel @Inject constructor(
     }
 
     private fun changeSelectedCoin(coin: Coin?) {
-        if (coin != null) {
-            _selectedCoin.value = coin
+        _loading.value = true
+        viewModelScope.launch {
+            if (coin != null) {
+                _selectedCoin.value = coin
+                _articles.value = newsRepository.getRecentArticles(coin)
+                _loading.value = false
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -86,24 +87,25 @@ fun ArticleListScreen(
 
     val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
     val filter by viewModel.filter.collectAsStateWithLifecycle()
-
     val articles by viewModel.articles.collectAsStateWithLifecycle()
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
 
-    var refreshing by remember { mutableStateOf(false) }
-    val refreshScope = rememberCoroutineScope()
-
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = refreshing,
-        onRefresh = {
-            refreshScope.launch {
-                refreshing = true
-                // refresh todo
-                delay(2000)
-                refreshing = false
-            }
-        })
+//    var refreshing by remember { mutableStateOf(false) }
+//    val refreshScope = rememberCoroutineScope()
+//
+//    val pullRefreshState = rememberPullRefreshState(
+//        refreshing = refreshing,
+//        onRefresh = {
+//            refreshScope.launch {
+//                refreshing = true
+//                // refresh todo
+//                delay(2000)
+//                refreshing = false
+//            }
+//        })
 
     ArticleListScreenContent(
+        isLoading = loading,
         articles = articles,
         selectedCoin = selectedCoin,
         filter = filter,
@@ -121,8 +123,7 @@ fun ArticleListScreen(
                 ArticleDetailNav.navigateWithArg(it)
             )
         },
-        pullRefreshState = pullRefreshState,
-        isRefreshing = refreshing,
+//        pullRefreshState = pullRefreshState,
         modifier = Modifier.fillMaxWidth(),
         state = state
     )
@@ -131,14 +132,14 @@ fun ArticleListScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ArticleListScreenContent(
+    isLoading: Boolean,
     filter: Filter?,
     articles: List<Article>,
     selectedCoin: Coin?,
     onFilterSettingClick: () -> Unit,
     onCoinClick: (Coin) -> Unit,
     onArticleClick: (Article) -> Unit,
-    pullRefreshState: PullRefreshState,
-    isRefreshing: Boolean,
+//    pullRefreshState: PullRefreshState,
     state: LazyListState,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -163,12 +164,20 @@ private fun ArticleListScreenContent(
                 )
             }
         } else {
-            val pullRefreshModifier = Modifier.pullRefresh(pullRefreshState)
-
             Box(
-                modifier = pullRefreshModifier,
                 contentAlignment = Alignment.Center
             ) {
+                if (isLoading) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(38.dp)
+                        )
+                    }
+                }
                 LazyColumn(
                     contentPadding = contentPadding,
                     modifier = Modifier.fillMaxSize(),
@@ -226,11 +235,6 @@ private fun ArticleListScreenContent(
                         }
                     }
                 }
-                PullRefreshIndicator(
-                    refreshing = isRefreshing,
-                    state = pullRefreshState,
-                    modifier = Modifier.align(Alignment.TopCenter)
-                )
             }
         }
     }
