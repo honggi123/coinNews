@@ -67,7 +67,7 @@ import com.hong7.coinnews.ui.utils.NavigationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 enum class Sections(@StringRes val titleResId: Int) {
-    News(R.string.news),
+    News(R.string.recent_news),
 
     //    Video(R.string.video),
     Scrap(R.string.scrap),
@@ -125,22 +125,6 @@ fun HomeScreen(
             contentPadding = contentPadding,
         )
     }
-
-    val isGlobalNews by viewModel.isGlobalNews.collectAsStateWithLifecycle()
-    var showModal by rememberSaveable { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(true)
-//
-//    if (showModal) {
-//        SettingBottomModal(
-//            isGlobalNews = isGlobalNews,
-//            sheetState = sheetState,
-//            onCloseClick = { showModal = false },
-//            onCompleteClick = { filter ->
-//                viewModel.saveCoinFilters(filter)
-//                showModal = false
-//            }
-//        )
-//    }
 }
 
 @Composable

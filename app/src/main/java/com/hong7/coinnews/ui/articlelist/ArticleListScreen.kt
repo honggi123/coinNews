@@ -87,7 +87,7 @@ fun ArticleListScreen(
     val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
     val filter by viewModel.filter.collectAsStateWithLifecycle()
 
-    val articles = viewModel.articles.collectAsLazyPagingItems()
+    val articles by viewModel.articles.collectAsStateWithLifecycle()
 
     var refreshing by remember { mutableStateOf(false) }
     val refreshScope = rememberCoroutineScope()
@@ -97,14 +97,14 @@ fun ArticleListScreen(
         onRefresh = {
             refreshScope.launch {
                 refreshing = true
-                articles.refresh()
-                delay(3000)
+                // refresh todo
+                delay(2000)
                 refreshing = false
             }
         })
 
     ArticleListScreenContent(
-        articles = articles.itemSnapshotList.items,
+        articles = articles,
         selectedCoin = selectedCoin,
         filter = filter,
         onCoinClick = viewModel::onCoinClick,

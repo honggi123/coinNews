@@ -1,3 +1,8 @@
-stable class DateUtils {
-  <runtime stability> = Stable
+runtime class CoinRepositoryImpl {
+  runtime val dataSource: CoinDataSource
+  <runtime stability> = Runtime(CoinDataSource)
+}
+unstable class FilterRepositoryImpl {
+  unstable val userFilterDao: UserFilterDao
+  <runtime stability> = Unstable
 }

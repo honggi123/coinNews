@@ -7,13 +7,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
 
-    fun getArticles(
+    suspend fun getRecentArticles(
         coin: Coin
-    ): Flow<PagingData<Article>>
-
-    fun getGlobalArticles(
-        coin: Coin
-    ): Flow<PagingData<Article>>
+    ): List<Article>
 
     fun getScrapedNews(): Flow<List<Article>>
 

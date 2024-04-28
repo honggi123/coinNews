@@ -8,12 +8,13 @@ import com.hong7.coinnews.network.model.NetworkArticle
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.network.model.NetworkGlobalNews
 import com.hong7.coinnews.ui.utils.DateUtils
+import com.hong7.coinnews.ui.utils.NumberUtils.getHashValue
 import java.security.MessageDigest
 import java.util.Locale
 
 fun NetworkArticle.toDomain(): Article {
     val article = Article(
-        id = generateId(this.title + this.createdAt),
+        id = getHashValue(this.originalUrl),
         title = this.title.replaceHtmlTags(),
         url = this.url,
         description = this.description.replaceHtmlTags(),
@@ -22,28 +23,6 @@ fun NetworkArticle.toDomain(): Article {
     )
     return article
 }
-
-fun NetworkGlobalNews.toDomain(): Article {
-    return Article(
-        id = generateId(this.title + this.createdAt),
-        title = this.title,
-        url = this.newsUrl,
-        description = this.text,
-        author = this.author,
-        createdAt = DateUtils.stringToDateTime(this.createdAt)
-    )
-}
-
-//fun Article.toEntity(): NewsEntity {
-//    return NewsEntity(
-//        newsId = this.id,
-//        title = this.title.replaceHtmlTags(),
-//        url = this.url,
-//        author = this.author,
-//        description = this.description,
-//        createdAt = DateUtils.timeStampToLocalDateTime(this.createdAt)
-//    )
-//}
 
 fun NewsEntity.toDomain(): Article {
     return Article(
@@ -72,8 +51,3 @@ private fun String.replaceHtmlTags(): String {
         .replace("&gt;", ">")
 }
 
-private fun generateId(value: String): String {
-    val bytes = value.toByteArray()
-    val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
-    return digest.fold("", { str, it -> str + "%02x".format(it) })
-}

@@ -42,30 +42,20 @@ class ArticleListViewModel @Inject constructor(
             null
         )
 
-
-    private val _isGlobalNews = MutableStateFlow<Boolean>(false)
-    val isGlobalNews: StateFlow<Boolean> = _isGlobalNews.asStateFlow()
-
     private val _selectedCoin = MutableStateFlow<Coin?>(null)
     val selectedCoin: StateFlow<Coin?> = _selectedCoin.asStateFlow()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val articles: StateFlow<PagingData<Article>> =
+    val articles: StateFlow<List<Article>> =
         combine(
             filter.filterNotNull(),
             selectedCoin.filterNotNull()
         ) { filter, selectedCoin ->
-            if (isGlobalNews.value) {
-                newsRepository.getGlobalArticles(selectedCoin)
-            } else {
-                newsRepository.getArticles(selectedCoin)
-            }
+            newsRepository.getRecentArticles(selectedCoin)
         }
-            .flatMapLatest { it.cachedIn(viewModelScope) }
             .stateIn(
                 viewModelScope,
                 SharingStarted.Lazily,
-                PagingData.empty()
+                emptyList()
             )
 
     fun onCoinClick(coin: Coin?) {

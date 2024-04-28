@@ -80,6 +80,7 @@ android {
 
 dependencies {
 
+    implementation(files("../libs/jsoup-1.17.2.jar"))
     kapt("androidx.room:room-compiler:2.6.1")
 
     implementation("androidx.core:core-ktx:1.12.0")
