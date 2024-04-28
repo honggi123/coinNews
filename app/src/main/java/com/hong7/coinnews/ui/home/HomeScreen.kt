@@ -61,6 +61,7 @@ import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
+import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey700
 import com.hong7.coinnews.ui.theme.GreyOpacity400
 import com.hong7.coinnews.ui.utils.NavigationUtils
@@ -68,7 +69,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 
 enum class Sections(@StringRes val titleResId: Int) {
     News(R.string.recent_news),
-
     //    Video(R.string.video),
     Scrap(R.string.scrap),
 }
@@ -78,15 +78,15 @@ class TabContent(val section: Sections, val content: @Composable () -> Unit)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    tabs: List<TabContent>,
+    tabs: MutableList<TabContent>,
     selectedSection: Sections,
     onSettingClick: () -> Unit,
     onSectionChange: (Sections) -> Unit,
     viewModel: ArticleListViewModel = hiltViewModel()
 ) {
-//    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-//        rememberTopAppBarState()
-//    )
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        rememberTopAppBarState()
+    )
 
     Scaffold(
         topBar = {
@@ -94,9 +94,10 @@ fun HomeScreen(
                 title = {
                     Text(
                         text = "코인왓치",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = Grey700
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.ExtraBold
+                        ),
+                        color = Blue800
                     )
                 },
                 actions = {
@@ -106,17 +107,17 @@ fun HomeScreen(
                         Icon(
                             painter = painterResource(id = R.drawable.ic_setting),
                             contentDescription = "",
-                            tint = Grey700
+                            tint = Grey500
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
-//                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior
             )
         },
-//        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { contentPadding ->
         HomeScreenContent(
             tabs = tabs,
@@ -129,14 +130,13 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
-    tabs: List<TabContent>,
+    tabs: MutableList<TabContent>,
     selectedSection: Sections,
     onSectionChange: (Sections) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val selectedTabIndex = tabs.indexOfFirst { it.section == selectedSection }
-    val tabWidths: List<Dp> = listOf(40.dp, 60.dp, 90.dp) // todo
 
     Column(
         modifier = Modifier
@@ -165,7 +165,7 @@ fun HomeScreenContent(
 
 @Composable
 fun HomeTabRowContent(
-    tabs: List<TabContent>,
+    tabs: MutableList<TabContent>,
     selectedTabIndex: Int,
     onSectionChange: (Sections) -> Unit,
 ) {
@@ -193,7 +193,7 @@ fun HomeTabRowContent(
 @Composable
 fun rememberTabContent(
     navController: NavHostController
-): List<TabContent> {
+): MutableList<TabContent> {
     val articleSection = TabContent(Sections.News) {
         ArticleListScreen(navController)
     }
@@ -206,7 +206,7 @@ fun rememberTabContent(
         ScrapNewsScreen(navController)
     }
 
-    return listOf(articleSection, scrapNewsSection)
+    return mutableListOf(articleSection, scrapNewsSection)
 }
 
 //@OptIn(ExperimentalMaterial3Api::class)

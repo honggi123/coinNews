@@ -85,6 +85,8 @@ fun ArticleListScreen(
 ) {
     val state = rememberLazyListState()
 
+    val scope = rememberCoroutineScope()
+
     val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
     val filter by viewModel.filter.collectAsStateWithLifecycle()
     val articles by viewModel.articles.collectAsStateWithLifecycle()
@@ -109,7 +111,10 @@ fun ArticleListScreen(
         articles = articles,
         selectedCoin = selectedCoin,
         filter = filter,
-        onCoinClick = viewModel::onCoinClick,
+        onCoinClick = {
+            viewModel.onCoinClick(it)
+            scope.launch { state.animateScrollToItem(0) }
+        },
         onFilterSettingClick = {
             NavigationUtils.navigate(
                 navController,
@@ -129,7 +134,6 @@ fun ArticleListScreen(
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ArticleListScreenContent(
     isLoading: Boolean,
@@ -164,9 +168,38 @@ private fun ArticleListScreenContent(
                 )
             }
         } else {
-            Box(
-                contentAlignment = Alignment.Center
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
+                Spacer(modifier = Modifier.height(15.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    LazyRow(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(filter.coins.size) {
+                            SelectableChip(
+                                selected = filter.coins[it] == selectedCoin,
+                                text = filter.coins[it].name,
+                                onClick = { onCoinClick(filter.coins[it]) }
+                            )
+                        }
+                    }
+                    SettingButton(
+                        text = "전체",
+                        onClick = { onFilterSettingClick() }
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(
+                    thickness = 0.7.dp,
+                    color = Grey200,
+                )
                 if (isLoading) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -183,42 +216,13 @@ private fun ArticleListScreenContent(
                     modifier = Modifier.fillMaxSize(),
                     state = state
                 ) {
-                    item {
-                        Spacer(modifier = Modifier.height(15.dp))
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            LazyRow(
-                                modifier = Modifier.weight(1f),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                items(filter.coins.size) {
-                                    SelectableChip(
-                                        selected = filter.coins[it] == selectedCoin,
-                                        text = filter.coins[it].name,
-                                        onClick = { onCoinClick(filter.coins[it]) }
-                                    )
-                                }
-                            }
-                            SettingButton(
-                                text = "전체",
-                                onClick = { onFilterSettingClick() }
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        HorizontalDivider(
-                            thickness = 0.7.dp,
-                            color = Grey200,
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                    }
                     items(
                         articles.size,
 //                        key = { articles[it].id } todo
                     ) { index ->
+                        if (index == 0) {
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
                         articles[index].let {
                             ArticleContentItem(
                                 article = it,

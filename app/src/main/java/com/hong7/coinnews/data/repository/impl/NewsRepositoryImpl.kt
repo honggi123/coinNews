@@ -46,9 +46,9 @@ class NewsRepositoryImpl @Inject constructor(
 
         urlList.map {
             async {
-                val title = it.selectFirst("title").text()
-                val url = it.selectFirst("link").text()
                 val author = it.selectFirst("source").text()
+                val title = it.selectFirst("title").text().replace(" - ${author}","")
+                val url = it.selectFirst("link").text()
                 val createdAt = it.selectFirst("pubDate").text()
                 val originalUrl = fetchUrlFromGoogleNewsRss(url)
 
@@ -100,19 +100,20 @@ class NewsRepositoryImpl @Inject constructor(
         return response.items
     }
 
-    override suspend fun getRecentArticles(coin: Coin): List<Article> {
-        val searchWordsWithPlus = coin.relatedSearchWord.joinToString(separator = " | ")
-        val query = "${coin.name} | ${searchWordsWithPlus}"
-        val naverNewsList = getNaverNews(query).map { it.toDomain() }
-        val googleNewsList = getGoogleNews(coin.name)
+    override suspend fun getRecentArticles(coin: Coin): List<Article> =
+        withContext(Dispatchers.Default) {
+            val searchWordsWithPlus = coin.relatedSearchWord.joinToString(separator = " | ")
+            val query = "${coin.name} | ${searchWordsWithPlus}"
 
-        val list = (naverNewsList + googleNewsList)
-            .distinctBy { it.id }
-            .sortedByDescending { it.createdAt }
-            .take(11)
+            val naverNewsDeffered = async { getNaverNews(query).map { it.toDomain() } }
+            val googleNewsDeffered = async { getGoogleNews(coin.name) }
 
-        return list
-    }
+            val list = (naverNewsDeffered.await() + googleNewsDeffered.await())
+                .distinctBy { it.id }
+                .sortedByDescending { it.createdAt }
+
+            list
+        }
 
     override fun getScrapedNews(): Flow<List<Article>> {
         return userNewsDao.getAllNews()

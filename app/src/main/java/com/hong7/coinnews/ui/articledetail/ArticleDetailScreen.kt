@@ -184,6 +184,7 @@ private fun TopAppBar(
                     color = Grey500,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Normal,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                 )
