@@ -41,11 +41,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Blue
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.perf.FirebasePerformance
@@ -60,6 +63,11 @@ import com.hong7.coinnews.ui.theme.Grey100
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey700
+import com.hong7.coinnews.ui.theme.defaultTextStyle
+import com.valentinilk.shimmer.ShimmerBounds
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
+import com.valentinilk.shimmer.unclippedBoundsInWindow
 import java.time.LocalDateTime
 
 
@@ -92,19 +100,10 @@ private fun ArticleDetailScreen(
     onToggleClick: (ArticleWithInterest) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val progress = remember { mutableStateOf(0.0f) }
-    val progressAnimDuration = 1_500
-    val progressAnimation by animateFloatAsState(
-        targetValue = progress.value / 100,
-        animationSpec = tween(durationMillis = progressAnimDuration, easing = FastOutSlowInEasing),
-        label = "",
-    )
-
     Scaffold(
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 TopAppBar(
-                    progressProvider = { progressAnimation },
                     article = article,
                     isInterested = isInterested,
                     onBackClick = onBackClick,
@@ -118,7 +117,6 @@ private fun ArticleDetailScreen(
         if (article != null) {
             ArticleContent(
                 url = article.url,
-                onProgressChange = { progress.value = it.toFloat() },
                 modifier = modifier
                     .padding(paddingValues)
             )
@@ -134,7 +132,6 @@ private fun ArticleDetailScreen(
 
 @Composable
 private fun TopAppBar(
-    progressProvider: () -> Float,
     article: Article?,
     isInterested: Boolean,
     onBackClick: () -> Unit,
@@ -175,7 +172,7 @@ private fun TopAppBar(
                     .weight(1f)
                     .background(
                         color = Grey100,
-                        shape = RoundedCornerShape(24.dp),
+                        shape = RoundedCornerShape(6.dp),
                     ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -207,10 +204,7 @@ private fun TopAppBar(
                 tint = Grey700
             )
         }
-        LinearProgressIndicator(
-            progress = { progressProvider() },
-            modifier = Modifier.fillMaxWidth(),
-        )
+
     }
 }
 
@@ -236,7 +230,6 @@ private fun EmptyArticleContent(
 @Composable
 private fun ArticleContent(
     url: String,
-    onProgressChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isLoading by rememberSaveable { mutableStateOf(true) }
@@ -245,7 +238,6 @@ private fun ArticleContent(
 
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
     ) {
         AndroidView(
             factory = { context ->
@@ -253,6 +245,7 @@ private fun ArticleContent(
                     webViewClient = object : WebViewClient() {
                         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                             super.onPageStarted(view, url, favicon)
+                            isLoading = true
                             trace.start()
                         }
 
@@ -265,18 +258,68 @@ private fun ArticleContent(
                     settings.javaScriptEnabled = true
                     settings.javaScriptCanOpenWindowsAutomatically = false
 
-                    this.setWebChromeClient(object : WebChromeClient() {
-                        override fun onProgressChanged(view: WebView, progress: Int) {
-                            onProgressChange(progress)
-                        }
-                    })
-
                     loadUrl(url)
                 }
             },
             modifier = Modifier.fillMaxSize()
         )
+        if (isLoading) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(White)
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .shimmer()
+                        .background(Grey500)
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(20.dp)
+                        .shimmer()
+                        .background(Grey500)
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .shimmer()
+                        .background(Grey500),
+                )
+                repeat(4){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(30.dp)
+                            .shimmer()
+                            .background(Grey500)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(220.dp)
+                            .height(30.dp)
+                            .shimmer()
+                            .background(Grey500)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(300.dp)
+                            .height(30.dp)
+                            .shimmer()
+                            .background(Grey500)
+                    )
+                }
+            }
+        }
     }
+
 }
 
 @Preview

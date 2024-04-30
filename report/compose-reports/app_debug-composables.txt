@@ -11,7 +11,6 @@ restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ArticleDe
   stable modifier: Modifier? = @static Companion
 )
 restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun TopAppBar(
-  stable progressProvider: Function0<Float>
   article: Article?
   stable isInterested: Boolean
   stable onBackClick: Function0<Unit>
@@ -23,8 +22,7 @@ restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun EmptyArti
   stable modifier: Modifier
 )
 restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ArticleContent(
-  article: Article?
-  stable onProgressChange: Function1<Int, Unit>
+  stable url: String
   stable modifier: Modifier? = @static Companion
 )
 restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ArticleDetailScreenPreview()

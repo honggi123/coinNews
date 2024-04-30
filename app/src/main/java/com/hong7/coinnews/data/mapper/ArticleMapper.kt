@@ -7,8 +7,8 @@ import com.hong7.coinnews.database.NewsEntity
 import com.hong7.coinnews.network.model.NetworkArticle
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.network.model.NetworkGlobalNews
-import com.hong7.coinnews.ui.utils.DateUtils
-import com.hong7.coinnews.ui.utils.NumberUtils.getHashValue
+import com.hong7.coinnews.utils.DateUtils
+import com.hong7.coinnews.utils.NumberUtils.getHashValue
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.util.Locale
@@ -20,7 +20,7 @@ fun NetworkArticle.toDomain(): Article {
         url = this.url,
         description = this.description.replaceHtmlTags(),
         author = parseDomain(this.originalUrl),
-        createdAt = DateUtils.stringToDateTime(this.createdAt)
+        createdAt = DateUtils.formatDateTimeWithTimeZoneName(this.createdAt)
     )
     return article
 }

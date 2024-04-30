@@ -70,8 +70,8 @@ import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.defaultTextStyle
-import com.hong7.coinnews.ui.utils.DateUtils
-import com.hong7.coinnews.ui.utils.NavigationUtils
+import com.hong7.coinnews.utils.DateUtils
+import com.hong7.coinnews.utils.NavigationUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -309,15 +309,6 @@ private fun ArticleContentItem(
             fontWeight = FontWeight.Bold,
             maxLines = 3,
         )
-//        Text(
-//            text = article.description,
-//            style = defaultTextStyle.copy(
-//                fontSize = 14.sp,
-//                lineHeight = 14.sp,
-//            ),
-//            fontWeight = FontWeight.Medium,
-//            maxLines = 3,
-//        )
         ArticleMetaData(
             article = article,
             modifier = Modifier.fillMaxWidth()
@@ -335,23 +326,7 @@ private fun ArticleMetaData(
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = article.author ?: "알 수 없는 출처",
-            style = defaultTextStyle.copy(
-                fontSize = 14.sp,
-                lineHeight = 14.sp,
-            ),
-            color = Color(0xFFAAAAAA)
-        )
-        Text(
-            text = "・",
-            style = defaultTextStyle.copy(
-                fontSize = 14.sp,
-                lineHeight = 14.sp,
-            ),
-            color = Color(0xFFAAAAAA)
-        )
-        Text(
-            text = article.createdAt?.let { DateUtils.getTimeAgo(it) } ?: "",
+            text = article.author + "・" + article.createdAt?.let { DateUtils.getTimeAgo(it) },
             style = defaultTextStyle.copy(
                 fontSize = 14.sp,
                 lineHeight = 14.sp,

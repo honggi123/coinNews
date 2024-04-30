@@ -5,7 +5,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.hong7.coinnews.model.Article
-import com.hong7.coinnews.ui.utils.GsonUtils
+import com.hong7.coinnews.utils.GsonUtils
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 

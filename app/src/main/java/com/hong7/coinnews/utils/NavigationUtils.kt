@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.utils
+package com.hong7.coinnews.utils
 
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.model.Article

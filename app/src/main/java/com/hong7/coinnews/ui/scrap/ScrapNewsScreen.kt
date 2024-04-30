@@ -41,8 +41,8 @@ import com.hong7.coinnews.ui.theme.Grey
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.defaultTextStyle
-import com.hong7.coinnews.ui.utils.DateUtils
-import com.hong7.coinnews.ui.utils.NavigationUtils
+import com.hong7.coinnews.utils.DateUtils
+import com.hong7.coinnews.utils.NavigationUtils
 
 @Composable
 fun ScrapNewsScreen(

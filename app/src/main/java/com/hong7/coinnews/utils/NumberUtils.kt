@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.utils
+package com.hong7.coinnews.utils
 
 import java.security.MessageDigest
 

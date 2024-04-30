@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.utils
+package com.hong7.coinnews.utils
 
 import java.time.Instant
 import java.time.LocalDateTime
@@ -10,16 +10,6 @@ import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 object DateUtils {
-
-    fun timeStringToTimestamp(timeString: String): Long? {
-        return try {
-            val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")
-            val zonedDateTime = ZonedDateTime.parse(timeString, formatter)
-            zonedDateTime.toEpochSecond() * 1000
-        } catch (e: DateTimeParseException) {
-            null
-        }
-    }
 
     fun getTimeAgo(
         fromTime: LocalDateTime,
@@ -34,27 +24,20 @@ object DateUtils {
         return when {
             minutes < 60 -> "${minutes}분전"
             hours < 24 -> "${hours}시간전"
-            days < 30 -> "${days}일전"
+            days < 31 -> "${days}일전"
             months < 12 -> "${months}개월전"
             else -> "${years}년전"
         }
     }
 
-    fun timeStampToLocalDateTime(value: Long): LocalDateTime {
-        return Instant.ofEpochSecond(value).atZone(ZoneId.systemDefault()).toLocalDateTime()
-    }
 
-    fun localDateTimeToTimeStamp(dateTime: LocalDateTime): Long {
-        return dateTime.atZone(ZoneId.systemDefault()).toEpochSecond()
-    }
-
-
-    fun stringToDateTime(dateTimeString: String): LocalDateTime {
+    fun formatDateTimeWithTimeZoneName(dateTimeString: String): LocalDateTime {
         val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US)
         return LocalDateTime.parse(dateTimeString, formatter)
     }
 
-    fun stringToTimeStampLong(dateTime: LocalDateTime): Long {
-        return dateTime.atZone(ZoneId.systemDefault()).toEpochSecond()
+    fun formatDateTimeWithUtcOffset(dateTimeString: String): LocalDateTime {
+        val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
+        return LocalDateTime.parse(dateTimeString, formatter)
     }
 }

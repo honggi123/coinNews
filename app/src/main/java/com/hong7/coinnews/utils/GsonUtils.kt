@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.utils
+package com.hong7.coinnews.utils
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParseException

@@ -1,6 +1,6 @@
 package,name,composable,skippable,restartable,readonly,inline,isLambda,hasDefaults,defaultsGroup,groups,calls,
 com.hong7.coinnews.ui.articledetail.ArticleDetailRoute,ArticleDetailRoute,1,1,1,0,0,0,1,0,2,4,
-com.hong7.coinnews.ui.articledetail.ArticleDetailScreen,ArticleDetailScreen,1,1,1,0,0,0,0,0,1,3,
+com.hong7.coinnews.ui.articledetail.ArticleDetailScreen,ArticleDetailScreen,1,1,1,0,0,0,0,0,1,1,
 com.hong7.coinnews.ui.articledetail.TopAppBar,TopAppBar,1,1,1,0,0,0,0,0,3,4,
 com.hong7.coinnews.ui.articledetail.EmptyArticleContent,EmptyArticleContent,1,1,1,0,0,0,0,0,1,1,
 com.hong7.coinnews.ui.articledetail.ArticleContent,ArticleContent,1,1,1,0,0,0,0,0,1,2,

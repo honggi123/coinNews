@@ -50,7 +50,7 @@ import com.hong7.coinnews.ui.component.CheckListItem
 import com.hong7.coinnews.ui.theme.Grey100
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Salmon600
-import com.hong7.coinnews.ui.utils.NavigationUtils
+import com.hong7.coinnews.utils.NavigationUtils
 import com.hong7.coinnews.R
 import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey200

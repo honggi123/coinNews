@@ -7,7 +7,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.ui.SettingNav
-import com.hong7.coinnews.ui.utils.NavigationUtils
+import com.hong7.coinnews.utils.NavigationUtils
 
 @Composable
 fun HomeRoute(

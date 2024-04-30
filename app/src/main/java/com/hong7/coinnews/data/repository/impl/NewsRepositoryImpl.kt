@@ -10,10 +10,12 @@ import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.network.model.NetworkArticle
 import com.hong7.coinnews.network.retrofit.NaverService
-import com.hong7.coinnews.ui.utils.NumberUtils.getHashValue
+import com.hong7.coinnews.utils.DateUtils
+import com.hong7.coinnews.utils.NumberUtils.getHashValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -42,23 +44,27 @@ class NewsRepositoryImpl @Inject constructor(
         val result =
             Jsoup.connect("https://news.google.com/rss/search?q=${query}&hl=ko&gl=KR&ceid=KR%3Ako")
                 .get()
-        val urlList = result.select("item").slice(0..10)
+        val urlList = result.select("item").take(5)
 
         urlList.map {
             async {
-                val author = it.selectFirst("source").text()
-                val title = it.selectFirst("title").text().replace(" - ${author}","")
-                val url = it.selectFirst("link").text()
-                val createdAt = it.selectFirst("pubDate").text()
-                val originalUrl = fetchUrlFromGoogleNewsRss(url)
+                val author = it.selectFirst("source")?.text()
+                val title = it.selectFirst("title")?.text()?.replace(" - ${author}","")
+                val url = it.selectFirst("link")?.text()
+                val createdAt = it.selectFirst("pubDate")?.text()
+
+                if (author == null || title == null || url == null || createdAt == null) {
+                    this.cancel()
+                }
+
+                val originalUrl = fetchOriginalUrl(url!!)
 
                 val article = Article(
                     id = getHashValue(originalUrl),
-                    title = title,
-                    description = "",
+                    title = title!!,
                     url = originalUrl,
                     author = author,
-                    createdAt = stringToDate(createdAt)
+                    createdAt = DateUtils.formatDateTimeWithUtcOffset(createdAt!!)
                 )
                 list.add(article)
             }
@@ -66,7 +72,8 @@ class NewsRepositoryImpl @Inject constructor(
         list
     }
 
-    fun fetchUrlFromGoogleNewsRss(rssUrl: String): String {
+    fun fetchOriginalUrl(rssUrl: String): String {
+        // todo parse first if error network connect
         val client = OkHttpClient()
 
         val request = Request.Builder()
@@ -88,11 +95,6 @@ class NewsRepositoryImpl @Inject constructor(
 
             return link
         }
-    }
-
-    private fun stringToDate(dateTimeString: String): LocalDateTime {
-        val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
-        return LocalDateTime.parse(dateTimeString, formatter)
     }
 
     private suspend fun getNaverNews(query: String): List<NetworkArticle> {

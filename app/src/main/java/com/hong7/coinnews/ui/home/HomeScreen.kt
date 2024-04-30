@@ -64,7 +64,7 @@ import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey700
 import com.hong7.coinnews.ui.theme.GreyOpacity400
-import com.hong7.coinnews.ui.utils.NavigationUtils
+import com.hong7.coinnews.utils.NavigationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 enum class Sections(@StringRes val titleResId: Int) {

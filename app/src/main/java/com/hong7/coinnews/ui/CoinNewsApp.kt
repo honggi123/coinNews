@@ -13,7 +13,7 @@ import com.hong7.coinnews.ui.coinlist.CoinListScreen
 import com.hong7.coinnews.ui.home.HomeRoute
 import com.hong7.coinnews.ui.setting.SettingScreen
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
-import com.hong7.coinnews.ui.utils.NavigationUtils
+import com.hong7.coinnews.utils.NavigationUtils
 
 @Composable
 fun CoinNewsApp() {
