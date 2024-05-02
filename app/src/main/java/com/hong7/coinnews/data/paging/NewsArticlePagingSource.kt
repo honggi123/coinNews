@@ -5,7 +5,7 @@ import androidx.paging.PagingState
 import com.google.firebase.perf.FirebasePerformance
 import com.google.firebase.perf.metrics.Trace
 import com.hong7.coinnews.network.model.NetworkArticle
-import com.hong7.coinnews.network.retrofit.NaverService
+import com.hong7.coinnews.network.okhttp.retrofit.NaverService
 import javax.inject.Inject
 
 

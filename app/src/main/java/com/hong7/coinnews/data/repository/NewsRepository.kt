@@ -1,15 +1,14 @@
 package com.hong7.coinnews.data.repository
 
-import androidx.paging.PagingData
 import com.hong7.coinnews.model.Article
-import com.hong7.coinnews.model.Coin
+import com.hong7.coinnews.model.NetworkResult
 import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
 
-    suspend fun getRecentArticles(
-        coin: Coin
-    ): List<Article>
+    suspend fun getGoogleNews(query: String): NetworkResult<List<Article>>
+
+    suspend fun getNaverNews(query: String): NetworkResult<List<Article>>
 
     fun getScrapedNews(): Flow<List<Article>>
 

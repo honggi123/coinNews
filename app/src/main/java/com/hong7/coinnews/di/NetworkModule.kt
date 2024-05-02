@@ -1,6 +1,6 @@
 package com.hong7.coinnews.di
 
-import com.hong7.coinnews.network.retrofit.NaverService
+import com.hong7.coinnews.network.okhttp.retrofit.NaverService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides

@@ -1,4 +1,4 @@
-package com.hong7.coinnews.network.retrofit
+package com.hong7.coinnews.network.okhttp.retrofit
 
 import com.hong7.coinnews.BuildConfig
 import com.hong7.coinnews.network.model.ArticlesResponse

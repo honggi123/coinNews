@@ -11,6 +11,7 @@ import androidx.work.workDataOf
 import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.database.AppDatabase
 import com.hong7.coinnews.database.FilterEntity
+import com.hong7.coinnews.model.toModel
 import com.hong7.coinnews.network.firebase.CoinDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -33,6 +34,7 @@ class CoinInfoUpdateWorker(
             val existingFilter = filterDao.getRecentFilter()
             if (existingFilter != null) {
                 val updatedCoins = CoinDataSource().getUpdatedCoins(calendar)
+                    .toModel()
                     .map { it.toEntity() }
 
                 val existingCoins = existingFilter.coins

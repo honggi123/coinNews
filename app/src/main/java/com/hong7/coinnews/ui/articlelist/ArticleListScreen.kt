@@ -278,7 +278,10 @@ private fun EmptyFiltersContent(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyLarge,
+            style = defaultTextStyle.copy(
+                fontSize = 16.sp,
+                lineHeight = 20.sp,
+            ),
             fontWeight = FontWeight.Medium,
         )
     }

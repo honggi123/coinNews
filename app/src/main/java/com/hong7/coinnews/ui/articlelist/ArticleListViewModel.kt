@@ -10,8 +10,12 @@ import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
+import com.hong7.coinnews.model.mapNetworkResult
+import com.hong7.coinnews.model.toModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +27,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,11 +67,24 @@ class ArticleListViewModel @Inject constructor(
         viewModelScope.launch {
             if (coin != null) {
                 _selectedCoin.value = coin
-                _articles.value = newsRepository.getRecentArticles(coin)
+                _articles.value = getRecentArticles(coin)
                 _loading.value = false
             }
         }
     }
+
+    private suspend fun getRecentArticles(coin: Coin): List<Article> =
+        withContext(Dispatchers.Default) {
+            val searchWordsWithPlus = coin.relatedSearchWord.joinToString(separator = " | ")
+            val query = "${coin.name} | ${searchWordsWithPlus}"
+
+            val naverNewsDeffered = async { newsRepository.getNaverNews(query) }
+            val googleNewsDeffered = async { newsRepository.getGoogleNews(coin.name) }
+
+            (naverNewsDeffered.await().toModel() + googleNewsDeffered.await().toModel())
+                .distinctBy { it.id }
+                .sortedByDescending { it.createdAt }
+        }
 }
 
 
