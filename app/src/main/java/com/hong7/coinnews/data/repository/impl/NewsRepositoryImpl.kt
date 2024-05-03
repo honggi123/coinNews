@@ -1,5 +1,6 @@
 package com.hong7.coinnews.data.repository.impl
 
+import android.util.Log
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.repository.NewsRepository
@@ -28,37 +29,71 @@ class NewsRepositoryImpl @Inject constructor(
     private val userNewsDao: UserNewsDao
 ) : NewsRepository {
 
-    override suspend fun getGoogleNews(query: String): NetworkResult<List<Article>> = withContext(Dispatchers.IO) {
-        networkHandling {
-            val result =
-                Jsoup.connect("https://news.google.com/rss/search?q=${query}&hl=ko&gl=KR&ceid=KR%3Ako")
-                    .get()
-            val urlList = result.select("item").take(5)
+    override suspend fun getRecentNews(query: String): NetworkResult<List<Article>> =
+        withContext(Dispatchers.IO) {
+            networkHandling {
+                val result =
+                    Jsoup.connect("https://news.google.com/rss/search?q=${query}&hl=ko&gl=KR&ceid=KR%3Ako")
+                        .get()
+                val urlList = result.select("item").take(10)
 
-            val list = urlList.mapNotNull {
-                async {
-                    val author = it.selectFirst("source")?.text()
-                    val title = it.selectFirst("title")?.text()?.replace(" - ${author}", "")
-                    val url = it.selectFirst("link")?.text()
-                    val createdAt = it.selectFirst("pubDate")?.text()
+                val list = urlList.mapNotNull {
+                    async {
+                        val author = it.selectFirst("source")?.text()
+                        val title = it.selectFirst("title")?.text()?.replace(" - ${author}", "")
+                        val url = it.selectFirst("link")?.text()
+                        val createdAt = it.selectFirst("pubDate")?.text()
 
-                    if (author == null || title == null || url == null || createdAt == null) {
-                        return@async null
+                        if (author == null || title == null || url == null || createdAt == null) {
+                            return@async null
+                        }
+
+                        val originalUrl = RequestOriginalUrl().invoke(url)
+                        Article(
+                            id = getHashValue(originalUrl),
+                            title = title,
+                            url = originalUrl,
+                            author = author,
+                            createdAt = DateUtils.formatDateTimeWithUtcOffset(createdAt)
+                        )
                     }
-
-                    val originalUrl = RequestOriginalUrl().invoke(url)
-                    Article(
-                        id = getHashValue(originalUrl),
-                        title = title,
-                        url = originalUrl,
-                        author = author,
-                        createdAt = DateUtils.formatDateTimeWithUtcOffset(createdAt)
-                    )
-                }
-            }.awaitAll().filterNotNull()
-            list
+                }.awaitAll().filterNotNull()
+                list.sortedByDescending { it.createdAt }
+            }
         }
-    }
+
+    override suspend fun getGoogleNews(query: String): NetworkResult<List<Article>> =
+        withContext(Dispatchers.IO) {
+            networkHandling {
+                val result =
+                    Jsoup.connect("https://news.google.com/rss/search?q=${query}&hl=ko&gl=KR&ceid=KR%3Ako")
+                        .get()
+                val urlList = result.select("item").take(10)
+
+                val list = urlList.mapNotNull {
+                    async {
+                        val author = it.selectFirst("source")?.text()
+                        val title = it.selectFirst("title")?.text()?.replace(" - ${author}", "")
+                        val url = it.selectFirst("link")?.text()
+                        val createdAt = it.selectFirst("pubDate")?.text()
+
+                        if (author == null || title == null || url == null || createdAt == null) {
+                            return@async null
+                        }
+
+                        val originalUrl = RequestOriginalUrl().invoke(url)
+                        Article(
+                            id = getHashValue(originalUrl),
+                            title = title,
+                            url = originalUrl,
+                            author = author,
+                            createdAt = DateUtils.formatDateTimeWithUtcOffset(createdAt)
+                        )
+                    }
+                }.awaitAll().filterNotNull()
+                list
+            }
+        }
 
     override suspend fun getNaverNews(query: String): NetworkResult<List<Article>> {
         return networkHandling {

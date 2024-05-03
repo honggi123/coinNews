@@ -1,0 +1,59 @@
+restartable scheme("[androidx.compose.ui.UiComposable]") fun MyCoinNewsScreen(
+  unstable navController: NavHostController
+  viewModel: MyCoinNewsViewModel? = @dynamic hiltViewModel(null, null, $composer, 0, 0b0011)
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun ArticleListScreenContent(
+  unstable watchedNewsIds: Set<String>
+  stable isLoading: Boolean
+  filter: Filter?
+  unstable articles: List<Article>
+  selectedCoin: Coin?
+  stable onFilterSettingClick: Function0<Unit>
+  stable onCoinClick: Function1<Coin, Unit>
+  stable onArticleClick: Function1<Article, Unit>
+  stable state: LazyListState
+  stable modifier: Modifier? = @static Companion
+  stable contentPadding: PaddingValues? = @dynamic PaddingValues(LiveLiterals$MyCoinNewsScreenKt.Int$$$this$call-$get-dp$$arg-0$call-PaddingValues$param-contentPadding$fun-ArticleListScreenContent().dp)
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun SettingButton(
+  stable text: String
+  stable onClick: Function0<Unit>
+  stable modifier: Modifier? = @static Companion
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun EmptyFiltersContent(
+  stable text: String
+  stable modifier: Modifier? = @static Companion
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun ArticleContentItem(
+  unstable watchedNewsIds: Set<String>
+  article: Article
+  stable onArticleClick: Function1<Article, Unit>
+  stable modifier: Modifier? = @static Companion
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ArticleMetaData(
+  article: Article
+  stable modifier: Modifier? = @static Companion
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun RecentCoinNewsScreen(
+  unstable navController: NavHostController
+  viewModel: RecentCoinNewsViewModel? = @dynamic hiltViewModel(null, null, $composer, 0, 0b0011)
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun ArticleListScreenContent(
+  unstable watchedNewsIds: Set<String>
+  stable isLoading: Boolean
+  unstable articles: List<Article>
+  stable onArticleClick: Function1<Article, Unit>
+  stable state: LazyListState
+  stable modifier: Modifier? = @static Companion
+  stable contentPadding: PaddingValues? = @dynamic PaddingValues(LiveLiterals$RecentCoinNewsScreenKt.Int$$$this$call-$get-dp$$arg-0$call-PaddingValues$param-contentPadding$fun-ArticleListScreenContent().dp)
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun ArticleContentItem(
+  unstable watchedNewsIds: Set<String>
+  article: Article
+  stable onArticleClick: Function1<Article, Unit>
+  stable modifier: Modifier? = @static Companion
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ArticleMetaData(
+  article: Article
+  stable modifier: Modifier? = @static Companion
+)

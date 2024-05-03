@@ -1,0 +1,5 @@
+unstable class NewsRepositoryImpl {
+  unstable val naverService: NaverService
+  unstable val userNewsDao: UserNewsDao
+  <runtime stability> = Unstable
+}

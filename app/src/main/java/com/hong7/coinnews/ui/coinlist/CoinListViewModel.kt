@@ -1,24 +1,17 @@
 package com.hong7.coinnews.ui.coinlist
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.repository.CoinRepository
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.data.repository.UserRepository
-import com.hong7.coinnews.database.CoinEntity
-import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
+import com.hong7.coinnews.model.NetworkResult
 import com.hong7.coinnews.model.toModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
@@ -35,9 +28,13 @@ class CoinListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val allCoins = coinRepository.getAllCoins().toModel()
+            val allCoinsResult = coinRepository.getAllCoins()
+            val allCoins =
+                if (allCoinsResult is NetworkResult.Success)
+                    allCoinsResult.toModel()
+                else return@launch
             val filter = filterRepository.getFilter()
-            _coins.value =  if (filter != null) {
+            _coins.value = if (filter != null) {
                 val filterCoinIds = filter.coins.map { it.id }
                 allCoins.map { coin ->
                     coin.copy(isSelected = coin.id in filterCoinIds)

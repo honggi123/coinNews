@@ -1,76 +1,49 @@
 package com.hong7.coinnews.ui.home
 
-import android.annotation.SuppressLint
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
-import com.hong7.coinnews.ui.SettingNav
-import com.hong7.coinnews.ui.articlelist.ArticleListScreen
-import com.hong7.coinnews.ui.articlelist.ArticleListViewModel
-import com.hong7.coinnews.ui.component.BaseCustomModal
-import com.hong7.coinnews.ui.component.CheckListItem
-import com.hong7.coinnews.ui.extensions.customTabIndicatorOffset
+import com.hong7.coinnews.ui.CoinListNav
+import com.hong7.coinnews.ui.mycoinnews.MyCoinNewsScreen
+import com.hong7.coinnews.ui.mycoinnews.MyCoinNewsViewModel
+import com.hong7.coinnews.ui.recentcoinnews.RecentCoinNewsScreen
 import com.hong7.coinnews.ui.scrap.ScrapNewsScreen
-import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey500
-import com.hong7.coinnews.ui.theme.Grey700
-import com.hong7.coinnews.ui.theme.GreyOpacity400
 import com.hong7.coinnews.utils.NavigationUtils
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 enum class Sections(@StringRes val titleResId: Int) {
-    News(R.string.recent_news),
+    RecnentNews(R.string.recent_news),
+    MyCoinNews(R.string.my_coin_news),
     //    Video(R.string.video),
-    Scrap(R.string.scrap),
 }
 
 class TabContent(val section: Sections, val content: @Composable () -> Unit)
@@ -80,9 +53,10 @@ class TabContent(val section: Sections, val content: @Composable () -> Unit)
 fun HomeScreen(
     tabs: MutableList<TabContent>,
     selectedSection: Sections,
+    onScrapListClick: () -> Unit,
     onSettingClick: () -> Unit,
     onSectionChange: (Sections) -> Unit,
-    viewModel: ArticleListViewModel = hiltViewModel()
+    viewModel: MyCoinNewsViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
@@ -101,6 +75,15 @@ fun HomeScreen(
                     )
                 },
                 actions = {
+                    IconButton(
+                        onClick = { onScrapListClick() },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_bookmarks),
+                            contentDescription = "",
+                            tint = Grey500
+                        )
+                    }
                     IconButton(
                         onClick = { onSettingClick() },
                     ) {
@@ -194,19 +177,21 @@ fun HomeTabRowContent(
 fun rememberTabContent(
     navController: NavHostController
 ): MutableList<TabContent> {
-    val articleSection = TabContent(Sections.News) {
-        ArticleListScreen(navController)
+
+    val recentNewsSection = TabContent(Sections.RecnentNews) {
+        RecentCoinNewsScreen(navController)
+    }
+
+    val myCoinNewsSection = TabContent(Sections.MyCoinNews) {
+        MyCoinNewsScreen(navController)
     }
 
 //    val videoSection = TabContent(Sections.Video) {
 //        VideoListScreen()
 //    }
 
-    val scrapNewsSection = TabContent(Sections.Scrap) {
-        ScrapNewsScreen(navController)
-    }
 
-    return mutableListOf(articleSection, scrapNewsSection)
+    return mutableListOf(recentNewsSection, myCoinNewsSection)
 }
 
 //@OptIn(ExperimentalMaterial3Api::class)

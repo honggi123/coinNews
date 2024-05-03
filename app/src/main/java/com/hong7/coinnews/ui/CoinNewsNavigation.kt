@@ -44,6 +44,11 @@ object CoinListNav : Destination {
     override val title: String = NavigationTitle.ALL_COIN_LIST
 }
 
+object ScrapNav : Destination {
+    override val route: String = NavigationRouteName.SCRAP
+    override val title: String = NavigationTitle.SCRAP
+}
+
 object SettingNav : Destination {
     override val route: String = NavigationRouteName.SETTING
     override val title: String = NavigationTitle.SETTING
@@ -68,6 +73,7 @@ object NavigationRouteName {
     const val MAIN_HOME = "main_home"
     const val ARTICLE_DETAIL = "article_detail"
     const val ALL_COIN_LIST = "all_coin_list"
+    const val SCRAP = "scrap"
     const val SETTING = "setting"
 }
 
@@ -75,5 +81,6 @@ object NavigationTitle {
     const val MAIN_HOME = "홈"
     const val ARTICLE_DETAIL = "뉴스 상세페이지"
     const val ALL_COIN_LIST = "코인 목록"
+    const val SCRAP = "스크랩"
     const val SETTING = "설정"
 }

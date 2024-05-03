@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.hong7.coinnews.ui.CoinListNav
+import com.hong7.coinnews.ui.ScrapNav
 import com.hong7.coinnews.ui.SettingNav
 import com.hong7.coinnews.utils.NavigationUtils
 
@@ -21,6 +23,12 @@ fun HomeRoute(
     HomeScreen(
         tabs = tabContent,
         selectedSection = section,
+        onScrapListClick = {
+            NavigationUtils.navigate(
+                navController,
+                ScrapNav.route
+            )
+        },
         onSettingClick = {
             NavigationUtils.navigate(navController, SettingNav.route)
         },

@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
 
+    suspend fun getRecentNews(query: String): NetworkResult<List<Article>>
+
     suspend fun getGoogleNews(query: String): NetworkResult<List<Article>>
 
     suspend fun getNaverNews(query: String): NetworkResult<List<Article>>

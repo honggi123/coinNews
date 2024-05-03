@@ -1,11 +1,10 @@
-package com.hong7.coinnews.ui.articlelist
+package com.hong7.coinnews.ui.mycoinnews
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,53 +12,33 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.PullRefreshState
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineBreak
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.hong7.coinnews.model.Article
-import com.hong7.coinnews.model.ArticleWithInterest
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.ui.ArticleDetailNav
@@ -68,20 +47,19 @@ import com.hong7.coinnews.ui.component.ClickableChip
 import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.Blue600
+import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.defaultTextStyle
 import com.hong7.coinnews.utils.DateUtils
 import com.hong7.coinnews.utils.NavigationUtils
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun ArticleListScreen(
+fun MyCoinNewsScreen(
     navController: NavHostController,
-    viewModel: ArticleListViewModel = hiltViewModel()
+    viewModel: MyCoinNewsViewModel = hiltViewModel()
 ) {
     val state = rememberLazyListState()
 
@@ -91,7 +69,7 @@ fun ArticleListScreen(
     val filter by viewModel.filter.collectAsStateWithLifecycle()
     val articles by viewModel.articles.collectAsStateWithLifecycle()
     val loading by viewModel.loading.collectAsStateWithLifecycle()
-
+    val watchedNews by viewModel.watchedNewsIds.collectAsStateWithLifecycle()
 //    var refreshing by remember { mutableStateOf(false) }
 //    val refreshScope = rememberCoroutineScope()
 //
@@ -107,6 +85,7 @@ fun ArticleListScreen(
 //        })
 
     ArticleListScreenContent(
+        watchedNewsIds = watchedNews,
         isLoading = loading,
         articles = articles,
         selectedCoin = selectedCoin,
@@ -127,6 +106,7 @@ fun ArticleListScreen(
                 navController,
                 ArticleDetailNav.navigateWithArg(it)
             )
+            viewModel.onNewsClick(it.id)
         },
 //        pullRefreshState = pullRefreshState,
         modifier = Modifier.fillMaxWidth(),
@@ -136,6 +116,7 @@ fun ArticleListScreen(
 
 @Composable
 private fun ArticleListScreenContent(
+    watchedNewsIds: Set<String>,
     isLoading: Boolean,
     filter: Filter?,
     articles: List<Article>,
@@ -225,6 +206,7 @@ private fun ArticleListScreenContent(
                         }
                         articles[index].let {
                             ArticleContentItem(
+                                watchedNewsIds = watchedNewsIds,
                                 article = it,
                                 onArticleClick = onArticleClick,
                                 modifier = Modifier
@@ -289,11 +271,17 @@ private fun EmptyFiltersContent(
 
 @Composable
 private fun ArticleContentItem(
+    watchedNewsIds: Set<String>,
     article: Article,
     onArticleClick: (Article) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val titleColor = if (watchedNewsIds.contains(article.id)) {
+        Color(0xFFAAAAAA)
+    } else {
+        Grey1000
+    }
 
     Column(
         modifier = modifier.clickableWithoutRipple(
@@ -309,7 +297,8 @@ private fun ArticleContentItem(
                 fontSize = 16.sp,
                 lineHeight = 20.sp,
             ),
-            fontWeight = FontWeight.Bold,
+            color = titleColor,
+            fontWeight = FontWeight.Medium,
             maxLines = 3,
         )
         ArticleMetaData(
