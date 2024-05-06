@@ -1,1 +1,5 @@
 package,name,composable,skippable,restartable,readonly,inline,isLambda,hasDefaults,defaultsGroup,groups,calls,
+com.hong7.coinnews.ui.home.HomeScreen,HomeScreen,1,0,1,0,0,0,0,0,1,6,
+com.hong7.coinnews.ui.home.HomeScreenContent,HomeScreenContent,1,0,1,0,0,0,0,0,1,1,
+com.hong7.coinnews.ui.home.HomeTabRowContent,HomeTabRowContent,1,0,1,0,0,0,0,0,1,0,
+com.hong7.coinnews.ui.home.rememberTabContent,rememberTabContent,1,0,0,0,0,0,0,0,1,0,

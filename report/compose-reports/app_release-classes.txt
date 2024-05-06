@@ -1,5 +1,5 @@
-unstable class NewsRepositoryImpl {
-  unstable val naverService: NaverService
-  unstable val userNewsDao: UserNewsDao
-  <runtime stability> = Unstable
+stable class TabContent {
+  stable val section: Sections
+  stable val content: @[Composable] Function0<Unit>
+  <runtime stability> = Stable
 }

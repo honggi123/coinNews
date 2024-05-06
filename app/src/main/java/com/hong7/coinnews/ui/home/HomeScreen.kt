@@ -3,9 +3,12 @@ package com.hong7.coinnews.ui.home
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -20,6 +23,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
@@ -39,11 +43,11 @@ import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.utils.NavigationUtils
+import kotlinx.coroutines.launch
 
 enum class Sections(@StringRes val titleResId: Int) {
     RecnentNews(R.string.recent_news),
     MyCoinNews(R.string.my_coin_news),
-    //    Video(R.string.video),
 }
 
 class TabContent(val section: Sections, val content: @Composable () -> Unit)
@@ -61,6 +65,8 @@ fun HomeScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
     )
+    val pagerState = rememberPagerState(pageCount = { 2 })
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -104,33 +110,31 @@ fun HomeScreen(
     ) { contentPadding ->
         HomeScreenContent(
             tabs = tabs,
-            selectedSection = selectedSection,
-            onSectionChange = onSectionChange,
+            pagerState = pagerState,
+            onSectionIndexChange = { coroutineScope.launch { pagerState.animateScrollToPage(it) } },
             contentPadding = contentPadding,
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
 
 @Composable
-fun HomeScreenContent(
+private fun HomeScreenContent(
     tabs: MutableList<TabContent>,
-    selectedSection: Sections,
-    onSectionChange: (Sections) -> Unit,
+    pagerState: PagerState,
+    onSectionIndexChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
-    val selectedTabIndex = tabs.indexOfFirst { it.section == selectedSection }
-
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .padding(contentPadding),
     ) {
         TabRow(
-            selectedTabIndex = selectedTabIndex,
+            selectedTabIndex = pagerState.currentPage,
             indicator = { tabPositions ->
                 TabRowDefaults.SecondaryIndicator(
-                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
                     color = Blue800
                 )
             },
@@ -138,19 +142,23 @@ fun HomeScreenContent(
         ) {
             HomeTabRowContent(
                 tabs,
-                selectedTabIndex,
-                onSectionChange,
+                pagerState.currentPage,
+                onSectionIndexChange,
             )
         }
-        tabs[selectedTabIndex].content()
+        HorizontalPager(
+            state = pagerState,
+        ) {
+            tabs[pagerState.currentPage].content()
+        }
     }
 }
 
 @Composable
-fun HomeTabRowContent(
+private fun HomeTabRowContent(
     tabs: MutableList<TabContent>,
     selectedTabIndex: Int,
-    onSectionChange: (Sections) -> Unit,
+    onSectionIndexChange: (Int) -> Unit,
 ) {
     tabs.forEachIndexed { index, content ->
         val colorText = if (selectedTabIndex == index) {
@@ -160,7 +168,7 @@ fun HomeTabRowContent(
         }
         Tab(
             selected = selectedTabIndex == index,
-            onClick = { onSectionChange(content.section) },
+            onClick = { onSectionIndexChange(index) },
             modifier = Modifier.height(40.dp)
         ) {
             Text(
@@ -185,11 +193,6 @@ fun rememberTabContent(
     val myCoinNewsSection = TabContent(Sections.MyCoinNews) {
         MyCoinNewsScreen(navController)
     }
-
-//    val videoSection = TabContent(Sections.Video) {
-//        VideoListScreen()
-//    }
-
 
     return mutableListOf(recentNewsSection, myCoinNewsSection)
 }

@@ -1,0 +1,23 @@
+restartable scheme("[androidx.compose.ui.UiComposable]") fun HomeScreen(
+  unstable tabs: MutableList<TabContent>
+  unused stable selectedSection: Sections
+  stable onScrapListClick: Function0<Unit>
+  stable onSettingClick: Function0<Unit>
+  unused stable onSectionChange: Function1<Sections, Unit>
+  unused viewModel: MyCoinNewsViewModel? = @dynamic hiltViewModel(null, null, $composer, 0, 0b0011)
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun HomeScreenContent(
+  unstable tabs: MutableList<TabContent>
+  stable pagerState: PagerState
+  stable onSectionIndexChange: Function1<Int, Unit>
+  stable modifier: Modifier? = @static Companion
+  stable contentPadding: PaddingValues? = @static PaddingValues(0.dp)
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun HomeTabRowContent(
+  unstable tabs: MutableList<TabContent>
+  stable selectedTabIndex: Int
+  stable onSectionIndexChange: Function1<Int, Unit>
+)
+fun rememberTabContent(
+  unstable navController: NavHostController
+): MutableList<TabContent>
