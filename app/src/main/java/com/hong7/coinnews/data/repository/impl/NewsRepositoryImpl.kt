@@ -1,10 +1,10 @@
 package com.hong7.coinnews.data.repository.impl
 
-import android.util.Log
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.repository.NewsRepository
-import com.hong7.coinnews.database.UserNewsDao
+import com.hong7.coinnews.database.InterestedNewsDao
+import com.hong7.coinnews.database.NewsDao
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.NetworkResult
 import com.hong7.coinnews.model.networkHandling
@@ -25,9 +25,16 @@ import javax.inject.Singleton
 
 @Singleton
 class NewsRepositoryImpl @Inject constructor(
+    private val newsDao: NewsDao,
     private val naverService: NaverService,
-    private val userNewsDao: UserNewsDao
+    private val interestedNewsDao: InterestedNewsDao
 ) : NewsRepository {
+
+    override suspend fun getSavedRecentNews(): List<Article> =
+        withContext(Dispatchers.IO) {
+            newsDao.getAllNews()
+                .map { it.toDomain() }
+        }
 
     override suspend fun getRecentNews(query: String): NetworkResult<List<Article>> =
         withContext(Dispatchers.IO) {
@@ -58,6 +65,7 @@ class NewsRepositoryImpl @Inject constructor(
                         )
                     }
                 }.awaitAll().filterNotNull()
+                newsDao.insertAll(list.map { it.toEntity() })
                 list.sortedByDescending { it.createdAt }
             }
         }
@@ -105,19 +113,19 @@ class NewsRepositoryImpl @Inject constructor(
 
 
     override fun getScrapedNews(): Flow<List<Article>> {
-        return userNewsDao.getAllNews()
+        return interestedNewsDao.getAllNews()
             .map { it.map { it.toDomain() } }
     }
 
     override fun isNewsScraped(id: String): Flow<Boolean> {
-        return userNewsDao.isInterested(id)
+        return interestedNewsDao.isInterested(id)
     }
 
     override suspend fun addNewsScraped(article: Article) {
-        userNewsDao.insert(article.toEntity())
+        interestedNewsDao.insert(article.toEntity())
     }
 
     override suspend fun deleteNewsScraped(article: Article) {
-        userNewsDao.delete(article.id)
+        interestedNewsDao.delete(article.id)
     }
 }

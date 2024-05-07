@@ -1,5 +1,306 @@
+stable class CoinNewsApplication {
+  <runtime stability> = Stable
+}
+runtime class NewsArticlePagingSource {
+  runtime val service: NaverService
+  stable val query: String
+  <runtime stability> = Uncertain(NaverService)
+}
+unstable class CoinRepositoryImpl {
+  unstable val dataSource: CoinDataSource
+  <runtime stability> = Unstable
+}
+runtime class FilterRepositoryImpl {
+  runtime val userFilterDao: UserFilterDao
+  <runtime stability> = Uncertain(UserFilterDao)
+}
+stable class NewsRepositoryImpl {
+  runtime val newsDao: NewsDao
+  runtime val naverService: NaverService
+  runtime val interestedNewsDao: InterestedNewsDao
+  <runtime stability> = 
+}
+unstable class UserRepositoryImpl {
+  unstable val preferenceManager: PreferenceManager
+  <runtime stability> = Unstable
+}
+stable class AppDatabase {
+  <runtime stability> = Stable
+}
+unstable class CoinEntity {
+  stable val id: String
+  stable val name: String
+  stable val symbol: String
+  unstable val relatedSearchWord: List<String>
+  stable val isSelected: Boolean
+  <runtime stability> = Unstable
+}
+stable class Converter {
+  <runtime stability> = Stable
+}
+unstable class FilterEntity {
+  stable var id: Int
+  unstable val coins: List<CoinEntity>
+  <runtime stability> = Unstable
+}
+unstable class NewsEntity {
+  stable var id: Int
+  stable var newsId: String
+  stable val title: String
+  stable val description: String
+  stable val url: String
+  stable val author: String?
+  unstable val createdAt: LocalDateTime
+  <runtime stability> = Unstable
+}
+stable class DataBaseModule {
+  <runtime stability> = Stable
+}
+stable class NetworkModule {
+  <runtime stability> = Stable
+}
+stable class WorkerModule {
+  <runtime stability> = Stable
+}
+unstable class Article {
+  stable val id: String
+  stable val title: String
+  stable val description: String
+  stable val url: String
+  stable val author: String?
+  unstable val createdAt: LocalDateTime?
+  <runtime stability> = Unstable
+}
+unstable class ArticleWithInterest {
+  unstable val article: Article
+  stable val isInterested: Boolean
+  <runtime stability> = Unstable
+}
+unstable class Coin {
+  stable val id: String
+  stable val name: String
+  stable val symbol: String
+  unstable val relatedSearchWord: List<String>
+  stable val isSelected: Boolean
+  <runtime stability> = Unstable
+}
+unstable class Filter {
+  stable val id: Int
+  unstable val coins: List<Coin>
+  <runtime stability> = Unstable
+}
+unstable class Success {
+  runtime var data: DATA
+  <runtime stability> = Unstable
+}
+stable class Fail {
+  stable val message: String
+  <runtime stability> = Stable
+}
+unstable class Exception {
+  unstable val exception: Exception
+  <runtime stability> = Unstable
+}
+stable class NetworkResult {
+  <runtime stability> = Stable
+}
+unstable class CoinDataSource {
+  unstable val firestore: FirebaseFirestore
+  <runtime stability> = Unstable
+}
+stable class $serializer {
+  <runtime stability> = Stable
+}
+unstable class ArticlesResponse {
+  stable val total: Int
+  unstable val items: List<NetworkArticle>
+  stable val page: Int
+  stable val totalPage: Int
+  stable val lastRequestedAt: String
+  <runtime stability> = Unstable
+}
+stable class $serializer {
+  <runtime stability> = Stable
+}
+stable class NetworkArticle {
+  stable val title: String
+  stable val originalUrl: String
+  stable val url: String
+  stable val description: String
+  stable val createdAt: String
+  <runtime stability> = Stable
+}
+stable class $serializer {
+  <runtime stability> = Stable
+}
+unstable class GlobalArticleResponse {
+  unstable val items: List<NetworkGlobalNews>
+  stable val totalPages: Int
+  <runtime stability> = Unstable
+}
+stable class $serializer {
+  <runtime stability> = Stable
+}
+unstable class NetworkGlobalNews {
+  stable val newsUrl: String
+  stable val imageUrl: String
+  stable val title: String
+  stable val text: String
+  stable val author: String
+  stable val createdAt: String
+  unstable val topics: List<String>
+  stable val sentiment: String
+  stable val type: String
+  unstable val tickers: List<String>
+  <runtime stability> = Unstable
+}
+unstable class NetworkCoin {
+  stable val id: String
+  stable val name: String
+  stable val symbol: String
+  unstable val relatedSearchWords: List<String>
+  unstable val updatedAt: Timestamp?
+  <runtime stability> = Unstable
+}
+stable class $serializer {
+  <runtime stability> = Stable
+}
+stable class NetworkStatus {
+  stable val timestamp: String
+  stable val errorCode: Int
+  stable val errorMessage: String?
+  stable val elapsed: Int
+  stable val creditCount: Int
+  stable val notice: String?
+  <runtime stability> = Stable
+}
+stable class RequestOriginalUrl {
+  <runtime stability> = Stable
+}
+unstable class PreferenceManager {
+  unstable val prefs$delegate: Lazy<SharedPreferences>
+  unstable val editor$delegate: Lazy<@[FlexibleNullability] Editor?>
+  <runtime stability> = Unstable
+}
+stable class HomeNav {
+  stable val route: String
+  stable val title: String
+  <runtime stability> = Stable
+}
+unstable class ArticleDetailNav {
+  stable val argName: String
+  stable val route: String
+  stable val title: String
+  unstable val arguments: List<NamedNavArgument>
+  <runtime stability> = Unstable
+}
+stable class CoinListNav {
+  stable val route: String
+  stable val title: String
+  <runtime stability> = Stable
+}
+stable class ScrapNav {
+  stable val route: String
+  stable val title: String
+  <runtime stability> = Stable
+}
+stable class SettingNav {
+  stable val route: String
+  stable val title: String
+  <runtime stability> = Stable
+}
+stable class NavigationRouteName {
+  stable val MAIN_HOME: String
+  stable val ARTICLE_DETAIL: String
+  stable val ALL_COIN_LIST: String
+  stable val SCRAP: String
+  stable val SETTING: String
+  <runtime stability> = Stable
+}
+stable class NavigationTitle {
+  stable val MAIN_HOME: String
+  stable val ARTICLE_DETAIL: String
+  stable val ALL_COIN_LIST: String
+  stable val SCRAP: String
+  stable val SETTING: String
+  <runtime stability> = Stable
+}
+unstable class MainActivity {
+  unstable val splashViewModel$delegate: Lazy<SplashViewModel>
+  <runtime stability> = Unstable
+}
+unstable class ArticleDetailViewModel {
+  runtime val newsRepository: NewsRepository
+  unstable val _isInterested: MutableStateFlow<Boolean>
+  unstable val isInterested: StateFlow<Boolean>
+  <runtime stability> = Unstable
+}
+unstable class CoinListViewModel {
+  runtime val coinRepository: CoinRepository
+  runtime val filterRepository: FilterRepository
+  runtime val userRepository: UserRepository
+  unstable val _coins: MutableStateFlow<List<Coin>>
+  unstable val coins: StateFlow<List<Coin>>
+  <runtime stability> = Unstable
+}
 stable class TabContent {
   stable val section: Sections
   stable val content: @[Composable] Function0<Unit>
+  <runtime stability> = Stable
+}
+unstable class MyCoinNewsViewModel {
+  runtime val newsRepository: NewsRepository
+  runtime val filterRepository: FilterRepository
+  unstable val filter: StateFlow<Filter?>
+  unstable val _selectedCoin: MutableStateFlow<Coin?>
+  unstable val selectedCoin: StateFlow<Coin?>
+  unstable val _articles: MutableStateFlow<List<Article>>
+  unstable val articles: StateFlow<List<Article>>
+  unstable val _loading: MutableStateFlow<Boolean>
+  unstable val loading: StateFlow<Boolean>
+  unstable val _watchedNewsIds: MutableStateFlow<Set<String>>
+  unstable val watchedNewsIds: StateFlow<Set<String>>
+  <runtime stability> = Unstable
+}
+unstable class RecentCoinNewsViewModel {
+  runtime val newsRepository: NewsRepository
+  unstable val _articles: MutableStateFlow<List<Article>>
+  unstable val articles: StateFlow<List<Article>>
+  unstable val _loading: MutableStateFlow<Boolean>
+  unstable val loading: StateFlow<Boolean>
+  unstable val _watchedNewsIds: MutableStateFlow<Set<String>>
+  unstable val watchedNewsIds: StateFlow<Set<String>>
+  <runtime stability> = Unstable
+}
+unstable class ScrapNewsViewModel {
+  runtime val newsRepository: NewsRepository
+  unstable val news: StateFlow<List<Article>>
+  <runtime stability> = Unstable
+}
+stable class SettingViewModel {
+  <runtime stability> = Stable
+}
+unstable class SplashViewModel {
+  runtime val userRepository: UserRepository
+  unstable val workManager: WorkManager
+  unstable val _isLoading: MutableStateFlow<Boolean>
+  unstable val isLoading: StateFlow<Boolean>
+  <runtime stability> = Unstable
+}
+stable class DateUtils {
+  <runtime stability> = Stable
+}
+unstable class GsonUtils {
+  unstable val gson: @[FlexibleNullability] Gson?
+  <runtime stability> = Unstable
+}
+unstable class NavigationUtils {
+  unstable var article: Article?
+  <runtime stability> = Unstable
+}
+stable class NumberUtils {
+  <runtime stability> = Stable
+}
+stable class CoinInfoUpdateWorker {
   <runtime stability> = Stable
 }

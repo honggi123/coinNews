@@ -7,7 +7,7 @@ import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface UserNewsDao {
+interface InterestedNewsDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM news WHERE news_id = :newsId LIMIT 1)")
     fun isInterested(newsId: String): Flow<Boolean>

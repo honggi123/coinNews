@@ -17,7 +17,9 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun filterDao(): UserFilterDao
 
-    abstract fun newsDao(): UserNewsDao
+    abstract fun interestedNewsDao(): InterestedNewsDao
+
+    abstract fun newsDao(): NewsDao
 
     companion object {
         @Volatile

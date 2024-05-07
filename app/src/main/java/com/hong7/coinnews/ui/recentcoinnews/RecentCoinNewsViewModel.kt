@@ -43,9 +43,11 @@ class RecentCoinNewsViewModel @Inject constructor(
 
             _loading.value = true
             val result = newsRepository.getRecentNews(query)
-            if (result is NetworkResult.Success)
+            if (result is NetworkResult.Success) {
                 _articles.value = result.toModel()
-            else return@launch
+            } else {
+                _articles.value = newsRepository.getSavedRecentNews()
+            }
             _loading.value = false
         }
     }
