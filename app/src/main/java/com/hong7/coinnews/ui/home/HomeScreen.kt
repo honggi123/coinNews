@@ -94,7 +94,7 @@ fun HomeScreen(
                         onClick = { onSettingClick() },
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_setting),
+                            painter = painterResource(id = R.drawable.baseline_info_24),
                             contentDescription = "",
                             tint = Grey500
                         )

@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.hong7.coinnews.BuildConfig
 import com.hong7.coinnews.R
 import com.hong7.coinnews.ui.theme.Grey
 import com.hong7.coinnews.ui.theme.Grey700
@@ -36,7 +37,7 @@ fun SettingScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "설정",
+                        text = "앱 정보",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Grey700
@@ -74,7 +75,14 @@ fun SettingScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "서비스 준비중 입니다. \n[문의] Email : ghdrl7526@gmail.com",
+                    text = "앱 버전 : ${BuildConfig.VERSION_NAME}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Grey,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "연락처 : ghdrl7526@gmail.com",
                     style = MaterialTheme.typography.titleMedium,
                     color = Grey,
                     fontWeight = FontWeight.Bold,

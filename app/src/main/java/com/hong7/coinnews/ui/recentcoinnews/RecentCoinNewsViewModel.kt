@@ -9,6 +9,7 @@ import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.NetworkResult
+import com.hong7.coinnews.model.NetworkState
 import com.hong7.coinnews.model.toModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,10 +45,15 @@ class RecentCoinNewsViewModel @Inject constructor(
 
             _loading.value = true
             val result = newsRepository.getRecentNews(query)
-            if (result is NetworkResult.Success) {
-                _articles.value = result.toModel()
-            } else {
-                _articles.value = newsRepository.getSavedRecentNews()
+            when(result) {
+                is NetworkResult.Success -> {
+                    _articles.value = result.toModel()
+                }
+                is NetworkResult.Fail -> {}
+                is NetworkResult.Exception -> {
+                    if (result.exception is IOException)
+                        _articles.value = newsRepository.getSavedRecentNews()
+                }
             }
             _loading.value = false
         }

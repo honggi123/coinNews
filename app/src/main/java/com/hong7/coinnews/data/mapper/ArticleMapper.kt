@@ -1,6 +1,7 @@
 package com.hong7.coinnews.data.mapper
 
 import com.hong7.coinnews.database.NewsEntity
+import com.hong7.coinnews.database.ScrapNewsEntity
 import com.hong7.coinnews.network.model.NetworkArticle
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.utils.DateUtils
@@ -31,6 +32,17 @@ fun NewsEntity.toDomain(): Article {
     )
 }
 
+fun ScrapNewsEntity.toDomain(): Article {
+    return Article(
+        id = this.newsId,
+        title = this.title.replaceHtmlTags(),
+        url = this.url,
+        description = this.description,
+        author = this.author,
+        createdAt = this.createdAt
+    )
+}
+
 fun Article.toEntity(): NewsEntity {
     return NewsEntity(
         newsId = this.id,
@@ -41,6 +53,18 @@ fun Article.toEntity(): NewsEntity {
         createdAt = this.createdAt ?: LocalDateTime.now()
     )
 }
+
+fun Article.toScrapEntity(): ScrapNewsEntity {
+    return ScrapNewsEntity(
+        newsId = this.id,
+        title = this.title,
+        description = this.description,
+        url = this.url,
+        author = this.author,
+        createdAt = this.createdAt ?: LocalDateTime.now()
+    )
+}
+
 
 
 private fun parseDomain(url: String): String? {

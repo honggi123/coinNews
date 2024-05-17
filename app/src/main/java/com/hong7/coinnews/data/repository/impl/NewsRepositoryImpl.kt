@@ -2,6 +2,7 @@ package com.hong7.coinnews.data.repository.impl
 
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.data.mapper.toEntity
+import com.hong7.coinnews.data.mapper.toScrapEntity
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.database.InterestedNewsDao
 import com.hong7.coinnews.database.NewsDao
@@ -122,7 +123,7 @@ class NewsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addNewsScraped(article: Article) {
-        interestedNewsDao.insert(article.toEntity())
+        interestedNewsDao.insert(article.toScrapEntity())
     }
 
     override suspend fun deleteNewsScraped(article: Article) {

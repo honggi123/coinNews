@@ -2,6 +2,9 @@ package com.hong7.coinnews.ui.articledetail
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.net.Uri
+import android.text.TextUtils
+import android.util.Log
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -229,7 +232,7 @@ private fun EmptyArticleContent(
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 private fun ArticleContent(
-    url: String,
+    url: String?,
     modifier: Modifier = Modifier
 ) {
     var isLoading by rememberSaveable { mutableStateOf(true) }
@@ -254,11 +257,27 @@ private fun ArticleContent(
                             isLoading = false
                             trace.stop()
                         }
+
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView?,
+                            url: String?
+                        ): Boolean {
+                            val host = Uri.parse(url).getHost();
+                            if (url == null) {
+                                return true;
+                            }
+                            if (!TextUtils.isEmpty(host) && url.startsWith("fb://") && host?.contains("profile") == true) {
+                                return true
+                            } else {
+                                loadUrl(url)
+                            }
+                            return true
+                        }
                     }
                     settings.javaScriptEnabled = true
-                    settings.javaScriptCanOpenWindowsAutomatically = false
+//                    settings.javaScriptCanOpenWindowsAutomatically = false
 
-                    loadUrl(url)
+                    loadUrl(url.toString())
                 }
             },
             modifier = Modifier.fillMaxSize()

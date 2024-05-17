@@ -1,11 +1,13 @@
 package com.hong7.coinnews.database
 
+import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
+@ProvidedTypeConverter
 class Converter {
     @TypeConverter
     fun localDateTimeToTimestamp(dateTime: LocalDateTime): Long =
