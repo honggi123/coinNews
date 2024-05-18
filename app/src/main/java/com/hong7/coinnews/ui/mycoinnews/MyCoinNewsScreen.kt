@@ -25,9 +25,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +44,7 @@ import androidx.navigation.NavHostController
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
+import com.hong7.coinnews.model.NetworkState
 import com.hong7.coinnews.ui.ArticleDetailNav
 import com.hong7.coinnews.ui.CoinListNav
 import com.hong7.coinnews.ui.component.ClickableChip
@@ -54,10 +58,10 @@ import com.hong7.coinnews.utils.DateUtils
 import com.hong7.coinnews.utils.NavigationUtils
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun MyCoinNewsScreen(
+    networkState: NetworkState,
     navController: NavHostController,
     viewModel: MyCoinNewsViewModel = hiltViewModel()
 ) {
@@ -83,6 +87,15 @@ fun MyCoinNewsScreen(
 //                refreshing = false
 //            }
 //        })
+    var isFirstLaunch by remember { mutableStateOf(true) }
+
+    LaunchedEffect(key1 = networkState) {
+        if (isFirstLaunch) {
+            isFirstLaunch = false
+        } else {
+            viewModel.getSelectedCoinNews()
+        }
+    }
 
     ArticleListScreenContent(
         watchedNewsIds = watchedNews,

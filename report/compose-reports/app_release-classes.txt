@@ -1,6 +1,0 @@
-unstable class NewsRepositoryImpl {
-  runtime val newsDao: NewsDao
-  unstable val naverService: NaverService
-  unstable val interestedNewsDao: InterestedNewsDao
-  <runtime stability> = Unstable
-}

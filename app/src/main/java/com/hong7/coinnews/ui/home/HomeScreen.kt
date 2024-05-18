@@ -193,7 +193,7 @@ fun rememberTabContent(
     }
 
     val myCoinNewsSection = TabContent(Sections.MyCoinNews) {
-        MyCoinNewsScreen(navController)
+        MyCoinNewsScreen(networkState, navController)
     }
 
     return mutableListOf(recentNewsSection, myCoinNewsSection)

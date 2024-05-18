@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui.mycoinnews
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hong7.coinnews.data.repository.FilterRepository
@@ -72,6 +73,14 @@ class MyCoinNewsViewModel @Inject constructor(
                 _articles.value = getRecentArticles(coin)
                 _loading.value = false
             }
+        }
+    }
+
+    suspend fun getSelectedCoinNews() {
+        _articles.value = if (selectedCoin.value == null) {
+            emptyList()
+        } else {
+            getRecentArticles(selectedCoin.value!!)
         }
     }
 
