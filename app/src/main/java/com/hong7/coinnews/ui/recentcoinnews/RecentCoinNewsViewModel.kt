@@ -40,19 +40,23 @@ class RecentCoinNewsViewModel @Inject constructor(
     val watchedNewsIds: StateFlow<Set<String>> = _watchedNewsIds.asStateFlow()
 
     init {
+        getRecentNews()
+    }
+
+    fun getRecentNews() {
         viewModelScope.launch {
             val query = "암호화폐"
 
             _loading.value = true
             val result = newsRepository.getRecentNews(query)
-            when(result) {
+            when (result) {
                 is NetworkResult.Success -> {
                     _articles.value = result.toModel()
                 }
+
                 is NetworkResult.Fail -> {}
                 is NetworkResult.Exception -> {
-                    if (result.exception is IOException)
-                        _articles.value = newsRepository.getSavedRecentNews()
+                    _articles.value = newsRepository.getSavedRecentNews()
                 }
             }
             _loading.value = false

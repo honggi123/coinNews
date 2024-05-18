@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +62,7 @@ import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.R
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Filter
+import com.hong7.coinnews.model.NetworkState
 import com.hong7.coinnews.ui.ArticleDetailNav
 import com.hong7.coinnews.ui.CoinListNav
 import com.hong7.coinnews.ui.component.ClickableChip
@@ -79,6 +81,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun RecentCoinNewsScreen(
+    networkState: NetworkState,
     navController: NavHostController,
     viewModel: RecentCoinNewsViewModel = hiltViewModel()
 ) {

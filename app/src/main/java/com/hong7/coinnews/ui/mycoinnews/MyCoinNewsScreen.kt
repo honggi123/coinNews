@@ -92,7 +92,7 @@ fun MyCoinNewsScreen(
         filter = filter,
         onCoinClick = {
             viewModel.onCoinClick(it)
-            scope.launch { state.animateScrollToItem(0) }
+            if (articles.isNotEmpty()) scope.launch { state.animateScrollToItem(0) }
         },
         onFilterSettingClick = {
             NavigationUtils.navigate(

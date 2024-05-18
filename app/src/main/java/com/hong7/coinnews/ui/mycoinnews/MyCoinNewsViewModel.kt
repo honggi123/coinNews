@@ -7,6 +7,8 @@ import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
+import com.hong7.coinnews.model.NetworkResult
+import com.hong7.coinnews.model.NetworkState
 import com.hong7.coinnews.model.toModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +52,7 @@ class MyCoinNewsViewModel @Inject constructor(
     private val _watchedNewsIds = MutableStateFlow<Set<String>>(emptySet())
     val watchedNewsIds: StateFlow<Set<String>> = _watchedNewsIds.asStateFlow()
 
-    fun onNewsClick(newsId: String){
+    fun onNewsClick(newsId: String) {
         val watchedNewsIds = _watchedNewsIds.value.toMutableSet()
         watchedNewsIds.add(newsId)
         _watchedNewsIds.value = watchedNewsIds
@@ -81,9 +83,16 @@ class MyCoinNewsViewModel @Inject constructor(
             val naverNewsDeffered = async { newsRepository.getNaverNews(query) }
             val googleNewsDeffered = async { newsRepository.getGoogleNews(coin.name) }
 
-            (naverNewsDeffered.await().toModel() + googleNewsDeffered.await().toModel())
-                .distinctBy { it.id }
-                .sortedByDescending { it.createdAt }
+            val naverNews = naverNewsDeffered.await()
+            val googleNews = googleNewsDeffered.await()
+
+            if (naverNews is NetworkResult.Success && googleNews is NetworkResult.Success) {
+                (naverNews.toModel() + googleNews.toModel())
+                    .distinctBy { it.id }
+                    .sortedByDescending { it.createdAt }
+            } else {
+                emptyList()     // todo
+            }
         }
 }
 

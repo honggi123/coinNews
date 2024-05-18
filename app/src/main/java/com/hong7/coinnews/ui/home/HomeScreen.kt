@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
+import com.hong7.coinnews.model.NetworkState
 import com.hong7.coinnews.ui.CoinListNav
 import com.hong7.coinnews.ui.mycoinnews.MyCoinNewsScreen
 import com.hong7.coinnews.ui.mycoinnews.MyCoinNewsViewModel
@@ -183,11 +184,12 @@ private fun HomeTabRowContent(
 
 @Composable
 fun rememberTabContent(
+    networkState: NetworkState,
     navController: NavHostController
 ): MutableList<TabContent> {
 
     val recentNewsSection = TabContent(Sections.RecnentNews) {
-        RecentCoinNewsScreen(navController)
+        RecentCoinNewsScreen(networkState, navController)
     }
 
     val myCoinNewsSection = TabContent(Sections.MyCoinNews) {

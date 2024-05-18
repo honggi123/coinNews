@@ -66,6 +66,7 @@ class NewsRepositoryImpl @Inject constructor(
                         )
                     }
                 }.awaitAll().filterNotNull()
+                newsDao.deleteAllNews()
                 newsDao.insertAll(list.map { it.toEntity() })
                 list.sortedByDescending { it.createdAt }
             }
