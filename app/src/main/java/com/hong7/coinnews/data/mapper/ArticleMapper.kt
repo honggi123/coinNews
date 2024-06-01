@@ -37,8 +37,7 @@ fun ScrapNewsEntity.toDomain(): Article {
         id = this.newsId,
         title = this.title.replaceHtmlTags(),
         url = this.url,
-        description = this.description,
-        author = this.author,
+        author = this.authorName,
         createdAt = this.createdAt
     )
 }
@@ -58,9 +57,8 @@ fun Article.toScrapEntity(): ScrapNewsEntity {
     return ScrapNewsEntity(
         newsId = this.id,
         title = this.title,
-        description = this.description,
         url = this.url,
-        author = this.author,
+        authorName = this.author,
         createdAt = this.createdAt ?: LocalDateTime.now()
     )
 }

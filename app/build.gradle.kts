@@ -32,6 +32,17 @@ android {
         buildConfigField("String","CRTPTO_NEWS_API_KEY", getApiKey("CRTPTO_NEWS_API_KEY"))
         buildConfigField("String","NAVER_API_KEY", getApiKey("NAVER_API_KEY"))
         buildConfigField("String","NAVER_API_SECRETE", getApiKey("NAVER_API_SECRETE"))
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                argument("room.schemaLocation", "$projectDir/room_db_schemas")
+            }
+        }
+    }
+    sourceSets {
+        getByName("androidTest").assets.srcDirs(
+            files("$projectDir/room_db_schemas")
+        )
     }
     signingConfigs {
         create("release") {
@@ -137,6 +148,8 @@ dependencies {
     implementation("com.valentinilk.shimmer:compose-shimmer:1.3.0")
 
     testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
+
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))

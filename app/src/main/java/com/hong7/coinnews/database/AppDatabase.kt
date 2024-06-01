@@ -1,17 +1,30 @@
 package com.hong7.coinnews.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.DeleteColumn
+import androidx.room.DeleteTable
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.hong7.coinnews.database.migration.AutoMigrationSpecs
+import com.hong7.coinnews.database.migration.Migration.MIGRATION_1_2
 
 @Database(
     entities = [FilterEntity::class, ScrapNewsEntity::class, NewsEntity::class],
-    version = 2,
-    exportSchema = false
+    version = 3,
+    autoMigrations = [
+        AutoMigration(
+            from = 2,
+            to = 3,
+            spec = AutoMigrationSpecs.MIGRATION_2_3_SPEC::class
+        )
+    ],
+    exportSchema = true
 )
 @TypeConverters(Converter::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -33,24 +46,6 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         private fun buildDatabase(context: Context): AppDatabase {
-            val MIGRATION_1_2 = object : Migration(1, 2) {
-                override fun migrate(database: SupportSQLiteDatabase) {
-                    database.execSQL(
-                        """
-                            CREATE TABLE IF NOT EXISTS `scrap_news` (
-                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                `news_id` TEXT NOT NULL,
-                                `title` TEXT NOT NULL,
-                                `description` TEXT NOT NULL,
-                                `url` TEXT NOT NULL,
-                                `author` TEXT,
-                                `put_date` INTEGER NOT NULL
-                            )
-                        """.trimIndent()
-                    )
-                }
-            }
-
             return Room.databaseBuilder(context, AppDatabase::class.java, "coin_db")
                 .addMigrations(MIGRATION_1_2)
                 .addTypeConverter(Converter())

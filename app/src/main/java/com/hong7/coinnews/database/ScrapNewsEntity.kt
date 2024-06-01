@@ -14,12 +14,10 @@ data class ScrapNewsEntity(
     var newsId: String,
     @ColumnInfo(name = "title")
     val title: String,
-    @ColumnInfo(name = "description")
-    val description: String,
     @ColumnInfo(name = "url")
     val url: String,
-    @ColumnInfo(name = "author")
-    val author: String? = "",
+    @ColumnInfo(name = "author_name")
+    val authorName: String? = "",
     @ColumnInfo(name = "put_date")
     val createdAt: LocalDateTime,
 )
