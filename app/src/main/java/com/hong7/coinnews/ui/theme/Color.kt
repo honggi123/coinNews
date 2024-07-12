@@ -109,3 +109,7 @@ val md_theme_dark_inverseOnSurface = Color(0xFF201A1A)
 val md_theme_dark_inverseSurface = Color(0xFFECE0DF)
 val md_theme_dark_inversePrimary = Color(0xFFBF0031)
 val md_theme_dark_surfaceTint = Color(0xFFFFB3B4)
+
+// temp color
+val Blue800 = Color(0xFF003EBB)
+val Grey = Color(0xFF777777)

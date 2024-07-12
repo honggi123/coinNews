@@ -1,8 +1,6 @@
 package com.hong7.coinnews.di
 
-import com.hong7.coinnews.network.retrofit.CoinMarketCapService
-import com.hong7.coinnews.network.retrofit.CryptoNewsService
-import com.hong7.coinnews.network.retrofit.NaverService
+import com.hong7.coinnews.network.okhttp.retrofit.NaverService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -32,21 +30,6 @@ object NetworkModule {
             .build()
     }
 
-    @Provides
-    @Singleton
-    fun provideCoinService(client: OkHttpClient): CoinMarketCapService {
-        val json = Json { ignoreUnknownKeys = true }
-        val contentType = "application/json".toMediaType()
-
-        return Retrofit.Builder()
-            .baseUrl("https://pro-api.coinmarketcap.com")
-            .client(client)
-            .addConverterFactory(json.asConverterFactory(contentType))
-            .build()
-            .create(CoinMarketCapService::class.java)
-    }
-
-
     @Singleton
     @Provides
     fun provideNewsService(client: OkHttpClient): NaverService {
@@ -59,19 +42,5 @@ object NetworkModule {
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(NaverService::class.java)
-    }
-
-    @Singleton
-    @Provides
-    fun provideCryptoNewsService(client: OkHttpClient): CryptoNewsService {
-        val json = Json { ignoreUnknownKeys = true }
-        val contentType = "application/json".toMediaType()
-
-        return Retrofit.Builder()
-            .baseUrl("https://cryptonews-api.com")
-            .client(client)
-            .addConverterFactory(json.asConverterFactory(contentType))
-            .build()
-            .create(CryptoNewsService::class.java)
     }
 }

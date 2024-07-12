@@ -5,7 +5,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.hong7.coinnews.model.Article
-import com.hong7.coinnews.ui.utils.GsonUtils
+import com.hong7.coinnews.utils.GsonUtils
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -15,7 +15,7 @@ object HomeNav : Destination {
     override val title: String = NavigationTitle.MAIN_HOME
 }
 
-object ArticleDetailNav : DestinationArg<Article> {
+object NewsDetailNav : DestinationArg<Article> {
 
     override val argName: String = "article"
     override val route: String = NavigationRouteName.ARTICLE_DETAIL
@@ -39,6 +39,22 @@ object ArticleDetailNav : DestinationArg<Article> {
     }
 }
 
+object CoinListNav : Destination {
+    override val route: String = NavigationRouteName.ALL_COIN_LIST
+    override val title: String = NavigationTitle.ALL_COIN_LIST
+}
+
+object ScrapNav : Destination {
+    override val route: String = NavigationRouteName.SCRAP
+    override val title: String = NavigationTitle.SCRAP
+}
+
+object SettingNav : Destination {
+    override val route: String = NavigationRouteName.SETTING
+    override val title: String = NavigationTitle.SETTING
+}
+
+
 interface Destination {
     val route: String
     val title: String
@@ -56,9 +72,15 @@ interface DestinationArg<T> : Destination {
 object NavigationRouteName {
     const val MAIN_HOME = "main_home"
     const val ARTICLE_DETAIL = "article_detail"
+    const val ALL_COIN_LIST = "all_coin_list"
+    const val SCRAP = "scrap"
+    const val SETTING = "setting"
 }
 
 object NavigationTitle {
     const val MAIN_HOME = "홈"
     const val ARTICLE_DETAIL = "뉴스 상세페이지"
+    const val ALL_COIN_LIST = "코인 목록"
+    const val SCRAP = "스크랩"
+    const val SETTING = "설정"
 }

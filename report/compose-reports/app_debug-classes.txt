@@ -1,0 +1,8 @@
+stable class ExampleInstrumentedTest {
+  <runtime stability> = Stable
+}
+unstable class MigrationsTest {
+  stable val testDatabase: String
+  unstable val helper: MigrationTestHelper
+  <runtime stability> = Unstable
+}

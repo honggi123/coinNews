@@ -5,7 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface CoinRepository {
 
-    fun getCoinInfo(
-        coin: Coin,
-    ): Flow<Coin?>
+    fun getAllCoins(): Flow<List<Coin>>
 }

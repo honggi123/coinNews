@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 data class Article(
     val id: String,
     val title: String,
-    val description: String,
+    val description: String = "",
     val url: String,
     val author: String? = null,
     val createdAt: LocalDateTime? = null

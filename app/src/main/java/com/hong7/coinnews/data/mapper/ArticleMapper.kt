@@ -1,49 +1,25 @@
 package com.hong7.coinnews.data.mapper
 
-import android.util.Log
-import com.google.firebase.perf.FirebasePerformance
-import com.google.firebase.perf.metrics.Trace
 import com.hong7.coinnews.database.NewsEntity
+import com.hong7.coinnews.database.ScrapNewsEntity
 import com.hong7.coinnews.network.model.NetworkArticle
 import com.hong7.coinnews.model.Article
-import com.hong7.coinnews.network.model.NetworkGlobalNews
-import com.hong7.coinnews.ui.utils.DateUtils
-import java.security.MessageDigest
+import com.hong7.coinnews.utils.DateUtils
+import com.hong7.coinnews.utils.NumberUtils.getHashValue
+import java.time.LocalDateTime
 import java.util.Locale
 
 fun NetworkArticle.toDomain(): Article {
     val article = Article(
-        id = generateId(this.title + this.createdAt),
+        id = getHashValue(this.originalUrl),
         title = this.title.replaceHtmlTags(),
         url = this.url,
         description = this.description.replaceHtmlTags(),
         author = parseDomain(this.originalUrl),
-        createdAt = DateUtils.stringToDateTime(this.createdAt)
+        createdAt = DateUtils.formatDateTimeWithTimeZoneName(this.createdAt)
     )
     return article
 }
-
-fun NetworkGlobalNews.toDomain(): Article {
-    return Article(
-        id = generateId(this.title + this.createdAt),
-        title = this.title,
-        url = this.newsUrl,
-        description = this.text,
-        author = this.author,
-        createdAt = DateUtils.stringToDateTime(this.createdAt)
-    )
-}
-
-//fun Article.toEntity(): NewsEntity {
-//    return NewsEntity(
-//        newsId = this.id,
-//        title = this.title.replaceHtmlTags(),
-//        url = this.url,
-//        author = this.author,
-//        description = this.description,
-//        createdAt = DateUtils.timeStampToLocalDateTime(this.createdAt)
-//    )
-//}
 
 fun NewsEntity.toDomain(): Article {
     return Article(
@@ -55,6 +31,38 @@ fun NewsEntity.toDomain(): Article {
         createdAt = this.createdAt
     )
 }
+
+fun ScrapNewsEntity.toDomain(): Article {
+    return Article(
+        id = this.newsId,
+        title = this.title.replaceHtmlTags(),
+        url = this.url,
+        author = this.authorName,
+        createdAt = this.createdAt
+    )
+}
+
+fun Article.toEntity(): NewsEntity {
+    return NewsEntity(
+        newsId = this.id,
+        title = this.title,
+        description = this.description,
+        url = this.url,
+        author = this.author,
+        createdAt = this.createdAt ?: LocalDateTime.now()
+    )
+}
+
+fun Article.toScrapEntity(): ScrapNewsEntity {
+    return ScrapNewsEntity(
+        newsId = this.id,
+        title = this.title,
+        url = this.url,
+        authorName = this.author,
+        createdAt = this.createdAt ?: LocalDateTime.now()
+    )
+}
+
 
 
 private fun parseDomain(url: String): String? {
@@ -72,8 +80,3 @@ private fun String.replaceHtmlTags(): String {
         .replace("&gt;", ">")
 }
 
-private fun generateId(value: String): String {
-    val bytes = value.toByteArray()
-    val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
-    return digest.fold("", { str, it -> str + "%02x".format(it) })
-}

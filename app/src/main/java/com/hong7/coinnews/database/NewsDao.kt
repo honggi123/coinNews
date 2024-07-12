@@ -9,16 +9,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NewsDao {
 
-    @Query("SELECT EXISTS(SELECT 1 FROM news WHERE news_id = :newsId LIMIT 1)")
-    fun isInterested(newsId: String): Flow<Boolean>
-
     @Transaction
     @Query("SELECT * FROM news")
-    fun getAllNews(): Flow<List<NewsEntity>>
+    suspend fun getAllNews(): List<NewsEntity>
+
+    @Query("DELETE FROM news")
+    suspend fun deleteAllNews()
 
     @Insert
-    suspend fun insert(newsEntity: NewsEntity)
+    suspend fun insertAll(newsList: List<NewsEntity>)
 
-    @Query("DELETE FROM news WHERE news_id = :id")
-    suspend fun delete(id: String)
 }

@@ -1,24 +1,37 @@
 package com.hong7.coinnews.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.DeleteColumn
+import androidx.room.DeleteTable
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.AutoMigrationSpec
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.hong7.coinnews.worker.CoinFilterDatabaseWorker
+import com.hong7.coinnews.database.migration.AutoMigrationSpecs
+import com.hong7.coinnews.database.migration.Migration.MIGRATION_1_2
 
 @Database(
-    entities = [FilterEntity::class, NewsEntity::class],
-    version = 1,
-    exportSchema = false
+    entities = [FilterEntity::class, ScrapNewsEntity::class, NewsEntity::class],
+    version = 3,
+    autoMigrations = [
+        AutoMigration(
+            from = 2,
+            to = 3,
+            spec = AutoMigrationSpecs.MIGRATION_2_3_SPEC::class
+        )
+    ],
+    exportSchema = true
 )
 @TypeConverters(Converter::class)
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun filterDao(): FilterDao
+    abstract fun filterDao(): UserFilterDao
+
+    abstract fun interestedNewsDao(): InterestedNewsDao
 
     abstract fun newsDao(): NewsDao
 
@@ -34,16 +47,8 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun buildDatabase(context: Context): AppDatabase {
             return Room.databaseBuilder(context, AppDatabase::class.java, "coin_db")
-                .addCallback(
-                    object : RoomDatabase.Callback() {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            val request = OneTimeWorkRequestBuilder<CoinFilterDatabaseWorker>()
-                                .build()
-                            WorkManager.getInstance(context).enqueue(request)
-                        }
-                    }
-                )
+                .addMigrations(MIGRATION_1_2)
+                .addTypeConverter(Converter())
                 .build()
         }
     }

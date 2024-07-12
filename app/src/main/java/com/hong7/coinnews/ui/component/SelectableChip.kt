@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,10 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
+import com.hong7.coinnews.ui.theme.Grey
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 
@@ -30,27 +34,27 @@ fun SelectableChip(
     modifier: Modifier = Modifier,
 ) {
     val colorBackground = if (selected) {
-        Grey1000
+        Blue800
     } else {
         Grey200
     }
 
     val colorText = if (selected) {
-        Grey200
+        White
     } else {
-        Grey1000
+        Grey
     }
 
     val fontWeight = if (selected) {
         FontWeight.Bold
     } else {
-        FontWeight.Medium
+        FontWeight.Normal
     }
 
     Box(
         modifier = modifier
-            .background(colorBackground, RoundedCornerShape(20.dp))
-            .clip(RoundedCornerShape(20.dp))
+            .background(colorBackground, RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(6.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 6.dp),
         contentAlignment = Alignment.Center
@@ -62,7 +66,6 @@ fun SelectableChip(
             fontWeight = fontWeight
         )
     }
-
 }
 
 @Preview
