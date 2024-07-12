@@ -41,6 +41,7 @@ import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.NetworkState
+import com.hong7.coinnews.ui.CoinListNav
 import com.hong7.coinnews.ui.NewsDetailNav
 import com.hong7.coinnews.ui.component.ClickableChip
 import com.hong7.coinnews.ui.component.SelectableChip
@@ -61,25 +62,21 @@ fun MyCoinNewsScreen(
 ) {
     val uistate by viewModel.uiState.collectAsStateWithLifecycle()
     val watchedNews by viewModel.watchedNewsIds.collectAsStateWithLifecycle()
-    val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
 
-    when(val state = uistate){
-        is MyCoinNewsUiState.Loading -> {
-            TODO()
-        }
+    when (val state = uistate) {
         is MyCoinNewsUiState.Success -> {
             ArticleListScreenContent(
                 watchedNewsIds = watchedNews,
                 isLoading = false,
                 articles = state.newsList,
-                selectedCoin = selectedCoin,
+                selectedCoin = state.selectedCoin,
                 filter = state.filter,
                 onCoinClick = remember(viewModel) { { viewModel.onCoinClick(it) } },
                 onFilterSettingClick = {
-//            NavigationUtils.navigate(
-//                navController,
-//                CoinListNav.route
-//            )
+                     NavigationUtils.navigate(
+                        navController,
+                        CoinListNav.route
+                     )
                 },
                 onArticleClick = {
                     NavigationUtils.navigate(
@@ -92,7 +89,39 @@ fun MyCoinNewsScreen(
             )
         }
 
+        is MyCoinNewsUiState.FilterEmpty -> {
+            EmptyFilterContent(
+                onFilterSettingClick = {
+                    NavigationUtils.navigate(
+                        navController,
+                        CoinListNav.route
+                    )
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         else -> {}
+    }
+}
+
+@Composable
+private fun EmptyFilterContent(
+    onFilterSettingClick: () -> Unit,
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        EmptyFiltersContent(
+            text = "보고싶은 뉴스의 코인을 선택해보세요!"
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        ClickableChip(
+            text = "코인 선택",
+            onClick = { onFilterSettingClick() },
+        )
     }
 }
 
@@ -115,49 +144,32 @@ private fun ArticleListScreenContent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        if (filter == null || filter.coins.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                EmptyFiltersContent(
-                    text = "보고싶은 뉴스의 코인을 선택해보세요!"
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                ClickableChip(
-                    text = "코인 선택",
-                    onClick = { onFilterSettingClick() },
-                )
-            }
-        } else {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Spacer(modifier = Modifier.height(15.dp))
-                CoinFiltersRow(
-                    coins = filter.coins,
-                    selectedCoin = selectedCoin,
-                    onCoinClick = onCoinClick,
-                    onFilterSettingClick = onFilterSettingClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                HorizontalDivider(
-                    thickness = 0.7.dp,
-                    color = Grey200,
-                )
-                NewsList(
-                    watchedNewsIds = watchedNewsIds,
-                    isLoading = isLoading,
-                    articles = articles,
-                    onArticleClick = onArticleClick,
-                    modifier = Modifier.fillMaxWidth(),
-                    state = state
-                )
-            }
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Spacer(modifier = Modifier.height(15.dp))
+            CoinFiltersRow(
+                coins = filter?.coins ?: emptyList(),
+                selectedCoin = selectedCoin,
+                onCoinClick = onCoinClick,
+                onFilterSettingClick = onFilterSettingClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            HorizontalDivider(
+                thickness = 0.7.dp,
+                color = Grey200,
+            )
+            NewsList(
+                watchedNewsIds = watchedNewsIds,
+                isLoading = isLoading,
+                articles = articles,
+                onArticleClick = onArticleClick,
+                modifier = Modifier.fillMaxWidth(),
+                state = state
+            )
         }
     }
 }

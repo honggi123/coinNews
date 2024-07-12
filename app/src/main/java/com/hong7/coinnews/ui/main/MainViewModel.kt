@@ -18,7 +18,7 @@ class MainViewModel @Inject constructor(
     private val networkChecker: NetworkChecker
 ) : ViewModel() {
 
-    private val _isLoading = MutableStateFlow(true)
+    private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
     private val _networkState = MutableSharedFlow<NetworkState>(replay = 1)

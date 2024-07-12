@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui.feature.mycoinnews
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hong7.coinnews.data.repository.FilterRepository
@@ -14,47 +15,40 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MyCoinNewsViewModel @Inject constructor(
     private val newsRepository: NewsRepository,
     private val filterRepository: FilterRepository,
 ) : ViewModel() {
 
-    val selectedCoin = filterRepository.getFilter()
-        .flatMapLatest { filter ->
-            val selectedCoin = filter?.coins
-                ?.filter { it.isSelected }
-                ?.firstOrNull()
-            flowOf(selectedCoin)
-        }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(3_000),
-            null
-        )
+    private val selectedCoin = MutableStateFlow<Coin?>(null)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<MyCoinNewsUiState> = filterRepository.getFilter()
-        .flatMapLatest { filter ->
-            val selectedCoin = filter?.coins
-                ?.filter { it.isSelected }
-                ?.firstOrNull()
-            if (selectedCoin != null) {
-                newsRepository.getRecentNewsByCoin(selectedCoin)
-                    .flatMapLatest {
-                        flowOf(MyCoinNewsUiState.Success(it, filter))
-                    }
-            } else {
-                flowOf(MyCoinNewsUiState.SelectedCoinEmpty)
-            }
+    val uiState: StateFlow<MyCoinNewsUiState> = combine(
+        filterRepository.getUserFilter(),
+        selectedCoin,
+        ::Pair
+    ).flatMapLatest { pair ->
+        val filter = pair.first
+        val selectedCoin = pair.second ?: filter?.coins?.firstOrNull()
+        if (filter != null) {
+            newsRepository.getRecentNewsByCoin(selectedCoin!!) // todo
+                .flatMapLatest {
+                    flowOf(MyCoinNewsUiState.Success(it, selectedCoin, filter))
+                }
+        } else {
+            flowOf(MyCoinNewsUiState.FilterEmpty)
         }
-        .catch { TODO() }
+    }
+        .catch { emit(MyCoinNewsUiState.LoadFailed) }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(3_000),
@@ -72,7 +66,7 @@ class MyCoinNewsViewModel @Inject constructor(
 
     fun onCoinClick(coin: Coin) {
         viewModelScope.launch {
-            filterRepository.saveSelectedCoin(coin)
+            selectedCoin.value = coin
         }
     }
 }
@@ -81,16 +75,15 @@ sealed interface MyCoinNewsUiState {
 
     object Loading : MyCoinNewsUiState
 
-    object SelectedCoinEmpty : MyCoinNewsUiState
+    object FilterEmpty : MyCoinNewsUiState
 
     data class Success(
         val newsList: List<Article>,
+        val selectedCoin: Coin,
         val filter: Filter
     ) : MyCoinNewsUiState
 
-    data class Failed(
-        val throwable: Throwable
-    ) : MyCoinNewsUiState
+    object LoadFailed : MyCoinNewsUiState
 }
 
 

@@ -1,11 +1,11 @@
-package com.hong7.coinnews.ui.feature.coinlist
+package com.hong7.coinnews.ui.feature.filtersetting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hong7.coinnews.data.repository.CoinRepository
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.model.Coin
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -14,20 +14,19 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
-class CoinListViewModel @Inject constructor(
-    private val coinRepository: CoinRepository,
+class FilterSettingViewModel @Inject constructor(
     private val filterRepository: FilterRepository,
 ) : ViewModel() {
 
-    val coins: StateFlow<List<Coin>> = coinRepository.getAllCoins()
-        .flatMapLatest { coins ->
-            filterRepository.getFilter().map {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val coins: StateFlow<List<Coin>> = filterRepository.getFilter()
+        .flatMapLatest { filter ->
+            filterRepository.getUserFilter().map {
                 val filterCoinIds = it?.coins?.map { it.id }?.toSet() ?: emptySet()
-                it?.coins?.map { coin ->
+                filter.coins.map { coin ->
                     coin.copy(isSelected = coin.id in filterCoinIds)
                 }
             }
@@ -40,7 +39,7 @@ class CoinListViewModel @Inject constructor(
             emptyList()
         )
 
-    fun onCompleteSelect(selectedCoins: List<Coin>) {
+    fun onSelectCompleted(selectedCoins: List<Coin>) {
         viewModelScope.launch {
             filterRepository.setMyCoins(selectedCoins)
         }

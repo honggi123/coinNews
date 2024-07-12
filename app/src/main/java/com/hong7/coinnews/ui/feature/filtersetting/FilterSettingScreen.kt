@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.feature.coinlist
+package com.hong7.coinnews.ui.feature.filtersetting
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.ui.component.CheckListItem
@@ -47,17 +48,13 @@ import com.hong7.coinnews.ui.theme.Grey700
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CoinListScreen(
+fun FilterSettingScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: CoinListViewModel = hiltViewModel()
+    viewModel: FilterSettingViewModel = hiltViewModel()
 ) {
-    val coins by viewModel.coins.collectAsState()
+    val coins by viewModel.coins.collectAsStateWithLifecycle()
     val selectedCoins = rememberSaveable { mutableStateOf<Set<Coin>>(mutableSetOf()) }
-
-    LaunchedEffect(key1 = coins) {
-        selectedCoins.value = coins.filter { it.isSelected }.toMutableSet()
-    }
 
     Scaffold(
         topBar = {
@@ -121,7 +118,7 @@ fun CoinListScreen(
             registerCoinButton(
                 actionName = "등록",
                 onActionClick = {
-                    viewModel.onCompleteSelect(selectedCoins.value.toList())
+                    viewModel.onSelectCompleted(selectedCoins.value.toList())
                     navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth()

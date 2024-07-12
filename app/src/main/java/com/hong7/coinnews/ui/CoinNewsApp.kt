@@ -18,7 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.hong7.coinnews.model.NetworkState
-import com.hong7.coinnews.ui.feature.coinlist.CoinListScreen
+import com.hong7.coinnews.ui.feature.filtersetting.FilterSettingScreen
 import com.hong7.coinnews.ui.feature.home.HomeRoute
 import com.hong7.coinnews.ui.main.MainViewModel
 import com.hong7.coinnews.ui.feature.newsdetail.NewsDetailRoute
@@ -109,7 +109,7 @@ private fun CoinNewsNavGraph(
                 )
             }
         ) {
-            CoinListScreen(
+            FilterSettingScreen(
                 navController,
                 modifier.fillMaxSize()
             )
