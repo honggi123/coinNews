@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.scrap
+package com.hong7.coinnews.ui.feature.scrap
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

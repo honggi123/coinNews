@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.recentnews
+package com.hong7.coinnews.ui.feature.recentnews
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.interaction.MutableInteractionSource

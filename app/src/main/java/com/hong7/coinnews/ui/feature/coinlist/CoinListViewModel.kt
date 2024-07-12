@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.coinlist
+package com.hong7.coinnews.ui.feature.coinlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

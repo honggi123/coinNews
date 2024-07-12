@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.hong7.coinnews.model.NetworkState
 import com.hong7.coinnews.ui.CoinNewsApp
-import com.hong7.coinnews.ui.component.NetworkOfflineDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

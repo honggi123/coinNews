@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.setting
+package com.hong7.coinnews.ui.feature.setting
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

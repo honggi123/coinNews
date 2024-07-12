@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.mycoinnews
+package com.hong7.coinnews.ui.feature.mycoinnews
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable

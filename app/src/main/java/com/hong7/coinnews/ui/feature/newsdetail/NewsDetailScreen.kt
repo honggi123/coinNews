@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.newsdetail
+package com.hong7.coinnews.ui.feature.newsdetail
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.perf.FirebasePerformance
 import com.google.firebase.perf.metrics.Trace
 import com.hong7.coinnews.R
@@ -60,11 +61,11 @@ fun NewsDetailRoute(
     onBackClick: () -> Unit,
     viewModel: NewsDetailViewModel = hiltViewModel()
 ) {
-    val isInterested by viewModel.isInterested.collectAsState()
-    val article by viewModel.article.collectAsState()
+    val isInterested by viewModel.isInterested.collectAsStateWithLifecycle()
+    val articleUrl by viewModel.articleUrl.collectAsStateWithLifecycle()
 
     NewsDetailScreen(
-        article = article,
+        articleUrl = articleUrl,
         isInterested = isInterested,
         onBackClick = onBackClick,
         onToggleClick = viewModel::onToggleClick,
@@ -74,7 +75,7 @@ fun NewsDetailRoute(
 
 @Composable
 private fun NewsDetailScreen(
-    article: Article?,
+    articleUrl: String?,
     isInterested: Boolean,
     onBackClick: () -> Unit,
     onToggleClick: (ArticleWithInterest) -> Unit,
@@ -84,7 +85,7 @@ private fun NewsDetailScreen(
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 TopAppBar(
-                    article = article,
+                    articleUrl = articleUrl,
                     isInterested = isInterested,
                     onBackClick = onBackClick,
                     onToggleClick = onToggleClick,
@@ -94,9 +95,9 @@ private fun NewsDetailScreen(
             }
         }
     ) { paddingValues ->
-        if (article != null) {
+        if (articleUrl != null) {
             ArticleContent(
-                url = article.url,
+                url = articleUrl,
                 date = LocalDateTime.now(),
                 modifier = modifier
                     .padding(paddingValues)
@@ -113,7 +114,7 @@ private fun NewsDetailScreen(
 
 @Composable
 private fun TopAppBar(
-    article: Article?,
+    articleUrl: String?,
     isInterested: Boolean,
     onBackClick: () -> Unit,
     onToggleClick: (ArticleWithInterest) -> Unit,
@@ -158,7 +159,7 @@ private fun TopAppBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = article?.url ?: "",
+                    text = articleUrl ?: "",
                     color = Grey500,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Normal,
@@ -176,10 +177,11 @@ private fun TopAppBar(
                     .clickableWithoutRipple(
                         interactionSource = interactionSource,
                     ) {
-                        if (article != null) {
-                            onToggleClick(
-                                ArticleWithInterest(article, isInterested)
-                            )
+                        if (articleUrl != null) {
+                            // todo
+//                            onToggleClick(
+//                                ArticleWithInterest(articleUrl, isInterested)
+//                            )
                         }
                     },
                 tint = Grey700
@@ -329,14 +331,7 @@ private fun ArticleContent(
 private fun ArticleDetailScreenPreview() {
     CoinNewsAppTheme {
         NewsDetailScreen(
-            article = Article(
-                id = "",
-                title = "",
-                description = "",
-                url = "",
-                author = "",
-                createdAt = LocalDateTime.now()
-            ),
+            articleUrl = "",
             isInterested = false,
             onBackClick = {},
             onToggleClick = {},

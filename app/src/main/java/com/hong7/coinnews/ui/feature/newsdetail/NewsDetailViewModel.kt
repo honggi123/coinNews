@@ -1,10 +1,11 @@
-package com.hong7.coinnews.ui.newsdetail
+package com.hong7.coinnews.ui.feature.newsdetail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.ArticleWithInterest
+import com.hong7.coinnews.ui.NewsDetailNav
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,8 +19,7 @@ class NewsDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    // todo
-    val article = savedStateHandle.getStateFlow(ARTICLE_KEY, )
+    val articleUrl = savedStateHandle.getStateFlow(ARTICLE_KEY, "")
 
     private val _isInterested = MutableStateFlow(false)
     val isInterested: StateFlow<Boolean> = _isInterested.asStateFlow()
@@ -35,4 +35,4 @@ class NewsDetailViewModel @Inject constructor(
     }
 }
 
-private const val ARTICLE_KEY = "article_key"
+private const val ARTICLE_KEY = "article"
