@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.home
+package com.hong7.coinnews.ui.feature.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -20,14 +20,9 @@ fun HomeRoute(
     navController: NavHostController
 ) {
     val tabContent = rememberTabContent(networkState, navController)
-    val (section, onSectionChange) = rememberSaveable {
-        mutableStateOf(tabContent.first().section)
-    }
-
 
     HomeScreen(
         tabs = tabContent.toImmutableList(),
-        selectedSection = section,
         onScrapListClick = {
             NavigationUtils.navigate(
                 navController,
@@ -36,7 +31,6 @@ fun HomeRoute(
         },
         onSettingClick = {
             NavigationUtils.navigate(navController, SettingNav.route)
-        },
-        onSectionChange = onSectionChange,
+        }
     )
 }

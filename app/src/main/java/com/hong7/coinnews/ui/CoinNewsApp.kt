@@ -18,12 +18,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.hong7.coinnews.model.NetworkState
-import com.hong7.coinnews.ui.coinlist.CoinListScreen
-import com.hong7.coinnews.ui.home.HomeRoute
+import com.hong7.coinnews.ui.feature.coinlist.CoinListScreen
+import com.hong7.coinnews.ui.feature.home.HomeRoute
 import com.hong7.coinnews.ui.main.MainViewModel
-import com.hong7.coinnews.ui.newsdetail.NewsDetailRoute
-import com.hong7.coinnews.ui.scrap.ScrapNewsScreen
-import com.hong7.coinnews.ui.setting.SettingScreen
+import com.hong7.coinnews.ui.feature.newsdetail.NewsDetailRoute
+import com.hong7.coinnews.ui.feature.scrap.ScrapNewsScreen
+import com.hong7.coinnews.ui.feature.setting.SettingScreen
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 
 @Composable

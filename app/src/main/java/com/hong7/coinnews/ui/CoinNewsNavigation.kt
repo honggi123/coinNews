@@ -26,16 +26,9 @@ object NewsDetailNav : DestinationArg<Article> {
     )
 
     override fun navigateWithArg(item: Article): String {
-        val title = URLEncoder.encode(item.title, StandardCharsets.UTF_8.toString()).replace("+", "%20")
-        val description = URLEncoder.encode(item.description, StandardCharsets.UTF_8.toString()).replace("+", "%20")
         val newUrl = URLEncoder.encode(item.url, StandardCharsets.UTF_8.toString())
-        val arg = GsonUtils.toJson(item.copy(title = title, url = newUrl, description = description))
+        val arg = GsonUtils.toJson(newUrl)
         return "$route/$arg"
-    }
-
-    override fun findArgument(navBackStackEntry: NavBackStackEntry): Article? {
-        val articleString = navBackStackEntry.arguments?.getString(argName)
-        return GsonUtils.fromJson<Article>(articleString)
     }
 }
 
@@ -66,7 +59,6 @@ interface DestinationArg<T> : Destination {
 
     fun routeWithArgName() = "$route/{$argName}"
     fun navigateWithArg(item: T): String
-    fun findArgument(navBackStackEntry: NavBackStackEntry): T?
 }
 
 object NavigationRouteName {

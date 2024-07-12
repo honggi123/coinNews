@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.recentnews
+package com.hong7.coinnews.ui.feature.recentnews
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

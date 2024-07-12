@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.home
+package com.hong7.coinnews.ui.feature.home
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
 import com.hong7.coinnews.model.NetworkState
-import com.hong7.coinnews.ui.mycoinnews.MyCoinNewsScreen
-import com.hong7.coinnews.ui.recentnews.RecentNewsScreen
+import com.hong7.coinnews.ui.feature.mycoinnews.MyCoinNewsScreen
+import com.hong7.coinnews.ui.feature.recentnews.RecentNewsScreen
 import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200

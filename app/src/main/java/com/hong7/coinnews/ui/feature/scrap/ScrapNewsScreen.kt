@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.scrap
+package com.hong7.coinnews.ui.feature.scrap
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
