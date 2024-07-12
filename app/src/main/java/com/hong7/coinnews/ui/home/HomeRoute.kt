@@ -12,6 +12,7 @@ import com.hong7.coinnews.ui.CoinListNav
 import com.hong7.coinnews.ui.ScrapNav
 import com.hong7.coinnews.ui.SettingNav
 import com.hong7.coinnews.utils.NavigationUtils
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun HomeRoute(
@@ -25,7 +26,7 @@ fun HomeRoute(
 
 
     HomeScreen(
-        tabs = tabContent,
+        tabs = tabContent.toImmutableList(),
         selectedSection = section,
         onScrapListClick = {
             NavigationUtils.navigate(

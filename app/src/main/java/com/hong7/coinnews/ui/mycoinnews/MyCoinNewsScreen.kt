@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +45,6 @@ import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.NetworkState
 import com.hong7.coinnews.ui.ArticleDetailNav
-import com.hong7.coinnews.ui.CoinListNav
 import com.hong7.coinnews.ui.component.ClickableChip
 import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
@@ -56,7 +54,6 @@ import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.defaultTextStyle
 import com.hong7.coinnews.utils.DateUtils
 import com.hong7.coinnews.utils.NavigationUtils
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -65,66 +62,42 @@ fun MyCoinNewsScreen(
     navController: NavHostController,
     viewModel: MyCoinNewsViewModel = hiltViewModel()
 ) {
-    val state = rememberLazyListState()
-
-    val scope = rememberCoroutineScope()
-
-    val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
-    val filter by viewModel.filter.collectAsStateWithLifecycle()
-    val articles by viewModel.articles.collectAsStateWithLifecycle()
-    val loading by viewModel.loading.collectAsStateWithLifecycle()
+    val uistate by viewModel.uiState.collectAsStateWithLifecycle()
     val watchedNews by viewModel.watchedNewsIds.collectAsStateWithLifecycle()
-//    var refreshing by remember { mutableStateOf(false) }
-//    val refreshScope = rememberCoroutineScope()
-//
-//    val pullRefreshState = rememberPullRefreshState(
-//        refreshing = refreshing,
-//        onRefresh = {
-//            refreshScope.launch {
-//                refreshing = true
-//                // refresh todo
-//                delay(2000)
-//                refreshing = false
-//            }
-//        })
-    var isFirstLaunch by remember { mutableStateOf(true) }
+    val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
 
-    LaunchedEffect(key1 = networkState) {
-        if (isFirstLaunch) {
-            isFirstLaunch = false
-        } else {
-            viewModel.getSelectedCoinNews()
+    when(val state = uistate){
+        is MyCoinNewsUiState.Loading -> {
+            TODO()
         }
-    }
+        is MyCoinNewsUiState.Success -> {
+            ArticleListScreenContent(
+                watchedNewsIds = watchedNews,
+                isLoading = false,
+                articles = state.newsList,
+                selectedCoin = selectedCoin,
+                filter = state.filter,
+                onCoinClick = remember(viewModel) { { viewModel.onCoinClick(it) } },
+                onFilterSettingClick = {
+//            NavigationUtils.navigate(
+//                navController,
+//                CoinListNav.route
+//            )
+                },
+                onArticleClick = {
+                    NavigationUtils.saveArticle(it)
+                    NavigationUtils.navigate(
+                        navController,
+                        ArticleDetailNav.navigateWithArg(it)
+                    )
+                    viewModel.onNewsClick(it.id)
+                },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
 
-    ArticleListScreenContent(
-        watchedNewsIds = watchedNews,
-        isLoading = loading,
-        articles = articles,
-        selectedCoin = selectedCoin,
-        filter = filter,
-        onCoinClick = {
-            viewModel.onCoinClick(it)
-            if (articles.isNotEmpty()) scope.launch { state.animateScrollToItem(0) }
-        },
-        onFilterSettingClick = {
-            NavigationUtils.navigate(
-                navController,
-                CoinListNav.route
-            )
-        },
-        onArticleClick = {
-            NavigationUtils.saveArticle(it)
-            NavigationUtils.navigate(
-                navController,
-                ArticleDetailNav.navigateWithArg(it)
-            )
-            viewModel.onNewsClick(it.id)
-        },
-//        pullRefreshState = pullRefreshState,
-        modifier = Modifier.fillMaxWidth(),
-        state = state
-    )
+        else -> {}
+    }
 }
 
 @Composable
@@ -137,11 +110,11 @@ private fun ArticleListScreenContent(
     onFilterSettingClick: () -> Unit,
     onCoinClick: (Coin) -> Unit,
     onArticleClick: (Article) -> Unit,
-//    pullRefreshState: PullRefreshState,
-    state: LazyListState,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
+    val state = rememberLazyListState()
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(15.dp)
@@ -166,73 +139,111 @@ private fun ArticleListScreenContent(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Spacer(modifier = Modifier.height(15.dp))
-                Row(
+                CoinFiltersRow(
+                    coins = filter.coins,
+                    selectedCoin = selectedCoin,
+                    onCoinClick = onCoinClick,
+                    onFilterSettingClick = onFilterSettingClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    LazyRow(
-                        modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(filter.coins.size) {
-                            SelectableChip(
-                                selected = filter.coins[it] == selectedCoin,
-                                text = filter.coins[it].name,
-                                onClick = { onCoinClick(filter.coins[it]) }
-                            )
-                        }
-                    }
-                    SettingButton(
-                        text = "전체",
-                        onClick = { onFilterSettingClick() }
-                    )
-                }
+                        .padding(horizontal = 16.dp)
+                )
                 Spacer(modifier = Modifier.height(10.dp))
                 HorizontalDivider(
                     thickness = 0.7.dp,
                     color = Grey200,
                 )
-                if (isLoading) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(38.dp)
-                        )
-                    }
-                }
-                LazyColumn(
-                    contentPadding = contentPadding,
-                    modifier = Modifier.fillMaxSize(),
+                NewsList(
+                    watchedNewsIds = watchedNewsIds,
+                    isLoading = isLoading,
+                    articles = articles,
+                    onArticleClick = onArticleClick,
+                    modifier = Modifier.fillMaxWidth(),
                     state = state
-                ) {
-                    items(
-                        articles.size,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CoinFiltersRow(
+    coins: List<Coin>,
+    selectedCoin: Coin?,
+    onCoinClick: (Coin) -> Unit,
+    onFilterSettingClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        LazyRow(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(coins.size, key = { coins[it].id }) {
+                SelectableChip(
+                    selected = coins[it] == selectedCoin,
+                    text = coins[it].name,
+                    onClick = { onCoinClick(coins[it]) }
+                )
+            }
+        }
+        SettingButton(
+            text = "전체",
+            onClick = onFilterSettingClick
+        )
+    }
+}
+
+@Composable
+private fun NewsList(
+    watchedNewsIds: Set<String>,
+    isLoading: Boolean,
+    articles: List<Article>,
+    onArticleClick: (Article) -> Unit,
+    state: LazyListState,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+) {
+    if (isLoading) {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(38.dp)
+            )
+        }
+    } else {
+        LazyColumn(
+            contentPadding = contentPadding,
+            modifier = Modifier.fillMaxSize(),
+            state = state
+        ) {
+            items(
+                articles.size,
 //                        key = { articles[it].id } todo
-                    ) { index ->
-                        if (index == 0) {
-                            Spacer(modifier = Modifier.height(10.dp))
-                        }
-                        articles[index].let {
-                            ArticleContentItem(
-                                watchedNewsIds = watchedNewsIds,
-                                article = it,
-                                onArticleClick = onArticleClick,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                            )
-                            HorizontalDivider(
-                                thickness = 0.7.dp,
-                                color = Grey200,
-                                modifier = Modifier.padding(vertical = 15.dp)
-                            )
-                        }
-                    }
+            ) { index ->
+                if (index == 0) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+                articles[index].let {
+                    ArticleContentItem(
+                        watchedNewsIds = watchedNewsIds,
+                        article = it,
+                        onArticleClick = onArticleClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    )
+                    HorizontalDivider(
+                        thickness = 0.7.dp,
+                        color = Grey200,
+                        modifier = Modifier.padding(vertical = 15.dp)
+                    )
                 }
             }
         }

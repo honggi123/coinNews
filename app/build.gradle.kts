@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.android.application")
@@ -29,9 +30,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String","CRTPTO_NEWS_API_KEY", getApiKey("CRTPTO_NEWS_API_KEY"))
-        buildConfigField("String","NAVER_API_KEY", getApiKey("NAVER_API_KEY"))
-        buildConfigField("String","NAVER_API_SECRETE", getApiKey("NAVER_API_SECRETE"))
+        buildConfigField("String", "CRTPTO_NEWS_API_KEY", getApiKey("CRTPTO_NEWS_API_KEY"))
+        buildConfigField("String", "NAVER_API_KEY", getApiKey("NAVER_API_KEY"))
+        buildConfigField("String", "NAVER_API_SECRETE", getApiKey("NAVER_API_SECRETE"))
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -71,8 +72,10 @@ android {
 
         freeCompilerArgs += listOf(
             "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${rootProject.file(".").absolutePath}/report/compose-reports"
-        )
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + project.buildDir.absolutePath + "/compose_metrics")
+        freeCompilerArgs += listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination="  + project.buildDir.absolutePath + "/compose_report")
     }
     buildFeatures {
         compose = true
@@ -86,7 +89,6 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-
 }
 
 dependencies {

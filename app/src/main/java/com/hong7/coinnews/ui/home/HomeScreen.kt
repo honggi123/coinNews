@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui.home
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,10 +45,12 @@ import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.utils.NavigationUtils
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
+import okhttp3.internal.immutableListOf
 
 enum class Sections(@StringRes val titleResId: Int) {
-    RecnentNews(R.string.recent_news),
+    RecentNews(R.string.recent_news),
     MyCoinNews(R.string.my_coin_news),
 }
 
@@ -56,7 +59,7 @@ class TabContent(val section: Sections, val content: @Composable () -> Unit)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    tabs: MutableList<TabContent>,
+    tabs: ImmutableList<TabContent>,
     selectedSection: Sections,
     onScrapListClick: () -> Unit,
     onSettingClick: () -> Unit,
@@ -121,7 +124,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreenContent(
-    tabs: MutableList<TabContent>,
+    tabs: ImmutableList<TabContent>,
     pagerState: PagerState,
     onSectionIndexChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -157,7 +160,7 @@ private fun HomeScreenContent(
 
 @Composable
 private fun HomeTabRowContent(
-    tabs: MutableList<TabContent>,
+    tabs: ImmutableList<TabContent>,
     selectedTabIndex: Int,
     onSectionIndexChange: (Int) -> Unit,
 ) {
@@ -186,9 +189,9 @@ private fun HomeTabRowContent(
 fun rememberTabContent(
     networkState: NetworkState,
     navController: NavHostController
-): MutableList<TabContent> {
+): List<TabContent> {
 
-    val recentNewsSection = TabContent(Sections.RecnentNews) {
+    val recentNewsSection = TabContent(Sections.RecentNews) {
         RecentCoinNewsScreen(networkState, navController)
     }
 
@@ -196,7 +199,7 @@ fun rememberTabContent(
         MyCoinNewsScreen(networkState, navController)
     }
 
-    return mutableListOf(recentNewsSection, myCoinNewsSection)
+    return listOf(recentNewsSection, myCoinNewsSection)
 }
 
 //@OptIn(ExperimentalMaterial3Api::class)

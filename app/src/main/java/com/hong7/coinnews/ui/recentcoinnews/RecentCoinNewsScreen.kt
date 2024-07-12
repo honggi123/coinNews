@@ -85,33 +85,53 @@ fun RecentCoinNewsScreen(
     navController: NavHostController,
     viewModel: RecentCoinNewsViewModel = hiltViewModel()
 ) {
-    val state = rememberLazyListState()
-
-    val articles by viewModel.articles.collectAsStateWithLifecycle()
-    val loading by viewModel.loading.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val watchedNews by viewModel.watchedNewsIds.collectAsStateWithLifecycle()
 
-    ArticleListScreenContent(
-        watchedNewsIds = watchedNews,
-        isLoading = loading,
-        articles = articles,
-        onArticleClick = {
-            NavigationUtils.saveArticle(it)
-            NavigationUtils.navigate(
-                navController,
-                ArticleDetailNav.navigateWithArg(it)
+    when(val state = uiState){
+        is RecentCoinNewsUiState.Loading -> {
+            LoadingContent(modifier = Modifier.fillMaxSize())
+        }
+        is RecentCoinNewsUiState.Success -> {
+            ArticleListScreenContent(
+                watchedNewsIds = watchedNews,
+                articles = state.newsList,
+                onArticleClick = {
+                    NavigationUtils.saveArticle(it)
+                    NavigationUtils.navigate(
+                        navController,
+                        ArticleDetailNav.navigateWithArg(it)
+                    )
+                    viewModel.onNewsClick(it.id)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                state = rememberLazyListState()
             )
-            viewModel.onNewsClick(it.id)
-        },
-        modifier = Modifier.fillMaxWidth(),
-        state = state
-    )
+        }
+        else -> {
+            // TODO
+        }
+    }
+}
+
+@Composable
+private fun LoadingContent(
+    modifier: Modifier = Modifier
+){
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(38.dp)
+        )
+    }
 }
 
 @Composable
 private fun ArticleListScreenContent(
     watchedNewsIds: Set<String>,
-    isLoading: Boolean,
     articles: List<Article>,
     onArticleClick: (Article) -> Unit,
     state: LazyListState,
@@ -129,17 +149,6 @@ private fun ArticleListScreenContent(
                 thickness = 0.7.dp,
                 color = Grey200,
             )
-            if (isLoading) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(38.dp)
-                    )
-                }
-            }
             LazyColumn(
                 contentPadding = contentPadding,
                 modifier = Modifier.fillMaxSize(),
@@ -147,7 +156,6 @@ private fun ArticleListScreenContent(
             ) {
                 items(
                     articles.size,
-//                        key = { articles[it].id } todo
                 ) { index ->
                     if (index == 0) {
                         Spacer(modifier = Modifier.height(10.dp))
@@ -170,7 +178,6 @@ private fun ArticleListScreenContent(
                 }
             }
         }
-
     }
 }
 

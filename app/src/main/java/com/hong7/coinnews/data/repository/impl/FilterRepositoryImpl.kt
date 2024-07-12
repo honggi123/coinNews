@@ -43,7 +43,11 @@ class FilterRepositoryImpl @Inject constructor(
         return userFilterDao.isEmpty()
     }
 
-    override suspend fun setCoins(selectedCoins: List<Coin>) {
+    override suspend fun saveSelectedCoin(coin: Coin) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun setMyCoins(selectedCoins: List<Coin>) {
         val filter = userFilterDao.getRecentFilter()
         val coinEntities = selectedCoins.map { it.toEntity() }
 

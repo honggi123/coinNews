@@ -13,15 +13,10 @@ class ScrapNewsViewModel @Inject constructor(
     private val newsRepository: NewsRepository
 ) : ViewModel() {
 
-    val news = newsRepository.getScrapedNews().stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(1_000),
-        emptyList()
-    )
-
-//    fun deleteInterest(coin: Coin) {
-//        viewModelScope.launch {
-//            repository.deleteInterest(coin)
-//        }
-//    }
+    val news = newsRepository.getScrapedNews()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(1_000),
+            emptyList()
+        )
 }

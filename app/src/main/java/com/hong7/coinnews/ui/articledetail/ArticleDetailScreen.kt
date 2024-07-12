@@ -120,6 +120,7 @@ private fun ArticleDetailScreen(
         if (article != null) {
             ArticleContent(
                 url = article.url,
+                date = LocalDateTime.now(),
                 modifier = modifier
                     .padding(paddingValues)
             )
@@ -233,6 +234,7 @@ private fun EmptyArticleContent(
 @Composable
 private fun ArticleContent(
     url: String?,
+    date: LocalDateTime,
     modifier: Modifier = Modifier
 ) {
     var isLoading by rememberSaveable { mutableStateOf(true) }
@@ -258,15 +260,19 @@ private fun ArticleContent(
                             trace.stop()
                         }
 
+                        @Deprecated("Deprecated in Java")
                         override fun shouldOverrideUrlLoading(
                             view: WebView?,
                             url: String?
                         ): Boolean {
                             val host = Uri.parse(url).getHost();
                             if (url == null) {
-                                return true;
+                                return true
                             }
-                            if (!TextUtils.isEmpty(host) && url.startsWith("fb://") && host?.contains("profile") == true) {
+                            if (!TextUtils.isEmpty(host) && url.startsWith("fb://") && host?.contains(
+                                    "profile"
+                                ) == true
+                            ) {
                                 return true
                             } else {
                                 loadUrl(url)
@@ -312,7 +318,7 @@ private fun ArticleContent(
                         .shimmer()
                         .background(Grey500),
                 )
-                repeat(4){
+                repeat(4) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
