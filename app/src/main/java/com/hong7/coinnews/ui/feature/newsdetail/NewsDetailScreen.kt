@@ -62,10 +62,10 @@ fun NewsDetailRoute(
     viewModel: NewsDetailViewModel = hiltViewModel()
 ) {
     val isInterested by viewModel.isInterested.collectAsStateWithLifecycle()
-    val articleUrl by viewModel.articleUrl.collectAsStateWithLifecycle()
+    val article by viewModel.article.collectAsStateWithLifecycle()
 
     NewsDetailScreen(
-        articleUrl = articleUrl,
+        article = article,
         isInterested = isInterested,
         onBackClick = onBackClick,
         onToggleClick = viewModel::onToggleClick,
@@ -75,7 +75,7 @@ fun NewsDetailRoute(
 
 @Composable
 private fun NewsDetailScreen(
-    articleUrl: String?,
+    article: Article?,
     isInterested: Boolean,
     onBackClick: () -> Unit,
     onToggleClick: (ArticleWithInterest) -> Unit,
@@ -85,7 +85,7 @@ private fun NewsDetailScreen(
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 TopAppBar(
-                    articleUrl = articleUrl,
+                    article = article,
                     isInterested = isInterested,
                     onBackClick = onBackClick,
                     onToggleClick = onToggleClick,
@@ -95,9 +95,9 @@ private fun NewsDetailScreen(
             }
         }
     ) { paddingValues ->
-        if (articleUrl != null) {
+        if (article != null) {
             ArticleContent(
-                url = articleUrl,
+                url = article.url,
                 date = LocalDateTime.now(),
                 modifier = modifier
                     .padding(paddingValues)
@@ -114,7 +114,7 @@ private fun NewsDetailScreen(
 
 @Composable
 private fun TopAppBar(
-    articleUrl: String?,
+    article: Article?,
     isInterested: Boolean,
     onBackClick: () -> Unit,
     onToggleClick: (ArticleWithInterest) -> Unit,
@@ -159,7 +159,7 @@ private fun TopAppBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = articleUrl ?: "",
+                    text = article?.url ?: "",
                     color = Grey500,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Normal,
@@ -177,7 +177,7 @@ private fun TopAppBar(
                     .clickableWithoutRipple(
                         interactionSource = interactionSource,
                     ) {
-                        if (articleUrl != null) {
+                        if (article?.url != null) {
                             // todo
 //                            onToggleClick(
 //                                ArticleWithInterest(articleUrl, isInterested)
@@ -331,7 +331,7 @@ private fun ArticleContent(
 private fun ArticleDetailScreenPreview() {
     CoinNewsAppTheme {
         NewsDetailScreen(
-            articleUrl = "",
+            article = null,
             isInterested = false,
             onBackClick = {},
             onToggleClick = {},
