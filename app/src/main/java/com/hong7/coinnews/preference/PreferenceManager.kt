@@ -31,20 +31,4 @@ class PreferenceManager @Inject constructor(
         return prefs.getLong(key, defValue)
     }
 
-    fun setLastUpdateDate(lastUpdateDate: Calendar) {
-        putLong(LAST_UPDATE_DATE, lastUpdateDate.timeInMillis)
-    }
-
-    fun getLastUpdateDate(): Calendar? {
-        val calendar = Calendar.getInstance()
-        val date = getLong(LAST_UPDATE_DATE, 0)
-
-        if (date == 0L) {
-            return null
-        }
-
-        calendar.timeInMillis = date!!
-
-        return calendar
-    }
 }

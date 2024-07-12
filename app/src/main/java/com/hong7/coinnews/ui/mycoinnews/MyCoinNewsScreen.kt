@@ -24,11 +24,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +41,7 @@ import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.NetworkState
-import com.hong7.coinnews.ui.ArticleDetailNav
+import com.hong7.coinnews.ui.NewsDetailNav
 import com.hong7.coinnews.ui.component.ClickableChip
 import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
@@ -85,10 +82,9 @@ fun MyCoinNewsScreen(
 //            )
                 },
                 onArticleClick = {
-                    NavigationUtils.saveArticle(it)
                     NavigationUtils.navigate(
                         navController,
-                        ArticleDetailNav.navigateWithArg(it)
+                        NewsDetailNav.navigateWithArg(it)
                     )
                     viewModel.onNewsClick(it.id)
                 },

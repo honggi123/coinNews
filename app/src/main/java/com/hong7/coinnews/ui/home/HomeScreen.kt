@@ -1,6 +1,5 @@
 package com.hong7.coinnews.ui.home
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,15 +9,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -31,23 +30,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
 import com.hong7.coinnews.model.NetworkState
-import com.hong7.coinnews.ui.CoinListNav
 import com.hong7.coinnews.ui.mycoinnews.MyCoinNewsScreen
-import com.hong7.coinnews.ui.mycoinnews.MyCoinNewsViewModel
-import com.hong7.coinnews.ui.recentcoinnews.RecentCoinNewsScreen
-import com.hong7.coinnews.ui.scrap.ScrapNewsScreen
+import com.hong7.coinnews.ui.recentnews.RecentNewsScreen
 import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey500
-import com.hong7.coinnews.utils.NavigationUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
-import okhttp3.internal.immutableListOf
 
 enum class Sections(@StringRes val titleResId: Int) {
     RecentNews(R.string.recent_news),
@@ -60,11 +53,8 @@ class TabContent(val section: Sections, val content: @Composable () -> Unit)
 @Composable
 fun HomeScreen(
     tabs: ImmutableList<TabContent>,
-    selectedSection: Sections,
     onScrapListClick: () -> Unit,
     onSettingClick: () -> Unit,
-    onSectionChange: (Sections) -> Unit,
-    viewModel: MyCoinNewsViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
@@ -192,7 +182,7 @@ fun rememberTabContent(
 ): List<TabContent> {
 
     val recentNewsSection = TabContent(Sections.RecentNews) {
-        RecentCoinNewsScreen(networkState, navController)
+        RecentNewsScreen(networkState, navController)
     }
 
     val myCoinNewsSection = TabContent(Sections.MyCoinNews) {
@@ -201,66 +191,3 @@ fun rememberTabContent(
 
     return listOf(recentNewsSection, myCoinNewsSection)
 }
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@SuppressLint("UnusedBoxWithConstraintsScope")
-//@Composable
-//private fun SettingBottomModal(
-//    isGlobalNews: Boolean,
-//    onCloseClick: () -> Unit,
-//    onCompleteClick: (filter: Filter) -> Unit,
-//    modifier: Modifier = Modifier,
-//    sheetState: SheetState = rememberModalBottomSheetState(),
-//) {
-//    val filters = rememberSaveable { mutableStateOf(filter.coins) }
-//    val scope = rememberSaveable { mutableStateOf(filter.scope) }
-//
-//    ModalBottomSheet(
-//        modifier = Modifier.padding(horizontal = 10.dp),
-//        sheetState = sheetState,
-//        tonalElevation = 0.dp,
-//        scrimColor = GreyOpacity400,
-//        onDismissRequest = { onCloseClick() },
-//        dragHandle = null,
-//        containerColor = Color.Transparent,
-//    ) {
-//        BoxWithConstraints(
-//            Modifier
-//                .navigationBarsPadding()
-//                .padding(bottom = 30.dp)
-//        ) {
-//            BaseCustomModal(
-//                onDismissClick = onCloseClick,
-//                actionButtonText = "등록",
-//                onActionClick = {
-//                    onCompleteClick(
-//                        filter.copy(
-//                            coins = filters.value,
-//                            scope = scope.value
-//                        )
-//                    )
-//                },
-//                modifier = modifier,
-//            ) {
-//                Column(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    verticalArrangement = Arrangement.spacedBy(6.dp)
-//                ) {
-//                    CheckListItem(
-//                        checked = scope.value != CountryScope.Local,
-//                        text = "해외 뉴스 (영어)",
-//                        onClick = {
-//                            scope.value = if (it) {
-//                                CountryScope.Global
-//                            } else {
-//                                CountryScope.Local
-//                            }
-//                        }
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
-
-

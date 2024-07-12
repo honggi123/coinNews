@@ -6,8 +6,6 @@ import com.hong7.coinnews.model.Article
 
 object NavigationUtils {
 
-    private var article: Article? = null
-
     fun navigate(
         controller: NavHostController,
         routeName: String,
@@ -22,13 +20,5 @@ object NavigationUtils {
             launchSingleTop = isLaunchSingleTop
             restoreState = needToRestoreState
         }
-    }
-
-    fun saveArticle(newArticle: Article) {
-        article = newArticle
-    }
-
-    fun getSavedArticle(): Article? {
-        return article
     }
 }

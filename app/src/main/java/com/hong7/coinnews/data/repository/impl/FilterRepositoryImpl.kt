@@ -21,22 +21,11 @@ class FilterRepositoryImpl @Inject constructor(
     private val userFilterDao: UserFilterDao
 ) : FilterRepository {
 
-    override fun getFilterStream(): Flow<Filter?> {
+    override fun getFilter(): Flow<Filter?> {
         val filter = userFilterDao.getRecentFilterStream()
-            .map { filter ->
-                if (filter != null) filter.toDomain()
-                else null
-            }
+            .map { filter -> filter?.let { it.toDomain() } }
 
         return filter
-    }
-
-    override suspend fun getFilter(): Filter? {
-        val filter = userFilterDao.getRecentFilter()
-        val mappedFilter =
-            if (filter != null) filter.toDomain()
-            else null
-        return mappedFilter
     }
 
     override suspend fun isFilterEmpty(): Boolean {

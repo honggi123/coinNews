@@ -15,7 +15,7 @@ object HomeNav : Destination {
     override val title: String = NavigationTitle.MAIN_HOME
 }
 
-object ArticleDetailNav : DestinationArg<Article> {
+object NewsDetailNav : DestinationArg<Article> {
 
     override val argName: String = "article"
     override val route: String = NavigationRouteName.ARTICLE_DETAIL

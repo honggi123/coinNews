@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hong7.coinnews.data.repository.CoinRepository
 import com.hong7.coinnews.data.repository.FilterRepository
-import com.hong7.coinnews.data.repository.UserRepository
 import com.hong7.coinnews.model.Coin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,12 +21,11 @@ import javax.inject.Inject
 class CoinListViewModel @Inject constructor(
     private val coinRepository: CoinRepository,
     private val filterRepository: FilterRepository,
-    private val userRepository: UserRepository
 ) : ViewModel() {
 
     val coins: StateFlow<List<Coin>> = coinRepository.getAllCoins()
         .flatMapLatest { coins ->
-            filterRepository.getFilterStream().map {
+            filterRepository.getFilter().map {
                 val filterCoinIds = it?.coins?.map { it.id }?.toSet() ?: emptySet()
                 it?.coins?.map { coin ->
                     coin.copy(isSelected = coin.id in filterCoinIds)
@@ -45,7 +43,6 @@ class CoinListViewModel @Inject constructor(
     fun onCompleteSelect(selectedCoins: List<Coin>) {
         viewModelScope.launch {
             filterRepository.setMyCoins(selectedCoins)
-            userRepository.updateLastUpdateDate(Calendar.getInstance())
         }
     }
 }

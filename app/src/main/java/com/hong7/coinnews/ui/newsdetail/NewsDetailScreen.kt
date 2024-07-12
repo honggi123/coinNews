@@ -1,17 +1,11 @@
-package com.hong7.coinnews.ui.articledetail
+package com.hong7.coinnews.ui.newsdetail
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.net.Uri
 import android.text.TextUtils
-import android.util.Log
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -24,17 +18,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,15 +33,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.perf.FirebasePerformance
@@ -60,43 +47,33 @@ import com.hong7.coinnews.R
 import com.hong7.coinnews.model.Article
 import com.hong7.coinnews.model.ArticleWithInterest
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
-import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey100
-import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey700
-import com.hong7.coinnews.ui.theme.defaultTextStyle
-import com.valentinilk.shimmer.ShimmerBounds
-import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
-import com.valentinilk.shimmer.unclippedBoundsInWindow
 import java.time.LocalDateTime
 
 
 @Composable
-fun ArticleDetailRoute(
-    article: Article?,
+fun NewsDetailRoute(
     onBackClick: () -> Unit,
-    viewModel: ArticleDetailViewModel = hiltViewModel()
+    viewModel: NewsDetailViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(key1 = Unit) {
-        viewModel.updateArticle(article)
-    }
-
     val isInterested by viewModel.isInterested.collectAsState()
+    val article by viewModel.article.collectAsState()
 
-    ArticleDetailScreen(
+    NewsDetailScreen(
         article = article,
         isInterested = isInterested,
         onBackClick = onBackClick,
-        onToggleClick = viewModel::toggleInterest,
+        onToggleClick = viewModel::onToggleClick,
         modifier = Modifier.fillMaxSize()
     )
 }
 
 @Composable
-private fun ArticleDetailScreen(
+private fun NewsDetailScreen(
     article: Article?,
     isInterested: Boolean,
     onBackClick: () -> Unit,
@@ -351,7 +328,7 @@ private fun ArticleContent(
 @Composable
 private fun ArticleDetailScreenPreview() {
     CoinNewsAppTheme {
-        ArticleDetailScreen(
+        NewsDetailScreen(
             article = Article(
                 id = "",
                 title = "",

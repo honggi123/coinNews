@@ -12,22 +12,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.hong7.coinnews.model.NetworkState
-import com.hong7.coinnews.ui.articledetail.ArticleDetailRoute
 import com.hong7.coinnews.ui.coinlist.CoinListScreen
-import com.hong7.coinnews.ui.component.NetworkOfflineDialog
 import com.hong7.coinnews.ui.home.HomeRoute
 import com.hong7.coinnews.ui.main.MainViewModel
+import com.hong7.coinnews.ui.newsdetail.NewsDetailRoute
 import com.hong7.coinnews.ui.scrap.ScrapNewsScreen
 import com.hong7.coinnews.ui.setting.SettingScreen
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
-import com.hong7.coinnews.utils.NavigationUtils
 
 @Composable
 fun CoinNewsApp(viewModel: MainViewModel) {
@@ -76,8 +73,8 @@ private fun CoinNewsNavGraph(
             HomeRoute(networkState, navController)
         }
         composable(
-            route = ArticleDetailNav.routeWithArgName(),
-            arguments = ArticleDetailNav.arguments,
+            route = NewsDetailNav.routeWithArgName(),
+            arguments = NewsDetailNav.arguments,
             enterTransition = {
                 slideIntoContainer(
                     animationSpec = tween(400),
@@ -91,10 +88,7 @@ private fun CoinNewsNavGraph(
                 )
             }
         ) {
-            val article = NavigationUtils.getSavedArticle()
-
-            ArticleDetailRoute(
-                article = article,
+            NewsDetailRoute(
                 onBackClick = {
                     navController.popBackStack()
                 }
