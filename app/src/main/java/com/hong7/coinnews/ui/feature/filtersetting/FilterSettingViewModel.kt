@@ -3,6 +3,8 @@ package com.hong7.coinnews.ui.feature.filtersetting
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
@@ -33,7 +35,10 @@ class FilterSettingViewModel @Inject constructor(
                 FilterSettingUiState.Success(coins)
             }
         }
-        .catch { emit(FilterSettingUiState.Failed(it)) }
+        .catch {
+            Firebase.crashlytics.recordException(it)
+            emit(FilterSettingUiState.Failed(it))
+        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(3_000),

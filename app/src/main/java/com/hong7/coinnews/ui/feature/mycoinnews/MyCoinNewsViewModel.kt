@@ -2,6 +2,9 @@ package com.hong7.coinnews.ui.feature.mycoinnews
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.Article
@@ -46,8 +49,10 @@ class MyCoinNewsViewModel @Inject constructor(
         } else {
             flowOf(MyCoinNewsUiState.FilterEmpty)
         }
+    }.catch {
+        Firebase.crashlytics.recordException(it)
+        emit(MyCoinNewsUiState.Failed(it))
     }
-        .catch { emit(MyCoinNewsUiState.Failed(it)) }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(3_000),
