@@ -19,14 +19,15 @@ class RecentNewsViewModel @Inject constructor(
     private val newsRepository: NewsRepository,
 ) : ViewModel() {
 
-    val uiState: StateFlow<RecentCoinNewsUiState> = newsRepository.getRecentNewsByQuery(CRYPTO_CURRENCY_KEYWORD)
-        .map { RecentCoinNewsUiState.Success(it) }
-        .catch { RecentCoinNewsUiState.Failed(it) }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(3_000),
-            RecentCoinNewsUiState.Loading
-        )
+    val uiState: StateFlow<RecentCoinNewsUiState> =
+        newsRepository.getRecentNewsByQuery(CRYPTO_CURRENCY_KEYWORD)
+            .map<List<Article>, RecentCoinNewsUiState> { RecentCoinNewsUiState.Success(it) }
+            .catch { emit(RecentCoinNewsUiState.Failed(it)) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(3_000),
+                RecentCoinNewsUiState.Loading
+            )
 
     private val _watchedNewsIds = MutableStateFlow<Set<String>>(emptySet())
     val watchedNewsIds: StateFlow<Set<String>> = _watchedNewsIds.asStateFlow()
@@ -41,7 +42,6 @@ class RecentNewsViewModel @Inject constructor(
 private const val CRYPTO_CURRENCY_KEYWORD = "암호화폐"
 
 sealed interface RecentCoinNewsUiState {
-
     object Loading : RecentCoinNewsUiState
 
     data class Success(

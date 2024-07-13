@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -46,15 +48,59 @@ import com.hong7.coinnews.R
 import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey700
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterSettingScreen(
     navController: NavHostController,
-    modifier: Modifier = Modifier,
     viewModel: FilterSettingViewModel = hiltViewModel()
 ) {
-    val coins by viewModel.coins.collectAsStateWithLifecycle()
-    val selectedCoins = rememberSaveable { mutableStateOf<Set<Coin>>(mutableSetOf()) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    when (val state = uiState) {
+        is FilterSettingUiState.Loading -> {
+            LoadingContent(
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        is FilterSettingUiState.Success -> {
+            CoinListContent(
+                onBackClick = { navController.popBackStack() },
+                onRegisterClick = { coins ->
+                    viewModel.onSelectCompleted(coins)
+                    navController.popBackStack()
+                },
+                coins = state.items
+            )
+        }
+
+        is FilterSettingUiState.Failed -> {}
+    }
+}
+
+@Composable
+private fun LoadingContent(
+    modifier: Modifier = Modifier
+){
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(38.dp)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CoinListContent(
+    onBackClick: () -> Unit,
+    onRegisterClick: (list: List<Coin>) -> Unit,
+    coins: List<Coin>,
+    modifier: Modifier = Modifier
+) {
+    val selectedCoins = rememberSaveable { mutableStateOf(coins.filter { it.isSelected }.toSet()) } // todo
 
     Scaffold(
         topBar = {
@@ -69,7 +115,7 @@ fun FilterSettingScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() },
+                        onClick = onBackClick,
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_back),
@@ -117,10 +163,7 @@ fun FilterSettingScreen(
             }
             registerCoinButton(
                 actionName = "등록",
-                onActionClick = {
-                    viewModel.onSelectCompleted(selectedCoins.value.toList())
-                    navController.popBackStack()
-                },
+                onActionClick = { onRegisterClick(selectedCoins.value.toList()) },
                 modifier = Modifier.fillMaxWidth()
             )
         }

@@ -48,7 +48,6 @@ class FilterRepositoryImpl @Inject constructor(
         } else {
             FilterEntity(coins = coinEntities)
         }
-        userFilterDao.deleteFilter()
         userFilterDao.insert(newFilter)
     }
 }

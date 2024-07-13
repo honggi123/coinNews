@@ -100,6 +100,12 @@ fun MyCoinNewsScreen(
                 modifier = Modifier.fillMaxSize()
             )
         }
+
+        is MyCoinNewsUiState.Loading -> {
+            LoadingContent(
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         else -> {}
     }
 }
@@ -121,6 +127,21 @@ private fun EmptyFilterContent(
         ClickableChip(
             text = "코인 선택",
             onClick = { onFilterSettingClick() },
+        )
+    }
+}
+
+@Composable
+private fun LoadingContent(
+    modifier: Modifier = Modifier
+){
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(38.dp)
         )
     }
 }
