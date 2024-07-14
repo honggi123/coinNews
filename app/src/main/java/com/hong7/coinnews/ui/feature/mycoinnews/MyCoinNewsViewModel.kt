@@ -55,7 +55,7 @@ class MyCoinNewsViewModel @Inject constructor(
     }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(3_000),
+            SharingStarted.WhileSubscribed(5_000),
             MyCoinNewsUiState.Loading
         )
 
