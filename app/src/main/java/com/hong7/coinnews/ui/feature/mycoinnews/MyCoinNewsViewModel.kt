@@ -1,8 +1,10 @@
 package com.hong7.coinnews.ui.feature.mycoinnews
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.Article
@@ -18,7 +20,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -47,11 +49,13 @@ class MyCoinNewsViewModel @Inject constructor(
         } else {
             flowOf(MyCoinNewsUiState.FilterEmpty)
         }
+    }.catch {
+        Firebase.crashlytics.recordException(it)
+        emit(MyCoinNewsUiState.Failed(it))
     }
-        .catch { emit(MyCoinNewsUiState.LoadFailed) }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(3_000),
+            SharingStarted.WhileSubscribed(5_000),
             MyCoinNewsUiState.Loading
         )
 
@@ -72,7 +76,6 @@ class MyCoinNewsViewModel @Inject constructor(
 }
 
 sealed interface MyCoinNewsUiState {
-
     object Loading : MyCoinNewsUiState
 
     object FilterEmpty : MyCoinNewsUiState
@@ -83,7 +86,9 @@ sealed interface MyCoinNewsUiState {
         val filter: Filter
     ) : MyCoinNewsUiState
 
-    object LoadFailed : MyCoinNewsUiState
+    data class Failed(
+        val throwable: Throwable
+    ) : MyCoinNewsUiState
 }
 
 

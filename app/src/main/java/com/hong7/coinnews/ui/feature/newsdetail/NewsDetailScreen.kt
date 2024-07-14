@@ -61,22 +61,28 @@ fun NewsDetailRoute(
     onBackClick: () -> Unit,
     viewModel: NewsDetailViewModel = hiltViewModel()
 ) {
-    val isInterested by viewModel.isInterested.collectAsStateWithLifecycle()
-    val article by viewModel.article.collectAsStateWithLifecycle()
+    val isScraped by viewModel.isScraped.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    NewsDetailScreen(
-        article = article,
-        isInterested = isInterested,
-        onBackClick = onBackClick,
-        onToggleClick = viewModel::onToggleClick,
-        modifier = Modifier.fillMaxSize()
-    )
+    when (val state = uiState) {
+        is NewsDetailUiState.Success -> {
+            NewsDetailScreen(
+                article = state.article,
+                isScraped = isScraped,
+                onBackClick = onBackClick,
+                onToggleClick = viewModel::onToggleClick,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        is NewsDetailUiState.Failed -> {}
+        is NewsDetailUiState.Loading -> {}
+    }
 }
 
 @Composable
 private fun NewsDetailScreen(
     article: Article?,
-    isInterested: Boolean,
+    isScraped: Boolean,
     onBackClick: () -> Unit,
     onToggleClick: (ArticleWithInterest) -> Unit,
     modifier: Modifier = Modifier
@@ -86,7 +92,7 @@ private fun NewsDetailScreen(
             Column(modifier = Modifier.fillMaxWidth()) {
                 TopAppBar(
                     article = article,
-                    isInterested = isInterested,
+                    isScraped = isScraped,
                     onBackClick = onBackClick,
                     onToggleClick = onToggleClick,
                     modifier = Modifier
@@ -115,12 +121,12 @@ private fun NewsDetailScreen(
 @Composable
 private fun TopAppBar(
     article: Article?,
-    isInterested: Boolean,
+    isScraped: Boolean,
     onBackClick: () -> Unit,
     onToggleClick: (ArticleWithInterest) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val interestIconPainter = if (isInterested) {
+    val interestIconPainter = if (isScraped) {
         painterResource(id = R.drawable.ic_star_fill)
     } else {
         painterResource(id = R.drawable.ic_star_border)
@@ -261,7 +267,6 @@ private fun ArticleContent(
                     }
                     settings.javaScriptEnabled = true
 //                    settings.javaScriptCanOpenWindowsAutomatically = false
-
                     loadUrl(url.toString())
                 }
             },
@@ -332,7 +337,7 @@ private fun ArticleDetailScreenPreview() {
     CoinNewsAppTheme {
         NewsDetailScreen(
             article = null,
-            isInterested = false,
+            isScraped = false,
             onBackClick = {},
             onToggleClick = {},
             modifier = Modifier.fillMaxSize()

@@ -109,10 +109,7 @@ private fun CoinNewsNavGraph(
                 )
             }
         ) {
-            FilterSettingScreen(
-                navController,
-                modifier.fillMaxSize()
-            )
+            FilterSettingScreen(navController)
         }
         composable(
             route = ScrapNav.route,
