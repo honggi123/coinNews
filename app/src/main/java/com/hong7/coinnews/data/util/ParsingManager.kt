@@ -1,6 +1,6 @@
 package com.hong7.coinnews.data.util
 
-import com.hong7.coinnews.model.Article
+import com.hong7.coinnews.model.News
 import com.hong7.coinnews.network.okhttp.RequestOriginalUrl
 import com.hong7.coinnews.utils.DateUtils
 import com.hong7.coinnews.utils.NumberUtils
@@ -30,7 +30,7 @@ object ParsingManager {
                 }
 
                 val originalUrl = RequestOriginalUrl().invoke(url)
-                Article(
+                News(
                     id = NumberUtils.getHashValue(originalUrl),
                     title = title,
                     url = originalUrl,

@@ -2,7 +2,7 @@ package com.hong7.coinnews.model
 
 import java.time.LocalDateTime
 
-data class Article(
+data class News(
     val id: String,
     val title: String,
     val description: String = "",
@@ -11,8 +11,8 @@ data class Article(
     val createdAt: LocalDateTime? = null
 )
 
-data class ArticleWithInterest(
-    val article: Article,
+data class NewsWithInterest(
+    val news: News,
     val isInterested: Boolean
 )
 

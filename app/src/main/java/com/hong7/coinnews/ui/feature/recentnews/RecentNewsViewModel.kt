@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.NewsRepository
-import com.hong7.coinnews.model.Article
+import com.hong7.coinnews.model.News
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,7 +23,7 @@ class RecentNewsViewModel @Inject constructor(
 
     val uiState: StateFlow<RecentCoinNewsUiState> =
         newsRepository.getRecentNewsByQuery(CRYPTO_CURRENCY_KEYWORD)
-            .map<List<Article>, RecentCoinNewsUiState> { RecentCoinNewsUiState.Success(it) }
+            .map<List<News>, RecentCoinNewsUiState> { RecentCoinNewsUiState.Success(it) }
             .catch {
                 Firebase.crashlytics.recordException(it)
                 emit(RecentCoinNewsUiState.Failed(it))
@@ -50,7 +50,7 @@ sealed interface RecentCoinNewsUiState {
     object Loading : RecentCoinNewsUiState
 
     data class Success(
-        val newsList: List<Article>
+        val newsList: List<News>
     ) : RecentCoinNewsUiState
 
     data class Failed(

@@ -7,7 +7,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.data.repository.NewsRepository
-import com.hong7.coinnews.model.Article
+import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,8 +43,8 @@ class MyCoinNewsViewModel @Inject constructor(
         val selectedCoin = pair.second ?: filter?.coins?.firstOrNull()
         if (filter != null) {
             newsRepository.getRecentNewsByCoin(selectedCoin!!) // todo
-                .flatMapLatest {
-                    flowOf(MyCoinNewsUiState.Success(it, selectedCoin, filter))
+                .flatMapLatest { news ->
+                    flowOf(MyCoinNewsUiState.Success(news, selectedCoin, filter))
                 }
         } else {
             flowOf(MyCoinNewsUiState.FilterEmpty)
@@ -81,7 +81,7 @@ sealed interface MyCoinNewsUiState {
     object FilterEmpty : MyCoinNewsUiState
 
     data class Success(
-        val newsList: List<Article>,
+        val newsList: List<News>,
         val selectedCoin: Coin,
         val filter: Filter
     ) : MyCoinNewsUiState

@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
-import com.hong7.coinnews.model.Article
+import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.ui.NewsDetailNav
 import com.hong7.coinnews.ui.theme.Grey200
@@ -48,12 +48,12 @@ fun ScrapNewsScreen(
     navController: NavHostController,
     viewModel: ScrapNewsViewModel = hiltViewModel()
 ) {
-    val news by viewModel.news.collectAsState()
+    val newsList by viewModel.newsList.collectAsState()
 
     ScrapNewsScreen(
-        news = news,
+        newsList = newsList,
         onBackClick = { navController.popBackStack() },
-        onArticleClick = {
+        onNewsClick = {
             NavigationUtils.navigate(
                 navController,
                 NewsDetailNav.navigateWithArg(it)
@@ -64,13 +64,13 @@ fun ScrapNewsScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class) 
 @Composable
 private fun ScrapNewsScreen(
-    news: List<Article>,
+    newsList: List<News>,
     onBackClick: () -> Unit,
     onDeleteClick: (coin: Coin) -> Unit,
-    onArticleClick: (Article) -> Unit,
+    onNewsClick: (News) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState()
 ) {
@@ -104,7 +104,7 @@ private fun ScrapNewsScreen(
         },
         modifier = modifier
     ) { contentPadding ->
-        if (news.isEmpty()) {
+        if (newsList.isEmpty()) {
             EmptyNewsContent(
                 text = "스크랩 뉴스가 존재하지 않습니다.",
                 modifier = modifier.padding(contentPadding)
@@ -118,12 +118,12 @@ private fun ScrapNewsScreen(
                 state = state
             ) {
                 items(
-                    items = news,
+                    items = newsList,
                     key = { coin -> coin.id }
                 ) {
-                    ArticleContentItem(
-                        article = it,
-                        onArticleClick = onArticleClick,
+                    NewsContentItem(
+                        news = it,
+                        onNewsClick = onNewsClick,
                         modifier = Modifier.fillMaxWidth()
                     )
                     HorizontalDivider(
@@ -157,18 +157,18 @@ private fun EmptyNewsContent(
 }
 
 @Composable
-private fun ArticleContentItem(
-    article: Article,
-    onArticleClick: (Article) -> Unit,
+private fun NewsContentItem(
+    news: News,
+    onNewsClick: (News) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.clickable { onArticleClick(article) },
+        modifier = modifier.clickable { onNewsClick(news) },
         verticalArrangement = Arrangement.spacedBy(6.dp),
         horizontalAlignment = Alignment.Start,
     ) {
         Text(
-            text = article.title,
+            text = news.title,
             style = defaultTextStyle.copy(
                 fontSize = 16.sp,
                 lineHeight = 20.sp,
@@ -176,7 +176,7 @@ private fun ArticleContentItem(
             fontWeight = FontWeight.Bold,
         )
         Text(
-            text = article.description,
+            text = news.description,
             style = defaultTextStyle.copy(
                 fontSize = 14.sp,
                 lineHeight = 20.sp,
@@ -185,16 +185,16 @@ private fun ArticleContentItem(
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
-        ArticleMetaData(
-            article = article,
+        NewsMetaData(
+            news = news,
             modifier = Modifier.fillMaxWidth()
         )
     }
 }
 
 @Composable
-private fun ArticleMetaData(
-    article: Article,
+private fun NewsMetaData(
+    news: News,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -202,7 +202,7 @@ private fun ArticleMetaData(
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = article.author ?: "알 수 없는 출처",
+            text = news.author ?: "알 수 없는 출처",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Normal,
             color = Color(0xFFAAAAAA)
@@ -215,7 +215,7 @@ private fun ArticleMetaData(
             color = Color(0xFFAAAAAA)
         )
         Text(
-            text = article.createdAt?.let { DateUtils.getTimeAgo(it) } ?: "",
+            text = news.createdAt?.let { DateUtils.getTimeAgo(it) } ?: "",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Normal,
             color = Color(0xFFAAAAAA)

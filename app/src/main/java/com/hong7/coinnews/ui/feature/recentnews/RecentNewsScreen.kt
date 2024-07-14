@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.hong7.coinnews.model.Article
+import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.NetworkState
 import com.hong7.coinnews.ui.NewsDetailNav
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
@@ -55,10 +55,10 @@ fun RecentNewsScreen(
             LoadingContent(modifier = Modifier.fillMaxSize())
         }
         is RecentCoinNewsUiState.Success -> {
-            ArticleListScreenContent(
+            NewsListScreenContent(
                 watchedNewsIds = watchedNews,
-                articles = state.newsList,
-                onArticleClick = {
+                newss = state.newsList,
+                onNewsClick = {
                     NavigationUtils.navigate(
                         navController,
                         NewsDetailNav.navigateWithArg(it)
@@ -91,10 +91,10 @@ private fun LoadingContent(
 }
 
 @Composable
-private fun ArticleListScreenContent(
+private fun NewsListScreenContent(
     watchedNewsIds: Set<String>,
-    articles: List<Article>,
-    onArticleClick: (Article) -> Unit,
+    newss: List<News>,
+    onNewsClick: (News) -> Unit,
     state: LazyListState,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -116,16 +116,16 @@ private fun ArticleListScreenContent(
                 state = state
             ) {
                 items(
-                    articles.size,
+                    newss.size,
                 ) { index ->
                     if (index == 0) {
                         Spacer(modifier = Modifier.height(10.dp))
                     }
-                    articles[index].let {
-                        ArticleContentItem(
+                    newss[index].let {
+                        NewsContentItem(
                             watchedNewsIds = watchedNewsIds,
-                            article = it,
-                            onArticleClick = onArticleClick,
+                            news = it,
+                            onNewsClick = onNewsClick,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
@@ -143,14 +143,14 @@ private fun ArticleListScreenContent(
 }
 
 @Composable
-private fun ArticleContentItem(
+private fun NewsContentItem(
     watchedNewsIds: Set<String>,
-    article: Article,
-    onArticleClick: (Article) -> Unit,
+    news: News,
+    onNewsClick: (News) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val titleColor = if (watchedNewsIds.contains(article.id)) {
+    val titleColor = if (watchedNewsIds.contains(news.id)) {
         Color(0xFFAAAAAA)
     } else {
         Grey1000
@@ -160,12 +160,12 @@ private fun ArticleContentItem(
         modifier = modifier.clickableWithoutRipple(
             interactionSource = interactionSource,
         ) {
-            onArticleClick(article)
+            onNewsClick(news)
         },
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
-            text = article.title,
+            text = news.title,
             style = defaultTextStyle.copy(
                 fontSize = 16.sp,
                 lineHeight = 20.sp,
@@ -174,16 +174,16 @@ private fun ArticleContentItem(
             fontWeight = FontWeight.Medium,
             maxLines = 3,
         )
-        ArticleMetaData(
-            article = article,
+        NewsMetaData(
+            news = news,
             modifier = Modifier.fillMaxWidth()
         )
     }
 }
 
 @Composable
-private fun ArticleMetaData(
-    article: Article,
+private fun NewsMetaData(
+    news: News,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -191,7 +191,7 @@ private fun ArticleMetaData(
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = article.author + "・" + article.createdAt?.let { DateUtils.getTimeAgo(it) },
+            text = news.author + "・" + news.createdAt?.let { DateUtils.getTimeAgo(it) },
             style = defaultTextStyle.copy(
                 fontSize = 14.sp,
                 lineHeight = 14.sp,

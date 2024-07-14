@@ -13,7 +13,7 @@ class ScrapNewsViewModel @Inject constructor(
     private val newsRepository: NewsRepository
 ) : ViewModel() {
 
-    val news = newsRepository.getScrapedNews()
+    val newsList = newsRepository.getScrapedNewsList()
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),

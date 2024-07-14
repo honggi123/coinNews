@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GlobalArticleResponse(
+data class GlobalNewsResponse(
     @SerialName("data") val items: List<NetworkGlobalNews>,
     @SerialName("total_pages") val totalPages: Int
 )
