@@ -47,7 +47,7 @@ class NewsRepositoryImpl @Inject constructor(
         emit(news)
     }
 
-    override fun getScrapedNews(): Flow<List<News>> {
+    override fun getScrapedNewsList(): Flow<List<News>> {
         return interestedNewsDao.getAllNews()
             .map { it.map { it.toDomain() } }
     }
