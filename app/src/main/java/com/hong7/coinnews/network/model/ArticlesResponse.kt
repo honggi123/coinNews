@@ -4,16 +4,16 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ArticlesResponse(
+data class NewssResponse(
     val total: Int,
-    val items: List<NetworkArticle>,
+    val items: List<NetworkNews>,
     @SerialName("start") val page: Int,
     @SerialName("display") val totalPage: Int,
     @SerialName("lastBuildDate") val lastRequestedAt: String,
 )
 
 @Serializable
-data class NetworkArticle(
+data class NetworkNews(
     val title: String,
     @SerialName("originallink") val originalUrl: String,
     @SerialName("link") val url: String,

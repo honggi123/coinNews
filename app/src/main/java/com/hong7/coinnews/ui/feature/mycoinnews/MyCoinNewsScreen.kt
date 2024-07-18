@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.hong7.coinnews.model.Article
+import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.NetworkState
@@ -65,10 +65,10 @@ fun MyCoinNewsScreen(
 
     when (val state = uistate) {
         is MyCoinNewsUiState.Success -> {
-            ArticleListScreenContent(
+            NewsListScreenContent(
                 watchedNewsIds = watchedNews,
                 isLoading = false,
-                articles = state.newsList,
+                newss = state.newsList,
                 selectedCoin = state.selectedCoin,
                 filter = state.filter,
                 onCoinClick = remember(viewModel) { { viewModel.onCoinClick(it) } },
@@ -78,7 +78,7 @@ fun MyCoinNewsScreen(
                         CoinListNav.route
                      )
                 },
-                onArticleClick = {
+                onNewsClick = {
                     NavigationUtils.navigate(
                         navController,
                         NewsDetailNav.navigateWithArg(it)
@@ -147,15 +147,15 @@ private fun LoadingContent(
 }
 
 @Composable
-private fun ArticleListScreenContent(
+private fun NewsListScreenContent(
     watchedNewsIds: Set<String>,
     isLoading: Boolean,
     filter: Filter?,
-    articles: List<Article>,
+    newss: List<News>,
     selectedCoin: Coin?,
     onFilterSettingClick: () -> Unit,
     onCoinClick: (Coin) -> Unit,
-    onArticleClick: (Article) -> Unit,
+    onNewsClick: (News) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -186,8 +186,8 @@ private fun ArticleListScreenContent(
             NewsList(
                 watchedNewsIds = watchedNewsIds,
                 isLoading = isLoading,
-                articles = articles,
-                onArticleClick = onArticleClick,
+                newss = newss,
+                onNewsClick = onNewsClick,
                 modifier = Modifier.fillMaxWidth(),
                 state = state
             )
@@ -230,8 +230,8 @@ private fun CoinFiltersRow(
 private fun NewsList(
     watchedNewsIds: Set<String>,
     isLoading: Boolean,
-    articles: List<Article>,
-    onArticleClick: (Article) -> Unit,
+    newss: List<News>,
+    onNewsClick: (News) -> Unit,
     state: LazyListState,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -253,17 +253,17 @@ private fun NewsList(
             state = state
         ) {
             items(
-                articles.size,
-//                        key = { articles[it].id } todo
+                newss.size,
+//                        key = { newss[it].id } todo
             ) { index ->
                 if (index == 0) {
                     Spacer(modifier = Modifier.height(10.dp))
                 }
-                articles[index].let {
-                    ArticleContentItem(
+                newss[index].let {
+                    NewsContentItem(
                         watchedNewsIds = watchedNewsIds,
-                        article = it,
-                        onArticleClick = onArticleClick,
+                        news = it,
+                        onNewsClick = onNewsClick,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
@@ -323,14 +323,14 @@ private fun EmptyFiltersContent(
 }
 
 @Composable
-private fun ArticleContentItem(
+private fun NewsContentItem(
     watchedNewsIds: Set<String>,
-    article: Article,
-    onArticleClick: (Article) -> Unit,
+    news: News,
+    onNewsClick: (News) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val titleColor = if (watchedNewsIds.contains(article.id)) {
+    val titleColor = if (watchedNewsIds.contains(news.id)) {
         Color(0xFFAAAAAA)
     } else {
         Grey1000
@@ -340,12 +340,12 @@ private fun ArticleContentItem(
         modifier = modifier.clickableWithoutRipple(
             interactionSource = interactionSource,
         ) {
-            onArticleClick(article)
+            onNewsClick(news)
         },
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
-            text = article.title,
+            text = news.title,
             style = defaultTextStyle.copy(
                 fontSize = 16.sp,
                 lineHeight = 20.sp,
@@ -354,16 +354,16 @@ private fun ArticleContentItem(
             fontWeight = FontWeight.Medium,
             maxLines = 3,
         )
-        ArticleMetaData(
-            article = article,
+        NewsMetaData(
+            news = news,
             modifier = Modifier.fillMaxWidth()
         )
     }
 }
 
 @Composable
-private fun ArticleMetaData(
-    article: Article,
+private fun NewsMetaData(
+    news: News,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -371,7 +371,7 @@ private fun ArticleMetaData(
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = article.author + "・" + article.createdAt?.let { DateUtils.getTimeAgo(it) },
+            text = news.author + "・" + news.createdAt?.let { DateUtils.getTimeAgo(it) },
             style = defaultTextStyle.copy(
                 fontSize = 14.sp,
                 lineHeight = 14.sp,
@@ -384,12 +384,12 @@ private fun ArticleMetaData(
 //
 //@Preview
 //@Composable
-//fun PreviewArticleContent(
-//    @PreviewParameter(ArticleContentPreviewParamProvider::class) articles: Flow<PagingData<Article>>
+//fun PreviewNewsContent(
+//    @PreviewParameter(NewsContentPreviewParamProvider::class) newss: Flow<PagingData<News>>
 //) {
 //    CoinNewsAppTheme {
-//        ArticleListScreenContent(
-//            articles = articles.collectAsLazyPagingItems(),
+//        NewsListScreenContent(
+//            newss = newss.collectAsLazyPagingItems(),
 //            filters = listOf(
 //                CoinFilter("비트코인", "BTC", symbol = ""),
 //                CoinFilter("이더리움", "ETC", symbol = "")
@@ -397,7 +397,7 @@ private fun ArticleMetaData(
 //            onCoinFilterClick = {},
 //            onFilterSettingClick = {},
 //            selectedFilter = Filter(CoinFilter("비트코인", "BTC", ""), CountryScope.Local),
-//            onArticleClick = {},
+//            onNewsClick = {},
 //            modifier = Modifier
 //                .fillMaxSize()
 //                .padding(10.dp)
@@ -406,15 +406,15 @@ private fun ArticleMetaData(
 //    }
 //}
 //
-//private class ArticleContentPreviewParamProvider :
-//    PreviewParameterProvider<Flow<PagingData<Article>>> {
+//private class NewsContentPreviewParamProvider :
+//    PreviewParameterProvider<Flow<PagingData<News>>> {
 //
-//    override val values: Sequence<Flow<PagingData<Article>>> =
+//    override val values: Sequence<Flow<PagingData<News>>> =
 //        sequenceOf(
 //            flowOf(
 //                PagingData.from(
 //                    listOf(
-//                        Article(
+//                        News(
 //                            id = "1",
 //                            title = "블롬버그 \"버블 조짐 있다\"vs 월스트리트저널 \"과거 만큼은 아니다\"",
 //                            url = "url",

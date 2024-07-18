@@ -45,8 +45,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.perf.FirebasePerformance
 import com.google.firebase.perf.metrics.Trace
 import com.hong7.coinnews.R
-import com.hong7.coinnews.model.Article
-import com.hong7.coinnews.model.ArticleWithInterest
+import com.hong7.coinnews.model.News
+import com.hong7.coinnews.model.NewsWithInterest
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey100
@@ -67,7 +67,7 @@ fun NewsDetailRoute(
     when (val state = uiState) {
         is NewsDetailUiState.Success -> {
             NewsDetailScreen(
-                article = state.article,
+                news = state.news,
                 isScraped = isScraped,
                 onBackClick = onBackClick,
                 onToggleClick = viewModel::onToggleClick,
@@ -81,17 +81,17 @@ fun NewsDetailRoute(
 
 @Composable
 private fun NewsDetailScreen(
-    article: Article?,
+    news: News?,
     isScraped: Boolean,
     onBackClick: () -> Unit,
-    onToggleClick: (ArticleWithInterest) -> Unit,
+    onToggleClick: (NewsWithInterest) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 TopAppBar(
-                    article = article,
+                    news = news,
                     isScraped = isScraped,
                     onBackClick = onBackClick,
                     onToggleClick = onToggleClick,
@@ -101,15 +101,15 @@ private fun NewsDetailScreen(
             }
         }
     ) { paddingValues ->
-        if (article != null) {
-            ArticleContent(
-                url = article.url,
+        if (news != null) {
+            NewsContent(
+                url = news.url,
                 date = LocalDateTime.now(),
                 modifier = modifier
                     .padding(paddingValues)
             )
         } else {
-            EmptyArticleContent(
+            EmptyNewsContent(
                 text = "해당 뉴스가 존재하지 않습니다.",
                 modifier = modifier
                     .padding(paddingValues)
@@ -120,10 +120,10 @@ private fun NewsDetailScreen(
 
 @Composable
 private fun TopAppBar(
-    article: Article?,
+    news: News?,
     isScraped: Boolean,
     onBackClick: () -> Unit,
-    onToggleClick: (ArticleWithInterest) -> Unit,
+    onToggleClick: (NewsWithInterest) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val interestIconPainter = if (isScraped) {
@@ -165,7 +165,7 @@ private fun TopAppBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = article?.url ?: "",
+                    text = news?.url ?: "",
                     color = Grey500,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Normal,
@@ -183,10 +183,10 @@ private fun TopAppBar(
                     .clickableWithoutRipple(
                         interactionSource = interactionSource,
                     ) {
-                        if (article?.url != null) {
+                        if (news?.url != null) {
                             // todo
 //                            onToggleClick(
-//                                ArticleWithInterest(articleUrl, isInterested)
+//                                NewsWithInterest(newsUrl, isInterested)
 //                            )
                         }
                     },
@@ -198,7 +198,7 @@ private fun TopAppBar(
 }
 
 @Composable
-private fun EmptyArticleContent(
+private fun EmptyNewsContent(
     text: String,
     modifier: Modifier
 ) {
@@ -217,14 +217,14 @@ private fun EmptyArticleContent(
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-private fun ArticleContent(
+private fun NewsContent(
     url: String?,
     date: LocalDateTime,
     modifier: Modifier = Modifier
 ) {
     var isLoading by rememberSaveable { mutableStateOf(true) }
     val trace: Trace =
-        FirebasePerformance.getInstance().newTrace("article_page_loaded")
+        FirebasePerformance.getInstance().newTrace("news_page_loaded")
 
     Box(
         modifier = modifier,
@@ -333,10 +333,10 @@ private fun ArticleContent(
 
 @Preview
 @Composable
-private fun ArticleDetailScreenPreview() {
+private fun NewsDetailScreenPreview() {
     CoinNewsAppTheme {
         NewsDetailScreen(
-            article = null,
+            news = null,
             isScraped = false,
             onBackClick = {},
             onToggleClick = {},

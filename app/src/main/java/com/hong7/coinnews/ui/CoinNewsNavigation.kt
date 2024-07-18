@@ -4,7 +4,7 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.hong7.coinnews.model.Article
+import com.hong7.coinnews.model.News
 import com.hong7.coinnews.utils.GsonUtils
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -15,9 +15,9 @@ object HomeNav : Destination {
     override val title: String = NavigationTitle.MAIN_HOME
 }
 
-object NewsDetailNav : DestinationArg<Article> {
+object NewsDetailNav : DestinationArg<News> {
 
-    override val argName: String = "article"
+    override val argName: String = "news"
     override val route: String = NavigationRouteName.ARTICLE_DETAIL
     override val title: String = NavigationTitle.ARTICLE_DETAIL
 
@@ -25,7 +25,7 @@ object NewsDetailNav : DestinationArg<Article> {
         navArgument(argName) { type = NavType.StringType }
     )
 
-    override fun navigateWithArg(item: Article): String {
+    override fun navigateWithArg(item: News): String {
         val newUrl = URLEncoder.encode(item.url, StandardCharsets.UTF_8.toString())
         val arg = GsonUtils.toJson(item.copy(title = "", url = newUrl, description = ""))
         return "$route/$arg"
@@ -64,7 +64,7 @@ interface DestinationArg<T> : Destination {
 
 object NavigationRouteName {
     const val MAIN_HOME = "main_home"
-    const val ARTICLE_DETAIL = "article_detail"
+    const val ARTICLE_DETAIL = "news_detail"
     const val ALL_COIN_LIST = "all_coin_list"
     const val SCRAP = "scrap"
     const val SETTING = "setting"
