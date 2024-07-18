@@ -38,7 +38,7 @@ class RecentNewsViewModel @Inject constructor(
     val watchedNewsIds: StateFlow<Set<String>> = _watchedNewsIds.asStateFlow()
 
     fun onNewsClick(newsId: String) {
-        val watchedNewsIds = _watchedNewsIds.value.toMutableSet()
+        val watchedNewsIds = watchedNewsIds.value.toMutableSet()
         watchedNewsIds.add(newsId)
         _watchedNewsIds.value = watchedNewsIds
     }

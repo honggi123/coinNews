@@ -3,13 +3,12 @@ package com.hong7.coinnews.ui.feature.mycoinnews
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.data.repository.NewsRepository
-import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
+import com.hong7.coinnews.model.News
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,15 +38,15 @@ class MyCoinNewsViewModel @Inject constructor(
         ::Pair
     ).flatMapLatest { pair ->
         val filter = pair.first
-        val selectedCoin = pair.second ?: filter?.coins?.firstOrNull()
-        if (filter != null) {
-            newsRepository.getRecentNewsByCoin(selectedCoin!!) // todo
-                .flatMapLatest { news ->
-                    flowOf(MyCoinNewsUiState.Success(news, selectedCoin, filter))
-                }
-        } else {
-            flowOf(MyCoinNewsUiState.FilterEmpty)
-        }
+            ?: return@flatMapLatest flowOf(MyCoinNewsUiState.FilterEmpty)
+        val selectedCoin = pair.second
+            ?: filter.coins.firstOrNull()
+            ?: return@flatMapLatest flowOf(MyCoinNewsUiState.FilterEmpty)   // 저장된 coin 필터가 비었기 때문에 FilterEmpty를 반환
+
+        newsRepository.getRecentNewsByCoin(selectedCoin)
+            .flatMapLatest { news ->
+                flowOf(MyCoinNewsUiState.Success(news, selectedCoin, filter))
+            }
     }.catch {
         Firebase.crashlytics.recordException(it)
         emit(MyCoinNewsUiState.Failed(it))
@@ -63,7 +61,7 @@ class MyCoinNewsViewModel @Inject constructor(
     val watchedNewsIds: StateFlow<Set<String>> = _watchedNewsIds.asStateFlow()
 
     fun onNewsClick(newsId: String) {
-        val watchedNewsIds = _watchedNewsIds.value.toMutableSet()
+        val watchedNewsIds = watchedNewsIds.value.toMutableSet()
         watchedNewsIds.add(newsId)
         _watchedNewsIds.value = watchedNewsIds
     }
