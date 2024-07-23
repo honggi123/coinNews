@@ -1,11 +1,10 @@
 package com.hong7.coinnews.data.repository.impl
 
-import android.util.Log
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.repository.FilterRepository
-import com.hong7.coinnews.database.FilterEntity
-import com.hong7.coinnews.database.UserFilterDao
+import com.hong7.coinnews.database.entity.FilterEntity
+import com.hong7.coinnews.database.dao.UserFilterDao
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.network.firebase.CoinDataSource

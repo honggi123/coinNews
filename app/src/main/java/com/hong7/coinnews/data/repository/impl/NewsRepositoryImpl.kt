@@ -6,7 +6,7 @@ import com.hong7.coinnews.data.mapper.toScrapEntity
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.data.util.ParsingManager
 import com.hong7.coinnews.database.InterestedNewsDao
-import com.hong7.coinnews.database.NewsDao
+import com.hong7.coinnews.database.dao.NewsDao
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.network.okhttp.retrofit.NaverService

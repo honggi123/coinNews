@@ -1,9 +1,10 @@
-package com.hong7.coinnews.database
+package com.hong7.coinnews.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.hong7.coinnews.database.entity.FilterEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

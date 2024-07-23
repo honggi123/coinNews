@@ -1,7 +1,7 @@
 package com.hong7.coinnews.data.mapper
 
-import com.hong7.coinnews.database.NewsEntity
-import com.hong7.coinnews.database.ScrapNewsEntity
+import com.hong7.coinnews.database.entity.NewsEntity
+import com.hong7.coinnews.database.entity.ScrapNewsEntity
 import com.hong7.coinnews.network.model.NetworkNews
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.utils.DateUtils

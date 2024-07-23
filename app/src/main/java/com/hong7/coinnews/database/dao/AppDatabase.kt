@@ -1,16 +1,16 @@
-package com.hong7.coinnews.database
+package com.hong7.coinnews.database.dao
 
 import android.content.Context
 import androidx.room.AutoMigration
 import androidx.room.Database
-import androidx.room.DeleteColumn
-import androidx.room.DeleteTable
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.AutoMigrationSpec
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import com.hong7.coinnews.database.Converter
+import com.hong7.coinnews.database.InterestedNewsDao
+import com.hong7.coinnews.database.entity.ScrapNewsEntity
+import com.hong7.coinnews.database.entity.FilterEntity
+import com.hong7.coinnews.database.entity.NewsEntity
 import com.hong7.coinnews.database.migration.AutoMigrationSpecs
 import com.hong7.coinnews.database.migration.Migration.MIGRATION_1_2
 
