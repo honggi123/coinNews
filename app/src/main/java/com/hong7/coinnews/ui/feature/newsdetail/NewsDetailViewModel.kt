@@ -9,7 +9,9 @@ import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.NewsWithInterest
 import com.hong7.coinnews.model.Coin
+import com.hong7.coinnews.model.exception.NetworkDisconnectedException
 import com.hong7.coinnews.ui.NewsDetailNav
+import com.hong7.coinnews.ui.feature.mycoinnews.MyCoinNewsUiState
 import com.hong7.coinnews.utils.GsonUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,9 +41,13 @@ class NewsDetailViewModel @Inject constructor(
             news?.let { NewsDetailUiState.Success(news) }
                 ?: throw NullPointerException()
         }
-        .catch {
-            Firebase.crashlytics.recordException(it)
-            NewsDetailUiState.Failed(it)
+        .catch { throwable ->
+            Firebase.crashlytics.recordException(throwable)
+            val exception = when(throwable){
+                is IOException -> NetworkDisconnectedException()
+                else -> throwable
+            }
+            NewsDetailUiState.Failed(exception)
         }
         .stateIn(
             viewModelScope,

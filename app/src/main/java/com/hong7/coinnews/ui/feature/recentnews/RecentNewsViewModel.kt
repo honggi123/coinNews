@@ -6,6 +6,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.News
+import com.hong7.coinnews.model.exception.NetworkDisconnectedException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,9 +26,13 @@ class RecentNewsViewModel @Inject constructor(
     val uiState: StateFlow<RecentCoinNewsUiState> =
         newsRepository.getRecentNewsByQuery(CRYPTO_CURRENCY_KEYWORD)
             .map<List<News>, RecentCoinNewsUiState> { RecentCoinNewsUiState.Success(it) }
-            .catch {
-                Firebase.crashlytics.recordException(it)
-                emit(RecentCoinNewsUiState.Failed(it))
+            .catch { throwable ->
+                Firebase.crashlytics.recordException(throwable)
+                val exception = when(throwable){
+                    is IOException -> NetworkDisconnectedException()
+                    else -> throwable
+                }
+                emit(RecentCoinNewsUiState.Failed(exception))
             }
             .stateIn(
                 viewModelScope,

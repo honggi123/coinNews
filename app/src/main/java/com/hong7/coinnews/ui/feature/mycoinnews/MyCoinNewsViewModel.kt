@@ -2,6 +2,7 @@ package com.hong7.coinnews.ui.feature.mycoinnews
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.impl.constraints.NetworkState
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.FilterRepository
@@ -9,6 +10,7 @@ import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.News
+import com.hong7.coinnews.model.exception.NetworkDisconnectedException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -42,14 +45,18 @@ class MyCoinNewsViewModel @Inject constructor(
         val selectedCoin = pair.second
             ?: filter.coins.firstOrNull()
             ?: return@flatMapLatest flowOf(MyCoinNewsUiState.FilterEmpty)   // 저장된 coin 필터가 비었기 때문에 FilterEmpty를 반환
-
+        
         newsRepository.getRecentNewsByCoin(selectedCoin)
             .flatMapLatest { news ->
                 flowOf(MyCoinNewsUiState.Success(news, selectedCoin, filter))
             }
-    }.catch {
-        Firebase.crashlytics.recordException(it)
-        emit(MyCoinNewsUiState.Failed(it))
+    }.catch { throwable ->
+        Firebase.crashlytics.recordException(throwable)
+        val exception = when(throwable){
+            is IOException -> NetworkDisconnectedException()
+            else -> throwable
+        }
+        emit(MyCoinNewsUiState.Failed(exception))
     }
         .stateIn(
             viewModelScope,
