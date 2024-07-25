@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui.feature.newsdetail
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,6 +26,8 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.net.ConnectException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,7 +47,7 @@ class NewsDetailViewModel @Inject constructor(
         .catch { throwable ->
             Firebase.crashlytics.recordException(throwable)
             val exception = when(throwable){
-                is IOException -> NetworkDisconnectedException()
+                is UnknownHostException, is ConnectException -> NetworkDisconnectedException()
                 else -> throwable
             }
             NewsDetailUiState.Failed(exception)
@@ -60,7 +63,7 @@ class NewsDetailViewModel @Inject constructor(
             news?.let { newsRepository.isNewsScraped(news.id) }
                 ?: throw NullPointerException()
         }
-        .catch {  }
+        .catch { Firebase.crashlytics.recordException(it) }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),

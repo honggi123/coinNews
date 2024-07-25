@@ -43,7 +43,6 @@ import com.hong7.coinnews.utils.NavigationUtils
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun RecentNewsScreen(
-    networkState: NetworkState,
     navController: NavHostController,
     viewModel: RecentNewsViewModel = hiltViewModel()
 ) {

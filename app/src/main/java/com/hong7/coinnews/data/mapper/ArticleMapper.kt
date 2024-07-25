@@ -11,7 +11,7 @@ import java.util.Locale
 
 fun NetworkNews.toDomain(): News {
     val news = News(
-        id = getHashValue(this.originalUrl),
+        id = getHashValue(this.title),
         title = this.title.replaceHtmlTags(),
         url = this.url,
         description = this.description.replaceHtmlTags(),

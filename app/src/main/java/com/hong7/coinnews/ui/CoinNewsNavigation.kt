@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui
 
+import android.util.Log
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType

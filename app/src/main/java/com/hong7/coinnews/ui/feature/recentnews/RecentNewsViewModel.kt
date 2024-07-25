@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.io.IOException
+import java.net.ConnectException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,7 +31,7 @@ class RecentNewsViewModel @Inject constructor(
             .catch { throwable ->
                 Firebase.crashlytics.recordException(throwable)
                 val exception = when(throwable){
-                    is IOException -> NetworkDisconnectedException()
+                    is UnknownHostException, is ConnectException -> NetworkDisconnectedException()
                     else -> throwable
                 }
                 emit(RecentCoinNewsUiState.Failed(exception))

@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.net.ConnectException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -33,7 +35,7 @@ class MyCoinNewsViewModel @Inject constructor(
     private val filterRepository: FilterRepository,
 ) : ViewModel() {
 
-    private val selectedCoin = MutableStateFlow<Coin?>(null)
+    val selectedCoin = MutableStateFlow<Coin?>(null)
 
     val uiState: StateFlow<MyCoinNewsUiState> = combine(
         filterRepository.getUserFilter(),
@@ -43,17 +45,16 @@ class MyCoinNewsViewModel @Inject constructor(
         val filter = pair.first
             ?: return@flatMapLatest flowOf(MyCoinNewsUiState.FilterEmpty)
         val selectedCoin = pair.second
-            ?: filter.coins.firstOrNull()
-            ?: return@flatMapLatest flowOf(MyCoinNewsUiState.FilterEmpty)   // 저장된 coin 필터가 비었기 때문에 FilterEmpty를 반환
-        
+            ?: return@flatMapLatest flowOf(MyCoinNewsUiState.Success(emptyList(), filter))
+
         newsRepository.getRecentNewsByCoin(selectedCoin)
             .flatMapLatest { news ->
-                flowOf(MyCoinNewsUiState.Success(news, selectedCoin, filter))
+                flowOf(MyCoinNewsUiState.Success(news, filter))
             }
     }.catch { throwable ->
         Firebase.crashlytics.recordException(throwable)
         val exception = when(throwable){
-            is IOException -> NetworkDisconnectedException()
+            is UnknownHostException, is ConnectException -> NetworkDisconnectedException()
             else -> throwable
         }
         emit(MyCoinNewsUiState.Failed(exception))
@@ -87,7 +88,6 @@ sealed interface MyCoinNewsUiState {
 
     data class Success(
         val newsList: List<News>,
-        val selectedCoin: Coin,
         val filter: Filter
     ) : MyCoinNewsUiState
 

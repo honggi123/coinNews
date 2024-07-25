@@ -1,5 +1,6 @@
 package com.hong7.coinnews.data.util
 
+import android.util.Log
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.network.okhttp.RequestOriginalUrl
 import com.hong7.coinnews.utils.DateUtils
@@ -29,11 +30,10 @@ object ParsingManager {
                     return@async null
                 }
 
-                val originalUrl = RequestOriginalUrl().invoke(url)
                 News(
-                    id = NumberUtils.getHashValue(originalUrl),
+                    id = NumberUtils.getHashValue(url),
                     title = title,
-                    url = originalUrl,
+                    url = url,
                     author = author,
                     createdAt = DateUtils.formatDateTimeWithUtcOffset(createdAt)
                 )

@@ -1,5 +1,6 @@
 package com.hong7.coinnews.data.repository.impl
 
+import android.util.Log
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.mapper.toScrapEntity
@@ -22,16 +23,13 @@ import javax.inject.Singleton
 
 @Singleton
 class NewsRepositoryImpl @Inject constructor(
-    private val newsDao: NewsDao,
     private val interestedNewsDao: InterestedNewsDao,
     private val naverService: NaverService
 ) : NewsRepository {
 
     override fun getRecentNewsByQuery(query: String): Flow<List<News>> = flow {
         val news = ParsingManager.parseGoogleNews(query)
-        newsDao.deleteAllNews()
-        newsDao.insertAll(news.map { it.toEntity() })
-        news.sortedByDescending { it.createdAt }
+            .sortedByDescending { it.createdAt }
         emit(news)
     }
 
@@ -68,10 +66,4 @@ class NewsRepositoryImpl @Inject constructor(
         naverService.getNewss(query = query, page = 1, pageSize = 10).items
             .map { it.toDomain() }
     }
-
-//    override suspend fun getSavedRecentNews(): List<News> =
-//        withContext(Dispatchers.IO) {
-//            newsDao.getAllNews()
-//                .map { it.toDomain() }
-//        }
 }
