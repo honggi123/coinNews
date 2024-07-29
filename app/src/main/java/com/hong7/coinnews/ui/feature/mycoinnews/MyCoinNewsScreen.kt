@@ -60,6 +60,7 @@ fun MyCoinNewsScreen(
     navController: NavHostController,
     viewModel: MyCoinNewsViewModel = hiltViewModel()
 ) {
+    val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
     val uistate by viewModel.uiState.collectAsStateWithLifecycle()
     val watchedNews by viewModel.watchedNewsIds.collectAsStateWithLifecycle()
 
@@ -69,7 +70,7 @@ fun MyCoinNewsScreen(
                 watchedNewsIds = watchedNews,
                 isLoading = false,
                 newss = state.newsList,
-                selectedCoin = state.selectedCoin,
+                selectedCoin = selectedCoin,
                 filter = state.filter,
                 onCoinClick = remember(viewModel) { { viewModel.onCoinClick(it) } },
                 onFilterSettingClick = {
@@ -106,7 +107,9 @@ fun MyCoinNewsScreen(
                 modifier = Modifier.fillMaxSize()
             )
         }
-        else -> {}
+        is MyCoinNewsUiState.Failed -> {
+            // todo
+        }
     }
 }
 

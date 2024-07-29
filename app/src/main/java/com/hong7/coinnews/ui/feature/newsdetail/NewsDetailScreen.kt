@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.net.Uri
 import android.text.TextUtils
+import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
@@ -74,8 +75,7 @@ fun NewsDetailRoute(
                 modifier = Modifier.fillMaxSize()
             )
         }
-        is NewsDetailUiState.Failed -> {}
-        is NewsDetailUiState.Loading -> {}
+        is NewsDetailUiState.Failed, is NewsDetailUiState.Loading  -> {} // todo
     }
 }
 
@@ -184,10 +184,9 @@ private fun TopAppBar(
                         interactionSource = interactionSource,
                     ) {
                         if (news?.url != null) {
-                            // todo
-//                            onToggleClick(
-//                                NewsWithInterest(newsUrl, isInterested)
-//                            )
+                            onToggleClick(
+                                NewsWithInterest(news, isScraped)
+                            )
                         }
                     },
                 tint = Grey700
@@ -272,63 +271,67 @@ private fun NewsContent(
             },
             modifier = Modifier.fillMaxSize()
         )
-        if (isLoading) {
-            Column(
+//        if (isLoading) {
+//            LoadingContent()
+//        }
+    }
+}
+
+@Composable
+private fun LoadingContent(){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .shimmer()
+                .background(Grey500)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .shimmer()
+                .background(Grey500)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .shimmer()
+                .background(Grey500),
+        )
+        repeat(4) {
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(White)
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp)
-                        .shimmer()
-                        .background(Grey500)
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(20.dp)
-                        .shimmer()
-                        .background(Grey500)
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .shimmer()
-                        .background(Grey500),
-                )
-                repeat(4) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(30.dp)
-                            .shimmer()
-                            .background(Grey500)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(220.dp)
-                            .height(30.dp)
-                            .shimmer()
-                            .background(Grey500)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(300.dp)
-                            .height(30.dp)
-                            .shimmer()
-                            .background(Grey500)
-                    )
-                }
-            }
+                    .fillMaxWidth()
+                    .height(30.dp)
+                    .shimmer()
+                    .background(Grey500)
+            )
+            Box(
+                modifier = Modifier
+                    .width(220.dp)
+                    .height(30.dp)
+                    .shimmer()
+                    .background(Grey500)
+            )
+            Box(
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(30.dp)
+                    .shimmer()
+                    .background(Grey500)
+            )
         }
     }
-
 }
 
 @Preview

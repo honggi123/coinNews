@@ -9,6 +9,8 @@ import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.News
+import com.hong7.coinnews.model.exception.ResponseResource
+import com.hong7.coinnews.model.exception.UnknownException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +32,7 @@ class MyCoinNewsViewModel @Inject constructor(
     private val filterRepository: FilterRepository,
 ) : ViewModel() {
 
-    private val selectedCoin = MutableStateFlow<Coin?>(null)
+    val selectedCoin = MutableStateFlow<Coin?>(null)
 
     val uiState: StateFlow<MyCoinNewsUiState> = combine(
         filterRepository.getUserFilter(),
@@ -40,16 +42,25 @@ class MyCoinNewsViewModel @Inject constructor(
         val filter = pair.first
             ?: return@flatMapLatest flowOf(MyCoinNewsUiState.FilterEmpty)
         val selectedCoin = pair.second
-            ?: filter.coins.firstOrNull()
-            ?: return@flatMapLatest flowOf(MyCoinNewsUiState.FilterEmpty)   // 저장된 coin 필터가 비었기 때문에 FilterEmpty를 반환
+            ?: return@flatMapLatest flowOf(MyCoinNewsUiState.Success(emptyList(), filter))
 
         newsRepository.getRecentNewsByCoin(selectedCoin)
-            .flatMapLatest { news ->
-                flowOf(MyCoinNewsUiState.Success(news, selectedCoin, filter))
+            .flatMapLatest {
+                when(it){
+                    is ResponseResource.Success -> {
+                        flowOf(MyCoinNewsUiState.Success(it.data, filter))
+                    }
+                    is ResponseResource.Error -> {
+                        flowOf(MyCoinNewsUiState.Failed(it.exception))
+                    }
+                    is ResponseResource.Loading -> {
+                        flowOf(MyCoinNewsUiState.Loading)
+                    }
+                }
             }
-    }.catch {
-        Firebase.crashlytics.recordException(it)
-        emit(MyCoinNewsUiState.Failed(it))
+    }.catch { throwable ->
+        Firebase.crashlytics.recordException(throwable)
+        emit(MyCoinNewsUiState.Failed(UnknownException()))
     }
         .stateIn(
             viewModelScope,
@@ -80,7 +91,6 @@ sealed interface MyCoinNewsUiState {
 
     data class Success(
         val newsList: List<News>,
-        val selectedCoin: Coin,
         val filter: Filter
     ) : MyCoinNewsUiState
 

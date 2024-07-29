@@ -1,4 +1,4 @@
-package com.hong7.coinnews.database
+package com.hong7.coinnews.database.entity
 
 data class CoinEntity(
     val id: String,

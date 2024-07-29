@@ -182,7 +182,7 @@ fun rememberTabContent(
 ): List<TabContent> {
 
     val recentNewsSection = TabContent(Sections.RecentNews) {
-        RecentNewsScreen(networkState, navController)
+        RecentNewsScreen(navController)
     }
 
     val myCoinNewsSection = TabContent(Sections.MyCoinNews) {

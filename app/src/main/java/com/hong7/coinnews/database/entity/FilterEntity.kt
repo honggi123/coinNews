@@ -1,8 +1,9 @@
-package com.hong7.coinnews.database
+package com.hong7.coinnews.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.hong7.coinnews.database.entity.CoinEntity
 
 @Entity(tableName = "filter")
 data class FilterEntity(

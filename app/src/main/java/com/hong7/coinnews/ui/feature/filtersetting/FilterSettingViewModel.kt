@@ -8,6 +8,7 @@ import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
+import com.hong7.coinnews.model.exception.NetworkDisconnectedException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,6 +18,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.IOException
+import java.net.ConnectException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,9 +39,13 @@ class FilterSettingViewModel @Inject constructor(
                 FilterSettingUiState.Success(coins)
             }
         }
-        .catch {
-            Firebase.crashlytics.recordException(it)
-            emit(FilterSettingUiState.Failed(it))
+        .catch { throwable ->
+            Firebase.crashlytics.recordException(throwable)
+            val exception = when(throwable){
+                is UnknownHostException, is ConnectException -> NetworkDisconnectedException()
+                else -> throwable
+            }
+            emit(FilterSettingUiState.Failed(exception))
         }
         .stateIn(
             viewModelScope,

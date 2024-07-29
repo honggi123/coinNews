@@ -1,10 +1,10 @@
-package com.hong7.coinnews.database
+package com.hong7.coinnews.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import kotlinx.coroutines.flow.Flow
+import com.hong7.coinnews.database.entity.NewsEntity
 
 @Dao
 interface NewsDao {

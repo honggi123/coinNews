@@ -1,19 +1,14 @@
 package com.example.coinnews
 
-import android.database.sqlite.SQLiteDatabase
-import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.work.impl.Migration_1_2
-import com.hong7.coinnews.database.AppDatabase
+import com.hong7.coinnews.database.dao.AppDatabase
 import com.hong7.coinnews.database.migration.AutoMigrationSpecs
-import com.hong7.coinnews.database.migration.Migration
 import junit.framework.TestCase.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import java.io.IOException
-import org.junit.Assert;
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 

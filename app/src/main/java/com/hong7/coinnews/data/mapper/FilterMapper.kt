@@ -1,7 +1,7 @@
 package com.hong7.coinnews.data.mapper
 
-import com.hong7.coinnews.database.CoinEntity
-import com.hong7.coinnews.database.FilterEntity
+import com.hong7.coinnews.database.entity.CoinEntity
+import com.hong7.coinnews.database.entity.FilterEntity
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import kotlinx.collections.immutable.toImmutableList

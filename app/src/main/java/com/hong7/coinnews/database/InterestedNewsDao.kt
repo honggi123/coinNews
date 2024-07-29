@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import com.hong7.coinnews.database.entity.ScrapNewsEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

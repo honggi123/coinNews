@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.NetworkState
+import com.hong7.coinnews.model.exception.NetworkException
 import com.hong7.coinnews.ui.NewsDetailNav
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.Grey1000
@@ -43,7 +44,6 @@ import com.hong7.coinnews.utils.NavigationUtils
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun RecentNewsScreen(
-    networkState: NetworkState,
     navController: NavHostController,
     viewModel: RecentNewsViewModel = hiltViewModel()
 ) {
@@ -69,8 +69,8 @@ fun RecentNewsScreen(
                 state = rememberLazyListState()
             )
         }
-        else -> {
-            // TODO
+        is RecentCoinNewsUiState.Failed -> {
+            // todo
         }
     }
 }

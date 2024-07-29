@@ -1,10 +1,10 @@
 package com.hong7.coinnews.di
 
 import android.content.Context
-import com.hong7.coinnews.database.AppDatabase
-import com.hong7.coinnews.database.UserFilterDao
+import com.hong7.coinnews.database.dao.AppDatabase
+import com.hong7.coinnews.database.dao.UserFilterDao
 import com.hong7.coinnews.database.InterestedNewsDao
-import com.hong7.coinnews.database.NewsDao
+import com.hong7.coinnews.database.dao.NewsDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

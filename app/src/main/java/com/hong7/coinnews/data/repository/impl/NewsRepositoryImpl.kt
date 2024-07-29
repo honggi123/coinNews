@@ -1,14 +1,17 @@
 package com.hong7.coinnews.data.repository.impl
 
+import android.util.Log
+import com.hong7.coinnews.data.extensions.asResponseResourceFlow
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.mapper.toScrapEntity
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.data.util.ParsingManager
 import com.hong7.coinnews.database.InterestedNewsDao
-import com.hong7.coinnews.database.NewsDao
+import com.hong7.coinnews.database.dao.NewsDao
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
+import com.hong7.coinnews.model.exception.ResponseResource
 import com.hong7.coinnews.network.okhttp.retrofit.NaverService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -22,20 +25,17 @@ import javax.inject.Singleton
 
 @Singleton
 class NewsRepositoryImpl @Inject constructor(
-    private val newsDao: NewsDao,
     private val interestedNewsDao: InterestedNewsDao,
     private val naverService: NaverService
 ) : NewsRepository {
 
-    override fun getRecentNewsByQuery(query: String): Flow<List<News>> = flow {
+    override fun getRecentNewsByQuery(query: String): Flow<ResponseResource<List<News>>> = flow {
         val news = ParsingManager.parseGoogleNews(query)
-        newsDao.deleteAllNews()
-        newsDao.insertAll(news.map { it.toEntity() })
-        news.sortedByDescending { it.createdAt }
+            .sortedByDescending { it.createdAt }
         emit(news)
-    }
+    }.asResponseResourceFlow()
 
-    override fun getRecentNewsByCoin(coin: Coin): Flow<List<News>> = flow {
+    override fun getRecentNewsByCoin(coin: Coin): Flow<ResponseResource<List<News>>> = flow {
         val news = coroutineScope {
             val query = coin.name
             val naverNewsDeffered = async { getNaverNews(query) }
@@ -45,7 +45,7 @@ class NewsRepositoryImpl @Inject constructor(
 
         news.sortedByDescending { it.createdAt }
         emit(news)
-    }
+    }.asResponseResourceFlow()
 
     override fun getScrapedNewsList(): Flow<List<News>> {
         return interestedNewsDao.getAllNews()
@@ -68,10 +68,4 @@ class NewsRepositoryImpl @Inject constructor(
         naverService.getNewss(query = query, page = 1, pageSize = 10).items
             .map { it.toDomain() }
     }
-
-//    override suspend fun getSavedRecentNews(): List<News> =
-//        withContext(Dispatchers.IO) {
-//            newsDao.getAllNews()
-//                .map { it.toDomain() }
-//        }
 }
