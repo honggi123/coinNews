@@ -1,5 +1,6 @@
 package com.hong7.coinnews.data.repository.impl
 
+import com.hong7.coinnews.data.extensions.asResponseResourceFlow
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.repository.FilterRepository
@@ -50,3 +51,4 @@ class FilterRepositoryImpl @Inject constructor(
         userFilterDao.insert(newFilter)
     }
 }
+

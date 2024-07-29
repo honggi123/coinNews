@@ -17,7 +17,6 @@ class CoinDataSource @Inject constructor() {
             .await().toObjects(NetworkCoin::class.java)
 
 
-
     suspend fun getUpdatedCoins(lastUpdate: Calendar): List<NetworkCoin> =
         collection("coin")
             .whereGreaterThanOrEqualTo("updatedAt", lastUpdate.time)

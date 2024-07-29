@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.net.Uri
 import android.text.TextUtils
+import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
@@ -74,8 +75,7 @@ fun NewsDetailRoute(
                 modifier = Modifier.fillMaxSize()
             )
         }
-        is NewsDetailUiState.Failed -> {}
-        is NewsDetailUiState.Loading -> {}
+        is NewsDetailUiState.Failed, is NewsDetailUiState.Loading  -> {} // todo
     }
 }
 
@@ -184,10 +184,9 @@ private fun TopAppBar(
                         interactionSource = interactionSource,
                     ) {
                         if (news?.url != null) {
-                            // todo
-//                            onToggleClick(
-//                                NewsWithInterest(newsUrl, isInterested)
-//                            )
+                            onToggleClick(
+                                NewsWithInterest(news, isScraped)
+                            )
                         }
                     },
                 tint = Grey700

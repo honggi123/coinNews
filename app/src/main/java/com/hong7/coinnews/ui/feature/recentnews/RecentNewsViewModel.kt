@@ -6,7 +6,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.News
-import com.hong7.coinnews.model.exception.NetworkDisconnectedException
+import com.hong7.coinnews.model.exception.ResponseResource
+import com.hong7.coinnews.model.exception.UnknownException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,9 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import java.io.IOException
-import java.net.ConnectException
-import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,14 +25,22 @@ class RecentNewsViewModel @Inject constructor(
 
     val uiState: StateFlow<RecentCoinNewsUiState> =
         newsRepository.getRecentNewsByQuery(CRYPTO_CURRENCY_KEYWORD)
-            .map<List<News>, RecentCoinNewsUiState> { RecentCoinNewsUiState.Success(it) }
+            .map {
+                when(it){
+                    is ResponseResource.Success -> {
+                        RecentCoinNewsUiState.Success(it.data)
+                    }
+                    is ResponseResource.Error -> {
+                        RecentCoinNewsUiState.Failed(it.exception)
+                    }
+                    is ResponseResource.Loading -> {
+                        RecentCoinNewsUiState.Loading
+                    }
+                }
+            }
             .catch { throwable ->
                 Firebase.crashlytics.recordException(throwable)
-                val exception = when(throwable){
-                    is UnknownHostException, is ConnectException -> NetworkDisconnectedException()
-                    else -> throwable
-                }
-                emit(RecentCoinNewsUiState.Failed(exception))
+                emit(RecentCoinNewsUiState.Failed(UnknownException()))
             }
             .stateIn(
                 viewModelScope,

@@ -28,10 +28,9 @@ object NewsDetailNav : DestinationArg<News> {
 
     override fun navigateWithArg(item: News): String {
         val newUrl = URLEncoder.encode(item.url, StandardCharsets.UTF_8.toString())
-        val arg = GsonUtils.toJson(item.copy(title = "", url = newUrl, description = ""))
+        val arg = GsonUtils.toJson(item.copy(url = newUrl))
         return "$route/$arg"
     }
-
 }
 
 object CoinListNav : Destination {

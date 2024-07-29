@@ -2,7 +2,6 @@ package com.hong7.coinnews.ui.feature.mycoinnews
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.impl.constraints.NetworkState
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.FilterRepository
@@ -10,7 +9,8 @@ import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.News
-import com.hong7.coinnews.model.exception.NetworkDisconnectedException
+import com.hong7.coinnews.model.exception.ResponseResource
+import com.hong7.coinnews.model.exception.UnknownException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,9 +23,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.io.IOException
-import java.net.ConnectException
-import java.net.UnknownHostException
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -48,16 +45,22 @@ class MyCoinNewsViewModel @Inject constructor(
             ?: return@flatMapLatest flowOf(MyCoinNewsUiState.Success(emptyList(), filter))
 
         newsRepository.getRecentNewsByCoin(selectedCoin)
-            .flatMapLatest { news ->
-                flowOf(MyCoinNewsUiState.Success(news, filter))
+            .flatMapLatest {
+                when(it){
+                    is ResponseResource.Success -> {
+                        flowOf(MyCoinNewsUiState.Success(it.data, filter))
+                    }
+                    is ResponseResource.Error -> {
+                        flowOf(MyCoinNewsUiState.Failed(it.exception))
+                    }
+                    is ResponseResource.Loading -> {
+                        flowOf(MyCoinNewsUiState.Loading)
+                    }
+                }
             }
     }.catch { throwable ->
         Firebase.crashlytics.recordException(throwable)
-        val exception = when(throwable){
-            is UnknownHostException, is ConnectException -> NetworkDisconnectedException()
-            else -> throwable
-        }
-        emit(MyCoinNewsUiState.Failed(exception))
+        emit(MyCoinNewsUiState.Failed(UnknownException()))
     }
         .stateIn(
             viewModelScope,

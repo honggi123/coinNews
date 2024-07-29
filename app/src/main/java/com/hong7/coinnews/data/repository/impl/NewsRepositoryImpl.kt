@@ -1,6 +1,7 @@
 package com.hong7.coinnews.data.repository.impl
 
 import android.util.Log
+import com.hong7.coinnews.data.extensions.asResponseResourceFlow
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.mapper.toScrapEntity
@@ -10,6 +11,7 @@ import com.hong7.coinnews.database.InterestedNewsDao
 import com.hong7.coinnews.database.dao.NewsDao
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
+import com.hong7.coinnews.model.exception.ResponseResource
 import com.hong7.coinnews.network.okhttp.retrofit.NaverService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -27,13 +29,13 @@ class NewsRepositoryImpl @Inject constructor(
     private val naverService: NaverService
 ) : NewsRepository {
 
-    override fun getRecentNewsByQuery(query: String): Flow<List<News>> = flow {
+    override fun getRecentNewsByQuery(query: String): Flow<ResponseResource<List<News>>> = flow {
         val news = ParsingManager.parseGoogleNews(query)
             .sortedByDescending { it.createdAt }
         emit(news)
-    }
+    }.asResponseResourceFlow()
 
-    override fun getRecentNewsByCoin(coin: Coin): Flow<List<News>> = flow {
+    override fun getRecentNewsByCoin(coin: Coin): Flow<ResponseResource<List<News>>> = flow {
         val news = coroutineScope {
             val query = coin.name
             val naverNewsDeffered = async { getNaverNews(query) }
@@ -43,7 +45,7 @@ class NewsRepositoryImpl @Inject constructor(
 
         news.sortedByDescending { it.createdAt }
         emit(news)
-    }
+    }.asResponseResourceFlow()
 
     override fun getScrapedNewsList(): Flow<List<News>> {
         return interestedNewsDao.getAllNews()

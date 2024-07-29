@@ -107,7 +107,9 @@ fun MyCoinNewsScreen(
                 modifier = Modifier.fillMaxSize()
             )
         }
-        else -> {}
+        is MyCoinNewsUiState.Failed -> {
+            // todo
+        }
     }
 }
 
