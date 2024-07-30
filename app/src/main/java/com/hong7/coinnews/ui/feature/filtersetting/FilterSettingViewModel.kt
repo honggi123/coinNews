@@ -8,7 +8,8 @@ import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
-import com.hong7.coinnews.model.exception.NetworkDisconnectedException
+import com.hong7.coinnews.model.exception.ResponseResource
+import com.hong7.coinnews.model.exception.UnknownException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,22 +31,28 @@ class FilterSettingViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<FilterSettingUiState> = filterRepository.getFilter()
-        .flatMapLatest<Filter, FilterSettingUiState> { filter ->
+        .flatMapLatest { filter ->
             filterRepository.getUserFilter().map {
-                val selectedCoinIds = it?.coins?.map { it.id }?.toSet() ?: emptySet()
-                val coins = filter.coins.map { coin ->
-                    coin.copy(isSelected = coin.id in selectedCoinIds)
+                when(filter){
+                    is ResponseResource.Success -> {
+                        val selectedCoinIds = it?.coins?.map { it.id }?.toSet() ?: emptySet()
+                        val coins = filter.data.coins.map { coin ->
+                            coin.copy(isSelected = coin.id in selectedCoinIds)
+                        }
+                        FilterSettingUiState.Success(coins)
+                    }
+                    is ResponseResource.Loading -> {
+                        FilterSettingUiState.Loading
+                    }
+                    is ResponseResource.Error -> {
+                        FilterSettingUiState.Failed(filter.exception)
+                    }
                 }
-                FilterSettingUiState.Success(coins)
             }
         }
         .catch { throwable ->
             Firebase.crashlytics.recordException(throwable)
-            val exception = when(throwable){
-                is UnknownHostException, is ConnectException -> NetworkDisconnectedException()
-                else -> throwable
-            }
-            emit(FilterSettingUiState.Failed(exception))
+            emit(FilterSettingUiState.Failed(UnknownException()))
         }
         .stateIn(
             viewModelScope,

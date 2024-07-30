@@ -8,6 +8,7 @@ import com.hong7.coinnews.database.entity.FilterEntity
 import com.hong7.coinnews.database.dao.UserFilterDao
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
+import com.hong7.coinnews.model.exception.ResponseResource
 import com.hong7.coinnews.network.firebase.CoinDataSource
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -22,11 +23,11 @@ class FilterRepositoryImpl @Inject constructor(
     private val userFilterDao: UserFilterDao
 ) : FilterRepository {
 
-    override fun getFilter(): Flow<Filter> = flow {
+    override fun getFilter(): Flow<ResponseResource<Filter>> = flow {
         val coins = dataSource.getAllCoins()
             .map { it.toDomain() }
         emit(Filter(coins = coins.toImmutableList()))
-    }
+    }.asResponseResourceFlow()
 
     override fun getUserFilter(): Flow<Filter?> {
         val filter = userFilterDao.getRecentFilterStream()
