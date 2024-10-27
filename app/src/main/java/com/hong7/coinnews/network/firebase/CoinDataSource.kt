@@ -11,13 +11,13 @@ class CoinDataSource @Inject constructor() {
 
     private val firestore = Firebase.firestore
 
-    suspend fun getAllCoins(): List<NetworkCoin> =
+    suspend fun fetchAllCoins(): List<NetworkCoin> =
         collection("coin")
             .get()
             .await().toObjects(NetworkCoin::class.java)
 
 
-    suspend fun getUpdatedCoins(lastUpdate: Calendar): List<NetworkCoin> =
+    suspend fun fetchUpdatedCoins(lastUpdate: Calendar): List<NetworkCoin> =
         collection("coin")
             .whereGreaterThanOrEqualTo("updatedAt", lastUpdate.time)
             .get()

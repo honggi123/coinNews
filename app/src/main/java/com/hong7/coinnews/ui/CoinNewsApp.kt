@@ -30,28 +30,12 @@ import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 fun CoinNewsApp(viewModel: MainViewModel) {
     val networkState by viewModel.networkState.collectAsState(initial = NetworkState.None)
 
-    val snackbarHostState = remember {
-        SnackbarHostState()
-    }
-
-    LaunchedEffect(key1 = networkState) {
-        if (networkState is NetworkState.NotConnected) {
-            snackbarHostState.showSnackbar(
-                "인터넷이 연결되지 않았습니다.", "확인", SnackbarDuration.Indefinite
-            )
-        }
-    }
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         CoinNewsAppTheme {
             CoinNewsNavGraph(networkState)
         }
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 

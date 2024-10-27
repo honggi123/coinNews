@@ -38,10 +38,6 @@ class RecentNewsViewModel @Inject constructor(
                     }
                 }
             }
-            .catch { throwable ->
-                Firebase.crashlytics.recordException(throwable)
-                emit(RecentCoinNewsUiState.Failed(UnknownException()))
-            }
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5_000),

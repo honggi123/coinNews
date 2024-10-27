@@ -11,13 +11,22 @@ sealed interface ResponseResource<out T> {
 open class AppException(message: String? = null, cause: Throwable? = null) :
     Throwable(message, cause)
 
-class NetworkException(message: String? = null, cause: Throwable? = null) :
+class BadRequestException(message: String? = null, cause: Throwable? = null) :
     AppException(message, cause)
 
-class ServerException(message: String? = null, cause: Throwable? = null) :
+class NotFoundException(message: String? = null, cause: Throwable? = null) :
     AppException(message, cause)
 
-class ClientException(message: String? = null, cause: Throwable? = null) :
+class ConflictException(message: String? = null, cause: Throwable? = null) :
+    AppException(message, cause)
+
+class InternetServerException(message: String? = null, cause: Throwable? = null) :
+    AppException(message, cause)
+
+class ForbiddenException(message: String? = null, cause: Throwable? = null) :
+    AppException(message, cause)
+
+class NetworkNotConnectedException(message: String? = null, cause: Throwable? = null) :
     AppException(message, cause)
 
 class UnknownException(message: String? = null, cause: Throwable? = null) :

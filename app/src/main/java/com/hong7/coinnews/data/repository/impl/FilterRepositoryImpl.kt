@@ -24,7 +24,7 @@ class FilterRepositoryImpl @Inject constructor(
 ) : FilterRepository {
 
     override fun getFilter(): Flow<ResponseResource<Filter>> = flow {
-        val coins = dataSource.getAllCoins()
+        val coins = dataSource.fetchAllCoins()
             .map { it.toDomain() }
         emit(Filter(coins = coins.toImmutableList()))
     }.asResponseResourceFlow()

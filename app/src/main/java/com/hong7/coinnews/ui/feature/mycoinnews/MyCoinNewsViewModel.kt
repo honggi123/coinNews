@@ -46,21 +46,20 @@ class MyCoinNewsViewModel @Inject constructor(
 
         newsRepository.getRecentNewsByCoin(selectedCoin)
             .flatMapLatest {
-                when(it){
+                when (it) {
                     is ResponseResource.Success -> {
                         flowOf(MyCoinNewsUiState.Success(it.data, filter))
                     }
+
                     is ResponseResource.Error -> {
                         flowOf(MyCoinNewsUiState.Failed(it.exception))
                     }
+
                     is ResponseResource.Loading -> {
                         flowOf(MyCoinNewsUiState.Loading)
                     }
                 }
             }
-    }.catch { throwable ->
-        Firebase.crashlytics.recordException(throwable)
-        emit(MyCoinNewsUiState.Failed(UnknownException()))
     }
         .stateIn(
             viewModelScope,

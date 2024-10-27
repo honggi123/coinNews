@@ -73,7 +73,7 @@ fun FilterSettingScreen(
             )
         }
 
-        is FilterSettingUiState.Failed -> {}
+        is FilterSettingUiState.Failed -> Unit
     }
 }
 

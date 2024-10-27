@@ -15,7 +15,7 @@ interface InterestedNewsDao {
 
     @Transaction
     @Query("SELECT * FROM scrap_news")
-    fun getAllNews(): Flow<List<ScrapNewsEntity>>
+    fun fetchAllNews(): Flow<List<ScrapNewsEntity>>
 
     @Insert
     suspend fun insert(newsEntity: ScrapNewsEntity)

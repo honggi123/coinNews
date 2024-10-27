@@ -34,10 +34,6 @@ class NewsDetailViewModel @Inject constructor(
             news?.let { NewsDetailUiState.Success(news) }
                 ?: throw NullPointerException()
         }
-        .catch { throwable ->
-            Firebase.crashlytics.recordException(throwable)
-            NewsDetailUiState.Failed(UnknownException())
-        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
@@ -49,7 +45,6 @@ class NewsDetailViewModel @Inject constructor(
             news?.let { newsRepository.isNewsScraped(news.id) }
                 ?: throw NullPointerException()
         }
-        .catch { Firebase.crashlytics.recordException(it) }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),

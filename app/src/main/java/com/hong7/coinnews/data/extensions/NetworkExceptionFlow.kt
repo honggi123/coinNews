@@ -1,10 +1,12 @@
 package com.hong7.coinnews.data.extensions
 
-import com.hong7.coinnews.model.exception.AppException
-import com.hong7.coinnews.model.exception.ClientException
-import com.hong7.coinnews.model.exception.NetworkException
+import com.hong7.coinnews.model.exception.BadRequestException
+import com.hong7.coinnews.model.exception.ConflictException
+import com.hong7.coinnews.model.exception.ForbiddenException
+import com.hong7.coinnews.model.exception.InternetServerException
+import com.hong7.coinnews.model.exception.NetworkNotConnectedException
+import com.hong7.coinnews.model.exception.NotFoundException
 import com.hong7.coinnews.model.exception.ResponseResource
-import com.hong7.coinnews.model.exception.ServerException
 import com.hong7.coinnews.model.exception.UnknownException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -25,67 +27,32 @@ fun <T> Flow<T>.asResponseResourceFlow(): Flow<ResponseResource<T>> {
             val exception = when (error) {
                 is HttpException -> {
                     when (error.code()) {
-                        in 400..499 -> {
-                            ClientException(
-                                message = "${CLIENT_ERROR}: ${error.code()}",
-                                cause = error,
-                            )
-                        }
-
-                        in 500..599 -> {
-                            ServerException(
-                                message = "${SERVER_ERROR}: ${error.code()}",
-                                cause = error
-                            )
-                        }
-
-                        else -> {
-                            UnknownException(
-                                message = "${HTTP_UNKNOWN_ERROR}: ${error.code()}",
-                                cause = error
-                            )
-                        }
+                        400 -> BadRequestException(message = "BadRequestException: ${error.code()}", cause = error)
+                        403 -> ForbiddenException(message = "ForbiddenException: ${error.code()}", cause = error)
+                        404 -> NotFoundException(message = "NotFoundException: ${error.code()}", cause = error)
+                        409 -> ConflictException(message = "ConflictException: ${error.code()}", cause = error)
+                        in 500..599 -> InternetServerException(
+                            message = "InternetServerException: ${error.code()}",
+                            cause = error
+                        )
+                        else -> UnknownException(
+                            message = "UnknownException: ${error.code()}",
+                            cause = error
+                        )
                     }
                 }
 
-                is IOException -> NetworkException(
-                    message = NETWORK_ERROR,
+                is IOException -> NetworkNotConnectedException(
+                    message = "NetworkNotConnectedException",
                     cause = error
                 )
 
-                else -> AppException(
-                    message = UNKNOWN_ERROR,
+                else -> UnknownException(
+                    message = "UnknownException",
                     cause = error
                 )
             }
-
-            val errorCode = when (error) {
-                is HttpException -> {
-                    when (error.code()) {
-                        in 400..499 -> {
-                            "#ER${error.code()}"
-                        }
-
-                        in 500..599 -> {
-                            "#ER${error.code()}"
-                        }
-
-                        else -> {
-                            "#ER${error.code()}"
-                        }
-                    }
-                }
-
-                else -> {
-                    error.cause?.message.toString()
-                }
-            }
-            emit(ResponseResource.Error(exception, errorCode))
+            emit(ResponseResource.Error(exception))
         }
 }
 
-const val CLIENT_ERROR = "오류가 발생했습니다. 입력 내용을 확인해 주세요."
-const val SERVER_ERROR = "서버에 오류가 발생했습니다. 나중에 다시 시도해 주세요."
-const val NETWORK_ERROR = "인터넷 연결에 문제가 있습니다. 나중에 다시 시도해 주세요."
-const val HTTP_UNKNOWN_ERROR = "알 수 없는 HTTP 오류 (예: 4xx/5xx)"
-const val UNKNOWN_ERROR = "알 수 없는 오류가 발생했습니다."

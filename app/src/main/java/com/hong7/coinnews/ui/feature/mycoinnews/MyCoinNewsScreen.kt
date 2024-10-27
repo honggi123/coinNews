@@ -52,6 +52,7 @@ import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.defaultTextStyle
 import com.hong7.coinnews.utils.DateUtils
 import com.hong7.coinnews.utils.NavigationUtils
+import java.lang.NullPointerException
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -74,10 +75,10 @@ fun MyCoinNewsScreen(
                 filter = state.filter,
                 onCoinClick = remember(viewModel) { { viewModel.onCoinClick(it) } },
                 onFilterSettingClick = {
-                     NavigationUtils.navigate(
+                    NavigationUtils.navigate(
                         navController,
                         CoinListNav.route
-                     )
+                    )
                 },
                 onNewsClick = {
                     NavigationUtils.navigate(
@@ -102,14 +103,8 @@ fun MyCoinNewsScreen(
             )
         }
 
-        is MyCoinNewsUiState.Loading -> {
-            LoadingContent(
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-        is MyCoinNewsUiState.Failed -> {
-            // todo
-        }
+        is MyCoinNewsUiState.Failed -> Unit
+        else -> Unit
     }
 }
 
@@ -137,7 +132,7 @@ private fun EmptyFilterContent(
 @Composable
 private fun LoadingContent(
     modifier: Modifier = Modifier
-){
+) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,

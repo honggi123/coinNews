@@ -38,7 +38,7 @@ class NewsRepositoryImpl @Inject constructor(
     override fun getRecentNewsByCoin(coin: Coin): Flow<ResponseResource<List<News>>> = flow {
         val news = coroutineScope {
             val query = coin.name
-            val naverNewsDeffered = async { getNaverNews(query) }
+            val naverNewsDeffered = async { fetchNaverNews(query) }
             val googleNewsDeffered = async { ParsingManager.parseGoogleNews(coin.name) }
             naverNewsDeffered.await() + googleNewsDeffered.await()
         }
@@ -48,7 +48,7 @@ class NewsRepositoryImpl @Inject constructor(
     }.asResponseResourceFlow()
 
     override fun getScrapedNewsList(): Flow<List<News>> {
-        return interestedNewsDao.getAllNews()
+        return interestedNewsDao.fetchAllNews()
             .map { it.map { it.toDomain() } }
     }
 
@@ -64,8 +64,8 @@ class NewsRepositoryImpl @Inject constructor(
         interestedNewsDao.delete(news.id)
     }
 
-    private suspend fun getNaverNews(query: String): List<News> = withContext(Dispatchers.IO) {
-        naverService.getNewss(query = query, page = 1, pageSize = 10).items
+    private suspend fun fetchNaverNews(query: String): List<News> = withContext(Dispatchers.IO) {
+        naverService.fetchNewss(query = query, page = 1, pageSize = 10).items
             .map { it.toDomain() }
     }
 }
