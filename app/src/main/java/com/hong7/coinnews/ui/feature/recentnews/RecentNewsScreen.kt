@@ -31,8 +31,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.model.News
-import com.hong7.coinnews.model.NetworkState
-import com.hong7.coinnews.model.exception.NetworkException
 import com.hong7.coinnews.ui.NewsDetailNav
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.Grey1000

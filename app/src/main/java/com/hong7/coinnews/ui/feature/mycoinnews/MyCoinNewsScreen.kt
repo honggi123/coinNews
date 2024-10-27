@@ -57,7 +57,6 @@ import java.lang.NullPointerException
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun MyCoinNewsScreen(
-    networkState: NetworkState,
     navController: NavHostController,
     viewModel: MyCoinNewsViewModel = hiltViewModel()
 ) {

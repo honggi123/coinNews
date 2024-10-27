@@ -177,7 +177,6 @@ private fun HomeTabRowContent(
 
 @Composable
 fun rememberTabContent(
-    networkState: NetworkState,
     navController: NavHostController
 ): List<TabContent> {
 
@@ -186,7 +185,7 @@ fun rememberTabContent(
     }
 
     val myCoinNewsSection = TabContent(Sections.MyCoinNews) {
-        MyCoinNewsScreen(networkState, navController)
+        MyCoinNewsScreen(navController)
     }
 
     return listOf(recentNewsSection, myCoinNewsSection)

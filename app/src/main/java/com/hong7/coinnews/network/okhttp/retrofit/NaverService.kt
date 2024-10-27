@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface NaverService {
 
     @GET("/v1/search/news.json")
-    suspend fun fetchNewss(
+    suspend fun fetchNews(
         @Header("X-Naver-Client-Id") clientId: String = BuildConfig.NAVER_API_KEY,
         @Header("X-Naver-Client-Secret") clientSecret: String = BuildConfig.NAVER_API_SECRETE,
         @Query("query") query: String,

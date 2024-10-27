@@ -22,7 +22,7 @@ class NewsNewsPagingSource @Inject constructor(
             val trace: Trace =
                 FirebasePerformance.getInstance().newTrace("network_news_request")
             trace.start()
-            val response = service.getNewss(
+            val response = service.fetchNews(
                 query = query,
                 page = page,
                 pageSize = params.loadSize

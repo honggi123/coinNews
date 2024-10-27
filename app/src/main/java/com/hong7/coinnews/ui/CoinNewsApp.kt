@@ -28,20 +28,18 @@ import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 
 @Composable
 fun CoinNewsApp(viewModel: MainViewModel) {
-    val networkState by viewModel.networkState.collectAsState(initial = NetworkState.None)
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         CoinNewsAppTheme {
-            CoinNewsNavGraph(networkState)
+            CoinNewsNavGraph()
         }
     }
 }
 
 @Composable
 private fun CoinNewsNavGraph(
-    networkState: NetworkState,
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
@@ -54,7 +52,7 @@ private fun CoinNewsNavGraph(
         composable(
             route = HomeNav.route
         ) {
-            HomeRoute(networkState, navController)
+            HomeRoute(navController)
         }
         composable(
             route = NewsDetailNav.routeWithArgName(),

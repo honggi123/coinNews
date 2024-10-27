@@ -1,14 +1,11 @@
 package com.hong7.coinnews.data.repository.impl
 
-import android.util.Log
 import com.hong7.coinnews.data.extensions.asResponseResourceFlow
 import com.hong7.coinnews.data.mapper.toDomain
-import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.mapper.toScrapEntity
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.data.util.ParsingManager
 import com.hong7.coinnews.database.InterestedNewsDao
-import com.hong7.coinnews.database.dao.NewsDao
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.exception.ResponseResource
@@ -40,9 +37,8 @@ class NewsRepositoryImpl @Inject constructor(
             val query = coin.name
             val naverNewsDeffered = async { fetchNaverNews(query) }
             val googleNewsDeffered = async { ParsingManager.parseGoogleNews(coin.name) }
-            naverNewsDeffered.await() + googleNewsDeffered.await()
+            naverNewsDeffered.await()
         }
-
         news.sortedByDescending { it.createdAt }
         emit(news)
     }.asResponseResourceFlow()
@@ -65,7 +61,7 @@ class NewsRepositoryImpl @Inject constructor(
     }
 
     private suspend fun fetchNaverNews(query: String): List<News> = withContext(Dispatchers.IO) {
-        naverService.fetchNewss(query = query, page = 1, pageSize = 10).items
+        naverService.fetchNews(query = query, page = 1, pageSize = 10).items
             .map { it.toDomain() }
     }
 }

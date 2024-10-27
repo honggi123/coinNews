@@ -5,7 +5,7 @@ sealed interface ResponseResource<out T> {
     data class Error(val exception: AppException, val errorCode: String? = null) :
         ResponseResource<Nothing>
 
-    data class Loading(val status: Boolean) : ResponseResource<Nothing>
+    object Loading : ResponseResource<Nothing>
 }
 
 open class AppException(message: String? = null, cause: Throwable? = null) :

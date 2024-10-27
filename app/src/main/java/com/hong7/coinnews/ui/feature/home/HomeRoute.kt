@@ -16,10 +16,9 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun HomeRoute(
-    networkState: NetworkState,
     navController: NavHostController
 ) {
-    val tabContent = rememberTabContent(networkState, navController)
+    val tabContent = rememberTabContent(navController)
 
     HomeScreen(
         tabs = tabContent.toImmutableList(),

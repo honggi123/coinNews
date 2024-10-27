@@ -21,8 +21,7 @@ fun <T> Flow<T>.asResponseResourceFlow(): Flow<ResponseResource<T>> {
         .map<T, ResponseResource<T>> {
             ResponseResource.Success(it)
         }
-        .onStart { emit(ResponseResource.Loading(true)) }
-        .onCompletion { emit(ResponseResource.Loading(false)) }
+        .onStart { emit(ResponseResource.Loading) }
         .catch { error ->
             val exception = when (error) {
                 is HttpException -> {
