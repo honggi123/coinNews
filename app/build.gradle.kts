@@ -147,6 +147,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("com.google.firebase:firebase-firestore")
 
+    implementation("androidx.navigation:navigation-compose:2.8.3")
+
     implementation("com.valentinilk.shimmer:compose-shimmer:1.3.0")
 
     testImplementation("junit:junit:4.13.2")

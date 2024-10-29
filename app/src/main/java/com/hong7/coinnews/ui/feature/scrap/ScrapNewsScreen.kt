@@ -52,7 +52,6 @@ fun ScrapNewsScreen(
 
     ScrapNewsScreen(
         newsList = newsList,
-        onBackClick = { navController.popBackStack() },
         onNewsClick = {
             NavigationUtils.navigate(
                 navController,
@@ -68,7 +67,6 @@ fun ScrapNewsScreen(
 @Composable
 private fun ScrapNewsScreen(
     newsList: List<News>,
-    onBackClick: () -> Unit,
     onDeleteClick: (coin: Coin) -> Unit,
     onNewsClick: (News) -> Unit,
     modifier: Modifier = Modifier,
@@ -84,17 +82,6 @@ private fun ScrapNewsScreen(
                         fontWeight = FontWeight.Bold,
                         color = Grey700
                     )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onBackClick() }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_back),
-                            contentDescription = "",
-                            tint = Grey700
-                        )
-                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background

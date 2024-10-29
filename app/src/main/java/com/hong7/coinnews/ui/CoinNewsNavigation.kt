@@ -1,23 +1,31 @@
 package com.hong7.coinnews.ui
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.hong7.coinnews.R
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.utils.GsonUtils
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 
-object HomeNav : Destination {
-    override val route: String = NavigationRouteName.MAIN_HOME
-    override val title: String = NavigationTitle.MAIN_HOME
+sealed class MainNav(
+    val title: String,
+    @DrawableRes val icon: Int,
+    val route: String
+) {
+    object News : MainNav(NavigationRouteName.MAIN_NEWS, R.drawable.ic_newspaper_24, NavigationRouteName.MAIN_NEWS)
+    object Video : MainNav(NavigationRouteName.MAIN_VIDEO, R.drawable.ic_slow_motion_video_24, NavigationRouteName.MAIN_VIDEO)
+
+    object Explore : MainNav(NavigationRouteName.MAIN_EXPLORE, R.drawable.ic_explore_24, NavigationRouteName.MAIN_EXPLORE)
+
+    object Scrap : MainNav(NavigationRouteName.MAIN_SCRAP, R.drawable.ic_bookmark, NavigationRouteName.MAIN_SCRAP)
+
 }
 
-object NewsNav : Destination {
-    override val route: String = NavigationRouteName.NEWS
-    override val title: String = NavigationTitle.NEWS
-}
 
 object NewsDetailNav : DestinationArg<News> {
 
@@ -30,7 +38,8 @@ object NewsDetailNav : DestinationArg<News> {
     )
 
     override fun navigateWithArg(item: News): String {
-        val encodedArg = URLEncoder.encode(GsonUtils.toJson(item), StandardCharsets.UTF_8.toString())
+        val encodedArg =
+            URLEncoder.encode(GsonUtils.toJson(item), StandardCharsets.UTF_8.toString())
         return "$route/$encodedArg"
     }
 }
@@ -38,16 +47,6 @@ object NewsDetailNav : DestinationArg<News> {
 object CoinListNav : Destination {
     override val route: String = NavigationRouteName.ALL_COIN_LIST
     override val title: String = NavigationTitle.ALL_COIN_LIST
-}
-
-object ScrapNav : Destination {
-    override val route: String = NavigationRouteName.SCRAP
-    override val title: String = NavigationTitle.SCRAP
-}
-
-object SettingNav : Destination {
-    override val route: String = NavigationRouteName.SETTING
-    override val title: String = NavigationTitle.SETTING
 }
 
 
@@ -65,19 +64,23 @@ interface DestinationArg<T> : Destination {
 }
 
 object NavigationRouteName {
-    const val MAIN_HOME = "main_home"
+    const val MAIN_NEWS = "뉴스"
+    const val MAIN_EXPLORE = "익스폴로러"
+    const val MAIN_VIDEO = "비디오"
+    const val MAIN_SCRAP = "스크랩"
+    const val MAIN_SETTING = "설정"
+
     const val ARTICLE_DETAIL = "news_detail"
     const val ALL_COIN_LIST = "all_coin_list"
-    const val NEWS = "news"
-    const val SCRAP = "scrap"
-    const val SETTING = "setting"
 }
 
 object NavigationTitle {
-    const val MAIN_HOME = "홈"
-    const val ARTICLE_DETAIL = "뉴스 상세페이지"
-    const val ALL_COIN_LIST = "코인 목록"
-    const val NEWS = "뉴스"
-    const val SCRAP = "스크랩"
-    const val SETTING = "설정"
+    const val MAIN_NEWS = "뉴스"
+    const val MAIN_EXPLORE = "스크랩"
+    const val MAIN_VIDEO = "비디오"
+    const val MAIN_SCRAP = "스크랩"
+    const val MAIN_SETTING = "설정"
+
+    const val ARTICLE_DETAIL = "뉴스_상세"
+    const val ALL_COIN_LIST = "코인_목록"
 }
