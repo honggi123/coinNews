@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        splashScreen.setKeepOnScreenCondition() {
+        splashScreen.setKeepOnScreenCondition {
             mainViewModel.isLoading.value
         }
 

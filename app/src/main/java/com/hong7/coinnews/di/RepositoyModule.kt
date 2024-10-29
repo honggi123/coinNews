@@ -2,8 +2,10 @@ package com.hong7.coinnews.di
 
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.data.repository.NewsRepository
+import com.hong7.coinnews.data.repository.VideoRepository
 import com.hong7.coinnews.data.repository.impl.FilterRepositoryImpl
 import com.hong7.coinnews.data.repository.impl.NewsRepositoryImpl
+import com.hong7.coinnews.data.repository.impl.VideoRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,4 +23,8 @@ interface RepositoyModule {
     @Binds
     @Singleton
     fun bindFilterRepository(repository: FilterRepositoryImpl): FilterRepository
+
+    @Binds
+    @Singleton
+    fun bindVideoRepository(repository: VideoRepositoryImpl): VideoRepository
 }

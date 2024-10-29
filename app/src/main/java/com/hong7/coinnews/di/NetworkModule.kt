@@ -1,6 +1,7 @@
 package com.hong7.coinnews.di
 
 import com.hong7.coinnews.network.retrofit.NaverService
+import com.hong7.coinnews.network.retrofit.YoutubeService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -11,6 +12,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -42,5 +44,18 @@ object NetworkModule {
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(NaverService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideYoutubeService(client: OkHttpClient): YoutubeService {
+        val BASE_URL = "https://www.googleapis.com/youtube/v3/"
+
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(YoutubeService::class.java)
     }
 }

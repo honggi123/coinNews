@@ -58,7 +58,7 @@ class FilterSettingViewModel @Inject constructor(
 
     fun onSelectCompleted(selectedCoins: List<Coin>) {
         viewModelScope.launch {
-            filterRepository.setMyCoinsFilter(selectedCoins)
+            filterRepository.refreshCoinsFilter(selectedCoins)
         }
     }
 }

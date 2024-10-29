@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -33,6 +34,7 @@ import com.hong7.coinnews.ui.feature.news.NewsScreen
 import com.hong7.coinnews.ui.main.MainViewModel
 import com.hong7.coinnews.ui.feature.newsdetail.NewsDetailRoute
 import com.hong7.coinnews.ui.feature.scrap.ScrapNewsScreen
+import com.hong7.coinnews.ui.feature.setting.SettingScreen
 import com.hong7.coinnews.ui.feature.video.VideoScreen
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
@@ -52,8 +54,8 @@ fun CoinNewsApp(viewModel: MainViewModel) {
                     MyBottomNavigation(
                         containerColor = Color.White,
                         contentColor = Grey500,
-                        indicatorColor = Color.Green,
-                        navController = navController
+                        navController = navController,
+                        modifier = Modifier.fillMaxWidth().height(60.dp)
                     )
                 }
             ) {
@@ -140,24 +142,23 @@ private fun CoinNewsNavGraph(
             FilterSettingScreen(navController)
         }
 
-//        composable(
-//            route = MainNav.Scrap,
-//        ) {
-//            SettingScreen(
-//                navController,
-//                modifier.fillMaxSize()
-//            )
-//        }
+        composable(
+            route = SettingNav.route,
+        ) {
+            SettingScreen(
+                navController,
+                modifier.fillMaxSize()
+            )
+        }
     }
 }
 
 @Composable
 private fun MyBottomNavigation(
-    modifier: Modifier = Modifier,
     containerColor: Color,
     contentColor: Color,
-    indicatorColor: Color,
-    navController: NavHostController
+    navController: NavHostController,
+    modifier: Modifier = Modifier
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -193,7 +194,9 @@ private fun MyBottomNavigation(
                             painter = painterResource(id = item.icon),
                             contentDescription = item.title,
                             tint = if (currentRoute == item.route) Blue600 else contentColor,
-                            modifier = Modifier.width(26.dp).height(26.dp)
+                            modifier = Modifier
+                                .width(26.dp)
+                                .height(26.dp)
 
                         )
                     },

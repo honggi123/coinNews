@@ -1,7 +1,7 @@
 package com.hong7.coinnews.network.retrofit
 
 import com.hong7.coinnews.BuildConfig
-import com.hong7.coinnews.network.model.NewsResponse
+import com.hong7.coinnews.network.model.response.NewsResponse
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query

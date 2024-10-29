@@ -79,7 +79,7 @@ fun NewsScreen(
     val watchedNews by viewModel.watchedNewsIds.collectAsStateWithLifecycle()
 
     when (val state = uistate) {
-        is MyCoinNewsUiState.Success -> {
+        is NewsScreenUiState.Success -> {
             NewsListScreenContent(
                 watchedNewsIds = watchedNews,
                 isLoading = false,
@@ -105,7 +105,7 @@ fun NewsScreen(
 
         }
 
-        is MyCoinNewsUiState.FilterEmpty -> {
+        is NewsScreenUiState.FilterEmpty -> {
             EmptyFilterContent(
                 onFilterSettingClick = {
                     NavigationUtils.navigate(
@@ -182,7 +182,7 @@ private fun NewsListScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "뉴스",
+                        text = "News",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.ExtraBold
                         ),
@@ -260,13 +260,13 @@ private fun CoinFiltersRow(
             items(coins.size, key = { coins[it].id }) {
                 SelectableChip(
                     selected = coins[it] == selectedCoin,
-                    text = coins[it].name,
+                    text = if (coins[it].name == "암호화폐") "전체" else coins[it].name,
                     onClick = { onCoinClick(coins[it]) }
                 )
             }
         }
         SettingButton(
-            text = "All",
+            text = "설정",
             onClick = onFilterSettingClick
         )
     }

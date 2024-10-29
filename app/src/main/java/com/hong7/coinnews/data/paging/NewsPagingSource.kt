@@ -1,13 +1,9 @@
 package com.hong7.coinnews.data.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.google.firebase.perf.FirebasePerformance
-import com.google.firebase.perf.metrics.Trace
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.model.News
-import com.hong7.coinnews.network.model.NetworkNews
 import com.hong7.coinnews.network.retrofit.NaverService
 import javax.inject.Inject
 

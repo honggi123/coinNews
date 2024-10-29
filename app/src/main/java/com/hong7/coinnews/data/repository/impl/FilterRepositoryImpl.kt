@@ -1,5 +1,6 @@
 package com.hong7.coinnews.data.repository.impl
 
+import android.util.Log
 import com.hong7.coinnews.data.extensions.asResponseResourceFlow
 import com.hong7.coinnews.data.mapper.toDomain
 import com.hong7.coinnews.data.mapper.toEntity
@@ -30,29 +31,33 @@ class FilterRepositoryImpl @Inject constructor(
     }.asResponseResourceFlow()
 
     override fun getUserFilter(): Flow<Filter?> {
-        val filter = userFilterDao.getRecentFilterStream()
-            .map { filter -> filter?.let { it.toDomain() } }
-
-        return filter
+        return userFilterDao.getRecentFilterStream()
+            .map { filter -> filter?.toDomain() }
     }
 
     override suspend fun isUserFilterEmpty(): Boolean {
         return userFilterDao.isEmpty()
     }
 
-    override suspend fun setMyCoinsFilter(coins: List<Coin>) {
+    override suspend fun addCoinsFilter(coins: List<Coin>) {
         val oldFilter = userFilterDao.getRecentFilter()
-        val coinEntities = coins.map { it.toEntity() }
+        val newCoinFilter = coins.map { it.toEntity() }
 
         val updatedCoins = if (oldFilter != null) {
-            val savedList = oldFilter.coins.toMutableList()
-             savedList + coinEntities
+            oldFilter.coins + newCoinFilter
         } else {
-            coinEntities
+            newCoinFilter
         }
 
-        val newFilter = oldFilter?.copy(coins = updatedCoins) ?: FilterEntity(coins = coinEntities)
+        val newFilter =
+            oldFilter?.copy(coins = updatedCoins) ?: FilterEntity(coins = updatedCoins)
+
         userFilterDao.insert(newFilter)
+    }
+
+    override suspend fun refreshCoinsFilter(coins: List<Coin>) {
+        val newCoinFilter = coins.map { it.toEntity() }
+        userFilterDao.insert(FilterEntity(coins = newCoinFilter))
     }
 }
 

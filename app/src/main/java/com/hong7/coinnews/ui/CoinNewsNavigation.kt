@@ -17,12 +17,12 @@ sealed class MainNav(
     @DrawableRes val icon: Int,
     val route: String
 ) {
-    object News : MainNav(NavigationRouteName.MAIN_NEWS, R.drawable.ic_newspaper_24, NavigationRouteName.MAIN_NEWS)
-    object Video : MainNav(NavigationRouteName.MAIN_VIDEO, R.drawable.ic_slow_motion_video_24, NavigationRouteName.MAIN_VIDEO)
+    object News : MainNav(NavigationTitle.MAIN_NEWS, R.drawable.ic_newspaper_24, NavigationRouteName.MAIN_NEWS)
+    object Video : MainNav(NavigationTitle.MAIN_VIDEO, R.drawable.ic_slow_motion_video_24, NavigationRouteName.MAIN_VIDEO)
 
-    object Explore : MainNav(NavigationRouteName.MAIN_EXPLORE, R.drawable.ic_explore_24, NavigationRouteName.MAIN_EXPLORE)
+    object Explore : MainNav(NavigationTitle.MAIN_EXPLORE, R.drawable.ic_explore_24, NavigationRouteName.MAIN_EXPLORE)
 
-    object Scrap : MainNav(NavigationRouteName.MAIN_SCRAP, R.drawable.ic_bookmark, NavigationRouteName.MAIN_SCRAP)
+    object Scrap : MainNav(NavigationTitle.MAIN_SCRAP, R.drawable.ic_bookmark, NavigationRouteName.MAIN_SCRAP)
 
 }
 
@@ -49,6 +49,10 @@ object CoinListNav : Destination {
     override val title: String = NavigationTitle.ALL_COIN_LIST
 }
 
+object SettingNav : Destination {
+    override val route: String = NavigationRouteName.SETTING
+    override val title: String = NavigationTitle.SETTING
+}
 
 interface Destination {
     val route: String
@@ -64,23 +68,23 @@ interface DestinationArg<T> : Destination {
 }
 
 object NavigationRouteName {
-    const val MAIN_NEWS = "뉴스"
-    const val MAIN_EXPLORE = "익스폴로러"
-    const val MAIN_VIDEO = "비디오"
-    const val MAIN_SCRAP = "스크랩"
-    const val MAIN_SETTING = "설정"
+    const val MAIN_NEWS = "bews"
+    const val MAIN_EXPLORE = "explorer"
+    const val MAIN_VIDEO = "video"
+    const val MAIN_SCRAP = "scrap"
 
+    const val SETTING = "setting"
     const val ARTICLE_DETAIL = "news_detail"
     const val ALL_COIN_LIST = "all_coin_list"
 }
 
 object NavigationTitle {
-    const val MAIN_NEWS = "뉴스"
-    const val MAIN_EXPLORE = "스크랩"
-    const val MAIN_VIDEO = "비디오"
-    const val MAIN_SCRAP = "스크랩"
-    const val MAIN_SETTING = "설정"
+    const val MAIN_NEWS = "News"
+    const val MAIN_EXPLORE = "Explorer"
+    const val MAIN_VIDEO = "Video"
+    const val MAIN_SCRAP = "Scrap"
 
-    const val ARTICLE_DETAIL = "뉴스_상세"
-    const val ALL_COIN_LIST = "코인_목록"
+    const val SETTING = "Setting"
+    const val ARTICLE_DETAIL = "News Detail"
+    const val ALL_COIN_LIST = "Coin List"
 }

@@ -151,6 +151,8 @@ dependencies {
 
     implementation("com.valentinilk.shimmer:compose-shimmer:1.3.0")
 
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.room:room-testing:2.6.1")
 

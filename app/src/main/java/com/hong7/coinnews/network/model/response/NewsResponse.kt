@@ -1,4 +1,4 @@
-package com.hong7.coinnews.network.model
+package com.hong7.coinnews.network.model.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

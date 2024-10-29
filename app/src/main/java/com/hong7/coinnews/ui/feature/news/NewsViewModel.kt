@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui.feature.news
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -40,29 +41,29 @@ class NewsViewModel @Inject constructor(
         get() = newsRepository.getNews(CRYPTO_SEARCH_KEYWORD)
             .cachedIn(viewModelScope)
 
-    val uiState: StateFlow<MyCoinNewsUiState> = combine(
+    val uiState: StateFlow<NewsScreenUiState> = combine(
         filterRepository.getUserFilter(),
         selectedCoin,
         ::Pair
     ).flatMapLatest { pair ->
-        val filter = pair.first
-            ?: return@flatMapLatest flowOf(MyCoinNewsUiState.FilterEmpty)
-        val selectedCoin = pair.second
-            ?: return@flatMapLatest flowOf(MyCoinNewsUiState.Success(null, filter))
+        val filter = pair.first ?: throw NullPointerException()
+        val currentCoin = pair.second ?: filter.coins.first().also { firstCoin ->
+            selectedCoin.value = firstCoin
+        }
 
-        newsRepository.getRecentNewsByCoin(selectedCoin)
+        newsRepository.getRecentNewsByCoin(currentCoin)
             .flatMapLatest {
                 when (it) {
                     is ResponseResource.Success -> {
-                        flowOf(MyCoinNewsUiState.Success(it.data, filter))
+                        flowOf(NewsScreenUiState.Success(it.data, filter))
                     }
 
                     is ResponseResource.Error -> {
-                        flowOf(MyCoinNewsUiState.Failed(it.exception))
+                        flowOf(NewsScreenUiState.Failed(it.exception))
                     }
 
                     is ResponseResource.Loading -> {
-                        flowOf(MyCoinNewsUiState.Loading)
+                        flowOf(NewsScreenUiState.Loading)
                     }
                 }
             }
@@ -70,7 +71,7 @@ class NewsViewModel @Inject constructor(
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            MyCoinNewsUiState.Loading
+            NewsScreenUiState.Loading
         )
 
     private val _watchedNewsIds = MutableStateFlow<Set<String>>(emptySet())
@@ -89,19 +90,19 @@ class NewsViewModel @Inject constructor(
     }
 }
 
-sealed interface MyCoinNewsUiState {
-    object Loading : MyCoinNewsUiState
+sealed interface NewsScreenUiState {
+    object Loading : NewsScreenUiState
 
-    object FilterEmpty : MyCoinNewsUiState
+    object FilterEmpty : NewsScreenUiState
 
     data class Success(
         val newsList: List<News>?,
         val filter: Filter
-    ) : MyCoinNewsUiState
+    ) : NewsScreenUiState
 
     data class Failed(
         val throwable: Throwable
-    ) : MyCoinNewsUiState
+    ) : NewsScreenUiState
 }
 
 

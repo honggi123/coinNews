@@ -2,10 +2,9 @@ package com.hong7.coinnews.data.mapper
 
 import com.hong7.coinnews.database.entity.NewsEntity
 import com.hong7.coinnews.database.entity.ScrapNewsEntity
-import com.hong7.coinnews.network.model.NetworkNews
+import com.hong7.coinnews.network.model.response.NetworkNews
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.utils.DateUtils
-import com.hong7.coinnews.utils.NumberUtils.getHashValue
 import java.time.LocalDateTime
 import java.util.Locale
 

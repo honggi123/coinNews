@@ -17,12 +17,5 @@ class CoinDataSource @Inject constructor() {
             .await().toObjects(NetworkCoin::class.java)
 
 
-    suspend fun fetchUpdatedCoins(lastUpdate: Calendar): List<NetworkCoin> =
-        collection("coin")
-            .whereGreaterThanOrEqualTo("updatedAt", lastUpdate.time)
-            .get()
-            .await().toObjects(NetworkCoin::class.java)
-
-
     private fun collection(path: String) = firestore.collection(path)
 }

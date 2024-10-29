@@ -37,7 +37,11 @@ import com.hong7.coinnews.R
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.ui.NewsDetailNav
+import com.hong7.coinnews.ui.SettingNav
+import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey200
+import com.hong7.coinnews.ui.theme.Grey300
+import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey700
 import com.hong7.coinnews.ui.theme.defaultTextStyle
 import com.hong7.coinnews.utils.DateUtils
@@ -58,16 +62,21 @@ fun ScrapNewsScreen(
                 NewsDetailNav.navigateWithArg(it)
             )
         },
-        onDeleteClick = {},
+        onSettingClick = {
+            NavigationUtils.navigate(
+                navController,
+                SettingNav.route
+            )
+        },
         modifier = Modifier.fillMaxSize()
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class) 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScrapNewsScreen(
     newsList: List<News>,
-    onDeleteClick: (coin: Coin) -> Unit,
+    onSettingClick: () -> Unit,
     onNewsClick: (News) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState()
@@ -77,15 +86,28 @@ private fun ScrapNewsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "스크랩",
-                        style = MaterialTheme.typography.titleLarge,
+                        text = "Scrap News",
                         fontWeight = FontWeight.Bold,
-                        color = Grey700
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.ExtraBold
+                        ),
+                        color = Blue800
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
+                actions = {
+                    IconButton(
+                        onClick = { onSettingClick() },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_info_24),
+                            contentDescription = "",
+                            tint = Grey500
+                        )
+                    }
+                },
 //                scrollBehavior = scrollBehavior
             )
         },
@@ -161,16 +183,6 @@ private fun NewsContentItem(
                 lineHeight = 20.sp,
             ),
             fontWeight = FontWeight.Bold,
-        )
-        Text(
-            text = news.description,
-            style = defaultTextStyle.copy(
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
-            ),
-            color = Color(0xFF777777),
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis
         )
         NewsMetaData(
             news = news,

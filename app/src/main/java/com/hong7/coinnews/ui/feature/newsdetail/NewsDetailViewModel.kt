@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui.feature.newsdetail
 
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,12 +32,14 @@ class NewsDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val news = savedStateHandle.getStateFlow(ARTICLE_KEY, "")
-        .map { GsonUtils.fromJson<News>(it) }
+        .map {
+            val decodedJson = URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
+            GsonUtils.fromJson<News>(decodedJson) ?: throw NullPointerException()
+        }
 
     val uiState: StateFlow<NewsDetailUiState> = news
-        .map {  news ->
-            news?.let { NewsDetailUiState.Success(news) }
-                ?: throw NullPointerException()
+        .map { news ->
+            news.let { NewsDetailUiState.Success(news) }
         }
         .stateIn(
             viewModelScope,

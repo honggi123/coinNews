@@ -16,7 +16,7 @@ class MainViewModel @Inject constructor(
     private val filterRepository: FilterRepository
 ) : ViewModel() {
 
-    private val _isLoading = MutableStateFlow(false)
+    private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
 
     init {
@@ -24,10 +24,10 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             filterRepository.getUserFilter().collectLatest { filter ->
                 if (filter == null) {
-                    filterRepository.setMyCoinsFilter(
+                    filterRepository.addCoinsFilter(
                         listOf(
                             Coin(
-                                id = "crypto_default",
+                                id = "crypto",
                                 name = "암호화폐",
                                 symbol = ""
                             )
@@ -35,6 +35,7 @@ class MainViewModel @Inject constructor(
                     )
                 }
                 _isLoading.value = false
+
             }
         }
     }
