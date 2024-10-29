@@ -50,10 +50,6 @@ class FilterSettingViewModel @Inject constructor(
                 }
             }
         }
-        .catch { throwable ->
-            Firebase.crashlytics.recordException(throwable)
-            emit(FilterSettingUiState.Failed(UnknownException()))
-        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
@@ -62,7 +58,7 @@ class FilterSettingViewModel @Inject constructor(
 
     fun onSelectCompleted(selectedCoins: List<Coin>) {
         viewModelScope.launch {
-            filterRepository.setMyCoins(selectedCoins)
+            filterRepository.setMyCoinsFilter(selectedCoins)
         }
     }
 }

@@ -37,7 +37,7 @@ fun SettingScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "앱 정보",
+                        text = "App Information",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Grey700
@@ -75,14 +75,14 @@ fun SettingScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "앱 버전 : ${BuildConfig.VERSION_NAME}",
+                    text = "Version : ${BuildConfig.VERSION_NAME}",
                     style = MaterialTheme.typography.titleMedium,
                     color = Grey,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = "연락처 : ghdrl7526@gmail.com",
+                    text = "Contact : ghdrl7526@gmail.com",
                     style = MaterialTheme.typography.titleMedium,
                     color = Grey,
                     fontWeight = FontWeight.Bold,

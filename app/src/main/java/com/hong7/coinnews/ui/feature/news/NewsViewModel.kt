@@ -1,23 +1,22 @@
-package com.hong7.coinnews.ui.feature.mycoinnews
+package com.hong7.coinnews.ui.feature.news
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
-import com.google.firebase.crashlytics.crashlytics
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.exception.ResponseResource
-import com.hong7.coinnews.model.exception.UnknownException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -25,14 +24,21 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val CRYPTO_SEARCH_KEYWORD = "crypto | bitcoin | cryptocurrency | ethereum | 코인 | 비트코인 | 암호화폐 | 이더리움"
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class MyCoinNewsViewModel @Inject constructor(
+class NewsViewModel @Inject constructor(
     private val newsRepository: NewsRepository,
     private val filterRepository: FilterRepository,
 ) : ViewModel() {
 
     val selectedCoin = MutableStateFlow<Coin?>(null)
+
+    // TODO
+    val pagingCryptoNews: Flow<PagingData<News>>
+        get() = newsRepository.getNews(CRYPTO_SEARCH_KEYWORD)
+            .cachedIn(viewModelScope)
 
     val uiState: StateFlow<MyCoinNewsUiState> = combine(
         filterRepository.getUserFilter(),
@@ -42,7 +48,7 @@ class MyCoinNewsViewModel @Inject constructor(
         val filter = pair.first
             ?: return@flatMapLatest flowOf(MyCoinNewsUiState.FilterEmpty)
         val selectedCoin = pair.second
-            ?: return@flatMapLatest flowOf(MyCoinNewsUiState.Success(emptyList(), filter))
+            ?: return@flatMapLatest flowOf(MyCoinNewsUiState.Success(null, filter))
 
         newsRepository.getRecentNewsByCoin(selectedCoin)
             .flatMapLatest {
@@ -89,7 +95,7 @@ sealed interface MyCoinNewsUiState {
     object FilterEmpty : MyCoinNewsUiState
 
     data class Success(
-        val newsList: List<News>,
+        val newsList: List<News>?,
         val filter: Filter
     ) : MyCoinNewsUiState
 

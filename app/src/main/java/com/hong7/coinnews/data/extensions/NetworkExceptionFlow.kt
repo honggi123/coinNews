@@ -31,7 +31,7 @@ fun <T> Flow<T>.asResponseResourceFlow(): Flow<ResponseResource<T>> {
                         404 -> NotFoundException(message = "NotFoundException: ${error.code()}", cause = error)
                         409 -> ConflictException(message = "ConflictException: ${error.code()}", cause = error)
                         in 500..599 -> InternetServerException(
-                            message = "InternetServerException: ${error.code()}",
+                            message = error.message(),
                             cause = error
                         )
                         else -> UnknownException(

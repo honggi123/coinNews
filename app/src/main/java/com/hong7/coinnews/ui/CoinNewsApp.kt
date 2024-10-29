@@ -4,22 +4,14 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.hong7.coinnews.model.NetworkState
 import com.hong7.coinnews.ui.feature.filtersetting.FilterSettingScreen
-import com.hong7.coinnews.ui.feature.home.HomeRoute
+import com.hong7.coinnews.ui.feature.deprecated.home.HomeRoute
+import com.hong7.coinnews.ui.feature.news.NewsScreen
 import com.hong7.coinnews.ui.main.MainViewModel
 import com.hong7.coinnews.ui.feature.newsdetail.NewsDetailRoute
 import com.hong7.coinnews.ui.feature.scrap.ScrapNewsScreen
@@ -46,13 +38,13 @@ private fun CoinNewsNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = HomeNav.route,
+        startDestination = NewsNav.route,
         modifier = modifier
     ) {
         composable(
-            route = HomeNav.route
+            route = NewsNav.route
         ) {
-            HomeRoute(navController)
+            NewsScreen(navController)
         }
         composable(
             route = NewsDetailNav.routeWithArgName(),

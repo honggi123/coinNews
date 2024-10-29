@@ -202,7 +202,7 @@ private fun NewsMetaData(
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = news.author ?: "알 수 없는 출처",
+            text = news.author ?: "-",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Normal,
             color = Color(0xFFAAAAAA)

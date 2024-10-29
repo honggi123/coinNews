@@ -10,15 +10,14 @@ import java.time.LocalDateTime
 import java.util.Locale
 
 fun NetworkNews.toDomain(): News {
-    val news = News(
-        id = getHashValue(this.title),
+    return News(
+        id = this.title,
         title = this.title.replaceHtmlTags(),
         url = this.url,
         description = this.description.replaceHtmlTags(),
         author = parseDomain(this.originalUrl),
         createdAt = DateUtils.formatDateTimeWithTimeZoneName(this.createdAt)
     )
-    return news
 }
 
 fun NewsEntity.toDomain(): News {
@@ -62,7 +61,6 @@ fun News.toScrapEntity(): ScrapNewsEntity {
         createdAt = this.createdAt ?: LocalDateTime.now()
     )
 }
-
 
 
 private fun parseDomain(url: String): String? {

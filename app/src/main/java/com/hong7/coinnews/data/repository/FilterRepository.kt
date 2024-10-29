@@ -13,5 +13,5 @@ interface FilterRepository {
 
     suspend fun isUserFilterEmpty(): Boolean
 
-    suspend fun setMyCoins(selectedCoins: List<Coin>)
+    suspend fun setMyCoinsFilter(coins: List<Coin>)
 }

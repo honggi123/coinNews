@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui.feature.newsdetail
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

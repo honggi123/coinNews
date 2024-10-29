@@ -40,15 +40,18 @@ class FilterRepositoryImpl @Inject constructor(
         return userFilterDao.isEmpty()
     }
 
-    override suspend fun setMyCoins(selectedCoins: List<Coin>) {
-        val filter = userFilterDao.getRecentFilter()
-        val coinEntities = selectedCoins.map { it.toEntity() }
+    override suspend fun setMyCoinsFilter(coins: List<Coin>) {
+        val oldFilter = userFilterDao.getRecentFilter()
+        val coinEntities = coins.map { it.toEntity() }
 
-        val newFilter = if (filter != null) {
-            filter.copy(coins = coinEntities)
+        val updatedCoins = if (oldFilter != null) {
+            val savedList = oldFilter.coins.toMutableList()
+             savedList + coinEntities
         } else {
-            FilterEntity(coins = coinEntities)
+            coinEntities
         }
+
+        val newFilter = oldFilter?.copy(coins = updatedCoins) ?: FilterEntity(coins = coinEntities)
         userFilterDao.insert(newFilter)
     }
 }

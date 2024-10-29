@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.feature.mycoinnews
+package com.hong7.coinnews.ui.feature.news
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
@@ -18,47 +18,61 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.hong7.coinnews.R
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
-import com.hong7.coinnews.model.NetworkState
 import com.hong7.coinnews.ui.CoinListNav
 import com.hong7.coinnews.ui.NewsDetailNav
 import com.hong7.coinnews.ui.component.ClickableChip
 import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.Blue600
+import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
+import com.hong7.coinnews.ui.theme.Grey300
+import com.hong7.coinnews.ui.theme.Grey600
 import com.hong7.coinnews.ui.theme.defaultTextStyle
 import com.hong7.coinnews.utils.DateUtils
 import com.hong7.coinnews.utils.NavigationUtils
-import java.lang.NullPointerException
+
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun MyCoinNewsScreen(
+fun NewsScreen(
     navController: NavHostController,
-    viewModel: MyCoinNewsViewModel = hiltViewModel()
+    viewModel: NewsViewModel = hiltViewModel()
 ) {
     val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
     val uistate by viewModel.uiState.collectAsStateWithLifecycle()
@@ -69,7 +83,7 @@ fun MyCoinNewsScreen(
             NewsListScreenContent(
                 watchedNewsIds = watchedNews,
                 isLoading = false,
-                newss = state.newsList,
+                newsList = state.newsList,
                 selectedCoin = selectedCoin,
                 filter = state.filter,
                 onCoinClick = remember(viewModel) { { viewModel.onCoinClick(it) } },
@@ -88,6 +102,7 @@ fun MyCoinNewsScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
+
         }
 
         is MyCoinNewsUiState.FilterEmpty -> {
@@ -102,7 +117,6 @@ fun MyCoinNewsScreen(
             )
         }
 
-        is MyCoinNewsUiState.Failed -> Unit
         else -> Unit
     }
 }
@@ -118,11 +132,11 @@ private fun EmptyFilterContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         EmptyFiltersContent(
-            text = "보고싶은 뉴스의 코인을 선택해보세요!"
+            text = "Select the coins for the news you want to see!"
         )
         Spacer(modifier = Modifier.height(10.dp))
         ClickableChip(
-            text = "코인 선택",
+            text = "Select Coins",
             onClick = { onFilterSettingClick() },
         )
     }
@@ -143,51 +157,84 @@ private fun LoadingContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NewsListScreenContent(
     watchedNewsIds: Set<String>,
     isLoading: Boolean,
-    filter: Filter?,
-    newss: List<News>,
+    filter: Filter,
+    newsList: List<News>?,
     selectedCoin: Coin?,
     onFilterSettingClick: () -> Unit,
     onCoinClick: (Coin) -> Unit,
     onNewsClick: (News) -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val state = rememberLazyListState()
+    val filterState = rememberLazyListState()
 
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(15.dp)
-    ) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        rememberTopAppBarState()
+    )
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "뉴스",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.ExtraBold
+                        ),
+                        color = Blue800
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    scrolledContainerColor = Color.White
+                ),
+                scrollBehavior = scrollBehavior
+            )
+        },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) { contentPadding ->
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = modifier.padding(contentPadding),
+            verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
-            Spacer(modifier = Modifier.height(15.dp))
-            CoinFiltersRow(
-                coins = filter?.coins ?: emptyList(),
-                selectedCoin = selectedCoin,
-                onCoinClick = onCoinClick,
-                onFilterSettingClick = onFilterSettingClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            HorizontalDivider(
-                thickness = 0.7.dp,
-                color = Grey200,
-            )
-            NewsList(
-                watchedNewsIds = watchedNewsIds,
-                isLoading = isLoading,
-                newss = newss,
-                onNewsClick = onNewsClick,
-                modifier = Modifier.fillMaxWidth(),
-                state = state
-            )
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                HorizontalDivider(
+                    thickness = 0.7.dp,
+                    color = Grey200,
+                )
+                Spacer(modifier = Modifier.height(15.dp))
+                CoinFiltersRow(
+                    coins = filter.coins,
+                    selectedCoin = selectedCoin,
+                    onCoinClick = onCoinClick,
+                    onFilterSettingClick = onFilterSettingClick,
+                    state = filterState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(
+                    thickness = 0.7.dp,
+                    color = Grey200,
+                )
+                NewsList(
+                    watchedNewsIds = watchedNewsIds,
+                    isLoading = isLoading,
+                    newsList = newsList ?: emptyList(),
+                    onNewsClick = onNewsClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    state = state
+                )
+
+            }
         }
     }
 }
@@ -198,6 +245,7 @@ private fun CoinFiltersRow(
     selectedCoin: Coin?,
     onCoinClick: (Coin) -> Unit,
     onFilterSettingClick: () -> Unit,
+    state: LazyListState,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -206,7 +254,8 @@ private fun CoinFiltersRow(
     ) {
         LazyRow(
             modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            state = state
         ) {
             items(coins.size, key = { coins[it].id }) {
                 SelectableChip(
@@ -217,7 +266,7 @@ private fun CoinFiltersRow(
             }
         }
         SettingButton(
-            text = "전체",
+            text = "All",
             onClick = onFilterSettingClick
         )
     }
@@ -227,7 +276,7 @@ private fun CoinFiltersRow(
 private fun NewsList(
     watchedNewsIds: Set<String>,
     isLoading: Boolean,
-    newss: List<News>,
+    newsList: List<News>,
     onNewsClick: (News) -> Unit,
     state: LazyListState,
     modifier: Modifier = Modifier,
@@ -250,13 +299,13 @@ private fun NewsList(
             state = state
         ) {
             items(
-                newss.size,
+                newsList.size,
 //                        key = { newss[it].id } todo
             ) { index ->
                 if (index == 0) {
                     Spacer(modifier = Modifier.height(10.dp))
                 }
-                newss[index].let {
+                newsList[index].let {
                     NewsContentItem(
                         watchedNewsIds = watchedNewsIds,
                         news = it,
@@ -348,6 +397,17 @@ private fun NewsContentItem(
                 lineHeight = 20.sp,
             ),
             color = titleColor,
+            fontWeight = FontWeight.Bold,
+            maxLines = 3,
+        )
+        Text(
+            text = news.description,
+            style = defaultTextStyle.copy(
+                fontSize = 16.sp,
+                lineHeight = 20.sp,
+            ),
+            overflow = TextOverflow.Ellipsis,
+            color = Grey600,
             fontWeight = FontWeight.Medium,
             maxLines = 3,
         )

@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.feature.home
+package com.hong7.coinnews.ui.feature.deprecated.home
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
@@ -25,6 +25,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,13 +33,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
-import com.hong7.coinnews.model.NetworkState
-import com.hong7.coinnews.ui.feature.mycoinnews.MyCoinNewsScreen
-import com.hong7.coinnews.ui.feature.recentnews.RecentNewsScreen
+import com.hong7.coinnews.ui.feature.news.NewsScreen
+import com.hong7.coinnews.ui.feature.deprecated.recentnews.RecentNewsScreen
 import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
-import com.hong7.coinnews.ui.theme.Grey500
+import com.hong7.coinnews.ui.theme.Grey300
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
@@ -67,7 +67,7 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "코인왓치",
+                        text = "뉴스",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.ExtraBold
                         ),
@@ -81,7 +81,7 @@ fun HomeScreen(
                         Icon(
                             painter = painterResource(id = R.drawable.ic_bookmarks),
                             contentDescription = "",
-                            tint = Grey500
+                            tint = Grey300
                         )
                     }
                     IconButton(
@@ -90,12 +90,13 @@ fun HomeScreen(
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_info_24),
                             contentDescription = "",
-                            tint = Grey500
+                            tint = Grey300
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = Color.White,
+                    scrolledContainerColor = Color.White
                 ),
                 scrollBehavior = scrollBehavior
             )
@@ -177,7 +178,7 @@ private fun HomeTabRowContent(
 
 @Composable
 fun rememberTabContent(
-    navController: NavHostController
+    navController: NavHostController,
 ): List<TabContent> {
 
     val recentNewsSection = TabContent(Sections.RecentNews) {
@@ -185,7 +186,7 @@ fun rememberTabContent(
     }
 
     val myCoinNewsSection = TabContent(Sections.MyCoinNews) {
-        MyCoinNewsScreen(navController)
+        NewsScreen(navController)
     }
 
     return listOf(recentNewsSection, myCoinNewsSection)

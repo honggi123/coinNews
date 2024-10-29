@@ -53,6 +53,7 @@ import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey100
 import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey700
+import com.hong7.coinnews.ui.theme.Grey900
 import com.valentinilk.shimmer.shimmer
 import java.time.LocalDateTime
 
@@ -75,7 +76,8 @@ fun NewsDetailRoute(
                 modifier = Modifier.fillMaxSize()
             )
         }
-        is NewsDetailUiState.Failed, is NewsDetailUiState.Loading  -> {} // todo
+
+        else -> {} // todo
     }
 }
 
@@ -139,7 +141,7 @@ private fun TopAppBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(60.dp)
                 .padding(horizontal = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -152,7 +154,7 @@ private fun TopAppBar(
                     .clickableWithoutRipple(
                         interactionSource = interactionSource,
                     ) { onBackClick() },
-                tint = Grey700
+                tint = Grey900
             )
             Spacer(modifier = Modifier.width(24.dp))
             Row(
@@ -222,8 +224,6 @@ private fun NewsContent(
     modifier: Modifier = Modifier
 ) {
     var isLoading by rememberSaveable { mutableStateOf(true) }
-    val trace: Trace =
-        FirebasePerformance.getInstance().newTrace("news_page_loaded")
 
     Box(
         modifier = modifier,
@@ -235,13 +235,11 @@ private fun NewsContent(
                         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                             super.onPageStarted(view, url, favicon)
                             isLoading = true
-                            trace.start()
                         }
 
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
                             isLoading = false
-                            trace.stop()
                         }
 
                         @Deprecated("Deprecated in Java")
@@ -253,7 +251,10 @@ private fun NewsContent(
                             if (url == null) {
                                 return true
                             }
-                            if (!TextUtils.isEmpty(host) && url.startsWith("fb://") && host?.contains(
+                            if (url.contains("shop") || (url.contains("ads") || url.contains("image"))) {
+                                return true
+                            }
+                            if (url.startsWith("fb://") && host?.contains(
                                     "profile"
                                 ) == true
                             ) {
@@ -264,21 +265,21 @@ private fun NewsContent(
                             return true
                         }
                     }
-                    settings.javaScriptEnabled = true
-//                    settings.javaScriptCanOpenWindowsAutomatically = false
+                    settings.javaScriptEnabled = false
+                    settings.javaScriptCanOpenWindowsAutomatically = false
                     loadUrl(url.toString())
                 }
             },
             modifier = Modifier.fillMaxSize()
         )
-//        if (isLoading) {
-//            LoadingContent()
-//        }
+        if (isLoading) {
+            LoadingContent()
+        }
     }
 }
 
 @Composable
-private fun LoadingContent(){
+private fun LoadingContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()

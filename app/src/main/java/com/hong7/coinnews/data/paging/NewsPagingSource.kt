@@ -1,44 +1,47 @@
 package com.hong7.coinnews.data.paging
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.google.firebase.perf.FirebasePerformance
 import com.google.firebase.perf.metrics.Trace
+import com.hong7.coinnews.data.mapper.toDomain
+import com.hong7.coinnews.model.News
 import com.hong7.coinnews.network.model.NetworkNews
-import com.hong7.coinnews.network.okhttp.retrofit.NaverService
+import com.hong7.coinnews.network.retrofit.NaverService
 import javax.inject.Inject
 
 
 private const val INITIAL_PAGE = 1
 
-class NewsNewsPagingSource @Inject constructor(
+class NewsPagingSource @Inject constructor(
     private val service: NaverService,
     private val query: String
-) : PagingSource<Int, NetworkNews>() {
+) : PagingSource<Int, News>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, NetworkNews> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, News> {
         return try {
             val page = params.key ?: INITIAL_PAGE
-            val trace: Trace =
-                FirebasePerformance.getInstance().newTrace("network_news_request")
-            trace.start()
-            val response = service.fetchNews(
+            val start = ((page - 1) * 30) + 1
+
+            val newsItems = service.fetchNews(
                 query = query,
-                page = page,
-                pageSize = params.loadSize
+                start = start,
+                pageSize = 30
             )
-            trace.stop()
+                .items
+                .map { it.toDomain() }
             LoadResult.Page(
-                data = response.items,
+                data = newsItems,
                 prevKey = if (page == INITIAL_PAGE) null else page - 1,
-                nextKey = if (response.items.isEmpty()) null else page + 1
+                nextKey = if (newsItems.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, NetworkNews>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, News>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey
         }

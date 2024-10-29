@@ -2,12 +2,10 @@ package com.hong7.coinnews.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hong7.coinnews.model.NetworkState
-import com.hong7.coinnews.utils.NetworkChecker
+import com.hong7.coinnews.data.repository.FilterRepository
+import com.hong7.coinnews.model.Coin
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -15,19 +13,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val networkChecker: NetworkChecker
+    private val filterRepository: FilterRepository
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
-    private val _networkState = MutableSharedFlow<NetworkState>(replay = 1)
-    val networkState: SharedFlow<NetworkState> = _networkState
-
     init {
+        _isLoading.value = true
         viewModelScope.launch {
-            networkChecker.networkState.collectLatest {
-                _networkState.emit(it)
+            filterRepository.getUserFilter().collectLatest { filter ->
+                if (filter == null) {
+                    filterRepository.setMyCoinsFilter(
+                        listOf(
+                            Coin(
+                                id = "crypto_default",
+                                name = "암호화폐",
+                                symbol = ""
+                            )
+                        )
+                    )
+                }
+                _isLoading.value = false
             }
         }
     }
