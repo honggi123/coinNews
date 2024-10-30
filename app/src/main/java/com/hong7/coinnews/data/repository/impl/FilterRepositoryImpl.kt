@@ -7,6 +7,7 @@ import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.database.entity.FilterEntity
 import com.hong7.coinnews.database.dao.UserFilterDao
+import com.hong7.coinnews.database.entity.CoinEntity
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.exception.ResponseResource
@@ -57,7 +58,14 @@ class FilterRepositoryImpl @Inject constructor(
 
     override suspend fun refreshCoinsFilter(coins: List<Coin>) {
         val newCoinFilter = coins.map { it.toEntity() }
-        userFilterDao.insert(FilterEntity(coins = newCoinFilter))
+        val newList = listOf(
+            CoinEntity(
+                id = "crypto",
+                name = "암호화폐",
+                symbol = ""
+            )
+        ) + newCoinFilter   // TODO refactor
+        userFilterDao.insert(FilterEntity(coins = newList))
     }
 }
 

@@ -11,6 +11,7 @@ import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.VideoItem
+import com.hong7.coinnews.ui.base.BaseViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,7 +32,7 @@ import javax.inject.Inject
 class VideoViewModel @Inject constructor(
     private val videoRepository: VideoRepository,
     private val filterRepository: FilterRepository,
-) : ViewModel() {
+) : BaseViewModel() {
 
     val selectedCoin = MutableStateFlow<Coin?>(null)
 

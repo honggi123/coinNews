@@ -5,12 +5,13 @@ import com.hong7.coinnews.database.entity.ScrapNewsEntity
 import com.hong7.coinnews.network.model.response.NetworkNews
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.utils.DateUtils
+import com.hong7.coinnews.utils.NumberUtils.getHashValue
 import java.time.LocalDateTime
 import java.util.Locale
 
 fun NetworkNews.toDomain(): News {
     return News(
-        id = this.title,
+        id = getHashValue(this.title),
         title = this.title.replaceHtmlTags(),
         url = this.url,
         description = this.description.replaceHtmlTags(),

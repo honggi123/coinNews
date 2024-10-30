@@ -14,9 +14,12 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -32,7 +35,7 @@ import com.hong7.coinnews.ui.feature.filtersetting.FilterSettingScreen
 import com.hong7.coinnews.ui.feature.explore.ExploreScreen
 import com.hong7.coinnews.ui.feature.news.NewsScreen
 import com.hong7.coinnews.ui.main.MainViewModel
-import com.hong7.coinnews.ui.feature.newsdetail.NewsDetailRoute
+import com.hong7.coinnews.ui.feature.newsdetail.NewsDetailScreen
 import com.hong7.coinnews.ui.feature.scrap.ScrapNewsScreen
 import com.hong7.coinnews.ui.feature.setting.SettingScreen
 import com.hong7.coinnews.ui.feature.video.VideoScreen
@@ -43,6 +46,7 @@ import com.hong7.coinnews.ui.theme.Grey500
 @Composable
 fun CoinNewsApp(viewModel: MainViewModel) {
     val navController = rememberNavController()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -50,18 +54,22 @@ fun CoinNewsApp(viewModel: MainViewModel) {
         CoinNewsAppTheme {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
+                snackbarHost = { SnackbarHost(snackbarHostState) },
                 bottomBar = {
                     MyBottomNavigation(
                         containerColor = Color.White,
                         contentColor = Grey500,
                         navController = navController,
-                        modifier = Modifier.fillMaxWidth().height(60.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
                     )
                 }
             ) {
                 Box(modifier = Modifier.padding(it)) {
                     CoinNewsNavGraph(
-                        navController = navController
+                        navController = navController,
+                        snackbarHostState = snackbarHostState
                     )
                 }
             }
@@ -72,7 +80,8 @@ fun CoinNewsApp(viewModel: MainViewModel) {
 @Composable
 private fun CoinNewsNavGraph(
     modifier: Modifier = Modifier,
-    navController: NavHostController
+    navController: NavHostController,
+    snackbarHostState: SnackbarHostState
 ) {
 
     NavHost(
@@ -83,7 +92,7 @@ private fun CoinNewsNavGraph(
         composable(
             route = MainNav.News.route
         ) {
-            NewsScreen(navController)
+            NewsScreen(navController, snackbarHostState)
         }
         composable(
             route = MainNav.Video.route,
@@ -95,6 +104,7 @@ private fun CoinNewsNavGraph(
         ) {
             ScrapNewsScreen(
                 navController,
+                snackbarHostState
             )
         }
         composable(
@@ -118,10 +128,11 @@ private fun CoinNewsNavGraph(
                 )
             }
         ) {
-            NewsDetailRoute(
+            NewsDetailScreen(
                 onBackClick = {
                     navController.popBackStack()
-                }
+                },
+                snackbarHostState = snackbarHostState
             )
         }
         composable(

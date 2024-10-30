@@ -20,18 +20,18 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -72,17 +72,24 @@ import com.hong7.coinnews.utils.NavigationUtils
 @Composable
 fun NewsScreen(
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
     viewModel: NewsViewModel = hiltViewModel()
 ) {
     val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
     val uistate by viewModel.uiState.collectAsStateWithLifecycle()
     val watchedNews by viewModel.watchedNewsIds.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.messageEvent.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
     when (val state = uistate) {
         is NewsScreenUiState.Success -> {
             NewsListScreenContent(
                 watchedNewsIds = watchedNews,
-                isLoading = false,
+                isNewsLoading = state.isNewsLoading,
                 newsList = state.newsList,
                 selectedCoin = selectedCoin,
                 filter = state.filter,
@@ -161,7 +168,7 @@ private fun LoadingContent(
 @Composable
 private fun NewsListScreenContent(
     watchedNewsIds: Set<String>,
-    isLoading: Boolean,
+    isNewsLoading: Boolean,
     filter: Filter,
     newsList: List<News>?,
     selectedCoin: Coin?,
@@ -225,15 +232,25 @@ private fun NewsListScreenContent(
                     thickness = 0.7.dp,
                     color = Grey200,
                 )
-                NewsList(
-                    watchedNewsIds = watchedNewsIds,
-                    isLoading = isLoading,
-                    newsList = newsList ?: emptyList(),
-                    onNewsClick = onNewsClick,
-                    modifier = Modifier.fillMaxWidth(),
-                    state = state
-                )
-
+                if (isNewsLoading) {
+                    Column(
+                        modifier = modifier,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(38.dp)
+                        )
+                    }
+                } else {
+                    NewsList(
+                        watchedNewsIds = watchedNewsIds,
+                        newsList = newsList ?: emptyList(),
+                        onNewsClick = onNewsClick,
+                        modifier = Modifier.fillMaxWidth(),
+                        state = state
+                    )
+                }
             }
         }
     }
@@ -275,53 +292,42 @@ private fun CoinFiltersRow(
 @Composable
 private fun NewsList(
     watchedNewsIds: Set<String>,
-    isLoading: Boolean,
     newsList: List<News>,
     onNewsClick: (News) -> Unit,
     state: LazyListState,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    if (isLoading) {
-        Column(
-            modifier = modifier,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(38.dp)
-            )
-        }
-    } else {
-        LazyColumn(
-            contentPadding = contentPadding,
-            modifier = Modifier.fillMaxSize(),
-            state = state
-        ) {
-            items(
-                newsList.size,
+
+    LazyColumn(
+        contentPadding = contentPadding,
+        modifier = Modifier.fillMaxSize(),
+        state = state
+    ) {
+        items(
+            newsList.size,
 //                        key = { newss[it].id } todo
-            ) { index ->
-                if (index == 0) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-                newsList[index].let {
-                    NewsContentItem(
-                        watchedNewsIds = watchedNewsIds,
-                        news = it,
-                        onNewsClick = onNewsClick,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
-                    HorizontalDivider(
-                        thickness = 0.7.dp,
-                        color = Grey200,
-                        modifier = Modifier.padding(vertical = 15.dp)
-                    )
-                }
+        ) { index ->
+            if (index == 0) {
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+            newsList[index].let {
+                NewsContentItem(
+                    watchedNewsIds = watchedNewsIds,
+                    news = it,
+                    onNewsClick = onNewsClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+                HorizontalDivider(
+                    thickness = 0.7.dp,
+                    color = Grey200,
+                    modifier = Modifier.padding(vertical = 15.dp)
+                )
             }
         }
+
     }
 }
 

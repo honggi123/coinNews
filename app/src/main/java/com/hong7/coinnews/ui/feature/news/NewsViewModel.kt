@@ -11,6 +11,7 @@ import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.exception.ResponseResource
+import com.hong7.coinnews.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -25,14 +26,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val CRYPTO_SEARCH_KEYWORD = "crypto | bitcoin | cryptocurrency | ethereum | 코인 | 비트코인 | 암호화폐 | 이더리움"
+private const val CRYPTO_SEARCH_KEYWORD =
+    "crypto | bitcoin | cryptocurrency | ethereum | 코인 | 비트코인 | 암호화폐 | 이더리움"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class NewsViewModel @Inject constructor(
     private val newsRepository: NewsRepository,
     private val filterRepository: FilterRepository,
-) : ViewModel() {
+) : BaseViewModel() {
 
     val selectedCoin = MutableStateFlow<Coin?>(null)
 
@@ -50,20 +52,26 @@ class NewsViewModel @Inject constructor(
         val currentCoin = pair.second ?: filter.coins.first().also { firstCoin ->
             selectedCoin.value = firstCoin
         }
-
         newsRepository.getRecentNewsByCoin(currentCoin)
             .flatMapLatest {
                 when (it) {
                     is ResponseResource.Success -> {
-                        flowOf(NewsScreenUiState.Success(it.data, filter))
+                        flowOf(
+                            NewsScreenUiState.Success(
+                                newsList = it.data,
+                                filter = filter,
+                                isNewsLoading = false
+                            )
+                        )
                     }
 
                     is ResponseResource.Error -> {
-                        flowOf(NewsScreenUiState.Failed(it.exception))
+                        onErrorResonse(it)
+                        flowOf(NewsScreenUiState.Failed(it.exception)) // TODO
                     }
 
                     is ResponseResource.Loading -> {
-                        flowOf(NewsScreenUiState.Loading)
+                        flowOf(NewsScreenUiState.Success(filter = filter, isNewsLoading = true))
                     }
                 }
             }
@@ -96,8 +104,9 @@ sealed interface NewsScreenUiState {
     object FilterEmpty : NewsScreenUiState
 
     data class Success(
-        val newsList: List<News>?,
-        val filter: Filter
+        val newsList: List<News>? = null,
+        val filter: Filter,
+        val isNewsLoading: Boolean
     ) : NewsScreenUiState
 
     data class Failed(

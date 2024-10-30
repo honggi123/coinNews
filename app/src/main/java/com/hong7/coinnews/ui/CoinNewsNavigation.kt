@@ -1,5 +1,6 @@
 package com.hong7.coinnews.ui
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.navigation.NamedNavArgument
@@ -39,7 +40,8 @@ object NewsDetailNav : DestinationArg<News> {
 
     override fun navigateWithArg(item: News): String {
         val encodedArg =
-            URLEncoder.encode(GsonUtils.toJson(item), StandardCharsets.UTF_8.toString())
+            URLEncoder.encode(GsonUtils.toJson(item.copy(title = "", description = "")), StandardCharsets.UTF_8.toString())
+
         return "$route/$encodedArg"
     }
 }

@@ -1,27 +1,24 @@
 package com.hong7.coinnews.ui.feature.newsdetail
 
-import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
-import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.NewsWithInterest
-import com.hong7.coinnews.model.exception.UnknownException
+import com.hong7.coinnews.ui.base.BaseViewModel
 import com.hong7.coinnews.utils.GsonUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
-import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
@@ -29,7 +26,7 @@ import javax.inject.Inject
 class NewsDetailViewModel @Inject constructor(
     private val newsRepository: NewsRepository,
     savedStateHandle: SavedStateHandle
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val news = savedStateHandle.getStateFlow(ARTICLE_KEY, "")
         .map {
@@ -49,8 +46,7 @@ class NewsDetailViewModel @Inject constructor(
 
     val isScraped: StateFlow<Boolean> = news
         .flatMapLatest { news ->
-            news?.let { newsRepository.isNewsScraped(news.id) }
-                ?: throw NullPointerException()
+            news.let { newsRepository.isNewsScraped(news.id) }
         }
         .stateIn(
             viewModelScope,

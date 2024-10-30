@@ -10,6 +10,7 @@ import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.exception.ResponseResource
 import com.hong7.coinnews.model.exception.UnknownException
+import com.hong7.coinnews.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,16 +28,16 @@ import javax.inject.Inject
 @HiltViewModel
 class FilterSettingViewModel @Inject constructor(
     private val filterRepository: FilterRepository,
-) : ViewModel() {
+) : BaseViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<FilterSettingUiState> = filterRepository.getFilter()
-        .flatMapLatest { filter ->
+        .flatMapLatest { filterResponse ->
             filterRepository.getUserFilter().map {
-                when(filter){
+                when(filterResponse){
                     is ResponseResource.Success -> {
                         val selectedCoinIds = it?.coins?.map { it.id }?.toSet() ?: emptySet()
-                        val coins = filter.data.coins.map { coin ->
+                        val coins = filterResponse.data.coins.map { coin ->
                             coin.copy(isSelected = coin.id in selectedCoinIds)
                         }
                         FilterSettingUiState.Success(coins)
@@ -45,7 +46,8 @@ class FilterSettingViewModel @Inject constructor(
                         FilterSettingUiState.Loading
                     }
                     is ResponseResource.Error -> {
-                        FilterSettingUiState.Failed(filter.exception)
+                        onErrorResonse(filterResponse)
+                        FilterSettingUiState.Failed(filterResponse.exception)
                     }
                 }
             }

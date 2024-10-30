@@ -24,8 +24,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,16 +61,23 @@ import java.time.LocalDateTime
 
 
 @Composable
-fun NewsDetailRoute(
+fun NewsDetailScreen(
     onBackClick: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     viewModel: NewsDetailViewModel = hiltViewModel()
 ) {
     val isScraped by viewModel.isScraped.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.messageEvent.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
     when (val state = uiState) {
         is NewsDetailUiState.Success -> {
-            NewsDetailScreen(
+            NewsDetailScreenContent(
                 news = state.news,
                 isScraped = isScraped,
                 onBackClick = onBackClick,
@@ -82,7 +91,7 @@ fun NewsDetailRoute(
 }
 
 @Composable
-private fun NewsDetailScreen(
+private fun NewsDetailScreenContent(
     news: News?,
     isScraped: Boolean,
     onBackClick: () -> Unit,
@@ -332,20 +341,6 @@ private fun LoadingContent() {
                     .background(Grey500)
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun NewsDetailScreenPreview() {
-    CoinNewsAppTheme {
-        NewsDetailScreen(
-            news = null,
-            isScraped = false,
-            onBackClick = {},
-            onToggleClick = {},
-            modifier = Modifier.fillMaxSize()
-        )
     }
 }
 

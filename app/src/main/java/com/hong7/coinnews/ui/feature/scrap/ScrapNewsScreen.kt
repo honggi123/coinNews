@@ -17,6 +17,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -50,26 +51,32 @@ import com.hong7.coinnews.utils.NavigationUtils
 @Composable
 fun ScrapNewsScreen(
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
     viewModel: ScrapNewsViewModel = hiltViewModel()
 ) {
-    val newsList by viewModel.newsList.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
-    ScrapNewsScreen(
-        newsList = newsList,
-        onNewsClick = {
-            NavigationUtils.navigate(
-                navController,
-                NewsDetailNav.navigateWithArg(it)
+    when(val state = uiState){
+        is ScrapNewsUiState.Success -> {
+            ScrapNewsScreen(
+                newsList = state.newsList,
+                onNewsClick = {
+                    NavigationUtils.navigate(
+                        navController,
+                        NewsDetailNav.navigateWithArg(it)
+                    )
+                },
+                onSettingClick = {
+                    NavigationUtils.navigate(
+                        navController,
+                        SettingNav.route
+                    )
+                },
+                modifier = Modifier.fillMaxSize()
             )
-        },
-        onSettingClick = {
-            NavigationUtils.navigate(
-                navController,
-                SettingNav.route
-            )
-        },
-        modifier = Modifier.fillMaxSize()
-    )
+        }
+        else -> Unit
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
