@@ -25,6 +25,7 @@ import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
+import com.hong7.coinnews.ui.theme.Grey900
 
 @Composable
 fun SelectableChip(
@@ -34,7 +35,7 @@ fun SelectableChip(
     modifier: Modifier = Modifier,
 ) {
     val colorBackground = if (selected) {
-        Blue800
+        Grey900
     } else {
         Grey200
     }

@@ -5,15 +5,13 @@ import java.time.LocalDateTime
 data class VideoItem(
     val kind: String,
     val etag: String,
-    val id: ResourceId,
-    val snippet: SearchSnippet
+    val id: String,
+    val snippet: SearchSnippet,
 )
 
 data class ResourceId(
     val kind: String,
     val videoId: String? = null,
-    val channelId: String? = null,
-    val playlistId: String? = null
 )
 
 data class SearchSnippet(
@@ -23,7 +21,7 @@ data class SearchSnippet(
     val description: String,
     val thumbnails: Map<String, ThumbnailInfo>,
     val channelTitle: String,
-    val liveBroadcastContent: String
+    val resourceId: ResourceId
 )
 
 data class ThumbnailInfo(

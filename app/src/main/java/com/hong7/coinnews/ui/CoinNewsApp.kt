@@ -32,13 +32,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.hong7.coinnews.ui.feature.filtersetting.FilterSettingScreen
-import com.hong7.coinnews.ui.feature.explore.ExploreScreen
+import com.hong7.coinnews.ui.feature.home.HomeScreen
+import com.hong7.coinnews.ui.feature.influencer_detail.InfluencerDetailScreen
 import com.hong7.coinnews.ui.feature.news.NewsScreen
 import com.hong7.coinnews.ui.main.MainViewModel
 import com.hong7.coinnews.ui.feature.newsdetail.NewsDetailScreen
 import com.hong7.coinnews.ui.feature.scrap.ScrapNewsScreen
 import com.hong7.coinnews.ui.feature.setting.SettingScreen
-import com.hong7.coinnews.ui.feature.video.VideoScreen
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey500
@@ -83,21 +83,15 @@ private fun CoinNewsNavGraph(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState
 ) {
-
     NavHost(
         navController = navController,
-        startDestination = MainNav.News.route,
+        startDestination = MainNav.Home.route,
         modifier = modifier
     ) {
         composable(
             route = MainNav.News.route
         ) {
             NewsScreen(navController, snackbarHostState)
-        }
-        composable(
-            route = MainNav.Video.route,
-        ) {
-            VideoScreen()
         }
         composable(
             route = MainNav.Scrap.route,
@@ -108,9 +102,9 @@ private fun CoinNewsNavGraph(
             )
         }
         composable(
-            route = MainNav.Explore.route,
+            route = MainNav.Home.route,
         ) {
-            ExploreScreen()
+            HomeScreen(snackbarHostState, navController)
         }
         composable(
             route = NewsDetailNav.routeWithArgName(),
@@ -136,6 +130,27 @@ private fun CoinNewsNavGraph(
             )
         }
         composable(
+            route = InfluencerDetailNav.routeWithArgName(),
+            arguments = InfluencerDetailNav.arguments,
+            enterTransition = {
+                slideIntoContainer(
+                    animationSpec = tween(400),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    animationSpec = tween(400),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right
+                )
+            }
+        ) {
+            InfluencerDetailScreen(
+                snackbarHostState = snackbarHostState,
+                navController = navController
+            )
+        }
+        composable(
             route = CoinListNav.route,
             enterTransition = {
                 slideIntoContainer(
@@ -152,7 +167,6 @@ private fun CoinNewsNavGraph(
         ) {
             FilterSettingScreen(navController)
         }
-
         composable(
             route = SettingNav.route,
         ) {
@@ -174,9 +188,8 @@ private fun MyBottomNavigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val items = listOf(
+        MainNav.Home,
         MainNav.News,
-        MainNav.Video,
-        MainNav.Explore,
         MainNav.Scrap
     )
 

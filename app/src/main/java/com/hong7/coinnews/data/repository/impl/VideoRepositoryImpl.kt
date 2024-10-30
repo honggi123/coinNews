@@ -18,10 +18,10 @@ import javax.inject.Singleton
 class VideoRepositoryImpl @Inject constructor(
     val youtubeService: YoutubeService
 ) : VideoRepository {
-    override fun getVideos(query: String): Flow<PagingData<VideoItem>> {
+    override fun getVideos(playListId: String): Flow<PagingData<VideoItem>> {
         return Pager(
             config = PagingConfig(enablePlaceholders = false, pageSize = 20),
-            pagingSourceFactory = { VideoPagingSource(youtubeService, query) }
+            pagingSourceFactory = { VideoPagingSource(youtubeService, playListId) }
         ).flow
     }
 }

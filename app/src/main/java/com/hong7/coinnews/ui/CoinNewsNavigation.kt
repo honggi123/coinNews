@@ -1,8 +1,6 @@
 package com.hong7.coinnews.ui
 
-import android.util.Log
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -18,11 +16,8 @@ sealed class MainNav(
     @DrawableRes val icon: Int,
     val route: String
 ) {
+    object Home : MainNav(NavigationTitle.MAIN_HOME, R.drawable.ic_home_24, NavigationRouteName.MAIN_HOME)
     object News : MainNav(NavigationTitle.MAIN_NEWS, R.drawable.ic_newspaper_24, NavigationRouteName.MAIN_NEWS)
-    object Video : MainNav(NavigationTitle.MAIN_VIDEO, R.drawable.ic_slow_motion_video_24, NavigationRouteName.MAIN_VIDEO)
-
-    object Explore : MainNav(NavigationTitle.MAIN_EXPLORE, R.drawable.ic_explore_24, NavigationRouteName.MAIN_EXPLORE)
-
     object Scrap : MainNav(NavigationTitle.MAIN_SCRAP, R.drawable.ic_bookmark, NavigationRouteName.MAIN_SCRAP)
 
 }
@@ -31,8 +26,8 @@ sealed class MainNav(
 object NewsDetailNav : DestinationArg<News> {
 
     override val argName: String = "news"
-    override val route: String = NavigationRouteName.ARTICLE_DETAIL
-    override val title: String = NavigationTitle.ARTICLE_DETAIL
+    override val route: String = NavigationRouteName.NEWS_DETAIL
+    override val title: String = NavigationTitle.NEWS_DETAIL
 
     override val arguments: List<NamedNavArgument> = listOf(
         navArgument(argName) { type = NavType.StringType }
@@ -43,6 +38,21 @@ object NewsDetailNav : DestinationArg<News> {
             URLEncoder.encode(GsonUtils.toJson(item.copy(title = "", description = "")), StandardCharsets.UTF_8.toString())
 
         return "$route/$encodedArg"
+    }
+}
+
+object InfluencerDetailNav : DestinationArg<String> {
+
+    override val argName: String = "influencerId"
+    override val route: String = NavigationRouteName.INFLUENCER_DETAIL
+    override val title: String = NavigationTitle.INFLUENCER_DETAIL
+
+    override val arguments: List<NamedNavArgument> = listOf(
+        navArgument(argName) { type = NavType.StringType }
+    )
+
+    override fun navigateWithArg(item: String): String {
+        return "$route/$item"
     }
 }
 
@@ -71,22 +81,23 @@ interface DestinationArg<T> : Destination {
 
 object NavigationRouteName {
     const val MAIN_NEWS = "bews"
-    const val MAIN_EXPLORE = "explorer"
-    const val MAIN_VIDEO = "video"
+    const val MAIN_HOME = "home"
     const val MAIN_SCRAP = "scrap"
 
     const val SETTING = "setting"
-    const val ARTICLE_DETAIL = "news_detail"
+    const val NEWS_DETAIL = "news_detail"
+    const val INFLUENCER_DETAIL = "influencer_detail"
     const val ALL_COIN_LIST = "all_coin_list"
 }
 
 object NavigationTitle {
     const val MAIN_NEWS = "News"
-    const val MAIN_EXPLORE = "Explorer"
+    const val MAIN_HOME = "Home"
     const val MAIN_VIDEO = "Video"
     const val MAIN_SCRAP = "Scrap"
 
     const val SETTING = "Setting"
-    const val ARTICLE_DETAIL = "News Detail"
+    const val NEWS_DETAIL = "News Detail"
+    const val INFLUENCER_DETAIL = "influencer_detail"
     const val ALL_COIN_LIST = "Coin List"
 }

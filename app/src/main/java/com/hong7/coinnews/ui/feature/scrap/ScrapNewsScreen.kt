@@ -44,6 +44,7 @@ import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey300
 import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey700
+import com.hong7.coinnews.ui.theme.Grey800
 import com.hong7.coinnews.ui.theme.defaultTextStyle
 import com.hong7.coinnews.utils.DateUtils
 import com.hong7.coinnews.utils.NavigationUtils
@@ -98,7 +99,7 @@ private fun ScrapNewsScreen(
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.ExtraBold
                         ),
-                        color = Blue800
+                        color = Grey800
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -122,7 +123,7 @@ private fun ScrapNewsScreen(
     ) { contentPadding ->
         if (newsList.isEmpty()) {
             EmptyNewsContent(
-                text = "스크랩 뉴스가 존재하지 않습니다.",
+                text = "뉴스를 스크랩 해보세요!",
                 modifier = modifier.padding(contentPadding)
             )
         } else {
@@ -166,7 +167,7 @@ private fun EmptyNewsContent(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Bold,
         )
     }
 

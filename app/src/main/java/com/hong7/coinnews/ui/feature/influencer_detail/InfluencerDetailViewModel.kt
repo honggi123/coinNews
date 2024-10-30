@@ -1,53 +1,45 @@
-package com.hong7.coinnews.ui.feature.video
+package com.hong7.coinnews.ui.feature.influencer_detail
 
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.hong7.coinnews.data.repository.FilterRepository
-import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.data.repository.VideoRepository
 import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.VideoItem
 import com.hong7.coinnews.ui.base.BaseViewModel
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class VideoViewModel @Inject constructor(
+class InfluencerDetailViewModel @Inject constructor(
     private val videoRepository: VideoRepository,
-    private val filterRepository: FilterRepository,
+    savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
 
-    val selectedCoin = MutableStateFlow<Coin?>(null)
-
-    val pagingCryptoNews: Flow<PagingData<VideoItem>> = combine(
-        filterRepository.getUserFilter(),
-        selectedCoin,
-        ::Pair
-    ).flatMapLatest { pair ->
-        val filter = pair.first ?: throw NullPointerException()
-        val currentCoin = pair.second ?: filter.coins.first().also { firstCoin ->
-            selectedCoin.value = firstCoin
+    private val influencerId = savedStateHandle.getStateFlow("influencerId", "")
+        .map {
+            URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
         }
-        videoRepository.getVideos(currentCoin.name)
+
+    val pagingVideoItems: Flow<PagingData<VideoItem>> = influencerId.flatMapLatest {
+        videoRepository.getVideos(it)
             .cachedIn(viewModelScope)
     }
+
+
 
 //    val uiState: StateFlow<VideoScreenUiState> = combine(
 //        filterRepository.getUserFilter(),
@@ -82,24 +74,19 @@ class VideoViewModel @Inject constructor(
 //            VideoScreenUiState.Loading
 //        )
 
-    fun onCoinClick(coin: Coin) {
-        viewModelScope.launch {
-            selectedCoin.value = coin
-        }
-    }
 }
 
-sealed interface VideoScreenUiState {
-    object Loading : VideoScreenUiState
+sealed interface InfluencerDetailUiState {
+    object Loading : InfluencerDetailUiState
 
-    object FilterEmpty : VideoScreenUiState
+    object FilterEmpty : InfluencerDetailUiState
 
     data class Success(
         val newsList: List<News>?,
         val filter: Filter
-    ) : VideoScreenUiState
+    ) : InfluencerDetailUiState
 
     data class Failed(
         val throwable: Throwable
-    ) : VideoScreenUiState
+    ) : InfluencerDetailUiState
 }

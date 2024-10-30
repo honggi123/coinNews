@@ -12,15 +12,14 @@ private const val STARTING_PAGE_TOKEN = ""
 
 class VideoPagingSource(
     private val service: YoutubeService,
-    private val query: String,
+    private val playListId: String,
 ) : PagingSource<String, VideoItem>() {
 
     override suspend fun load(params: LoadParams<String>): LoadResult<String, VideoItem> {
         return try {
             val page = params.key ?: STARTING_PAGE_TOKEN
             val response =
-                service.getYoutubeVideoItems(pageToken = page, query = query)
-
+                service.getYoutubeVideoItems(pageToken = page, playListId = playListId)
             val items = response.items.map { it.toDomain() }
             LoadResult.Page(
                 data = items,
@@ -28,6 +27,7 @@ class VideoPagingSource(
                 nextKey = if (items.isEmpty()) null else response.nextPageToken,
             )
         } catch (e: Exception) {
+            Log.e("prrint",e.message.toString())
             LoadResult.Error(e)
         }
     }

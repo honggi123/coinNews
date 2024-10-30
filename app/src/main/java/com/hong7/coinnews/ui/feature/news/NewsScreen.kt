@@ -62,7 +62,10 @@ import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey300
+import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey600
+import com.hong7.coinnews.ui.theme.Grey800
+import com.hong7.coinnews.ui.theme.coinNewsTypography
 import com.hong7.coinnews.ui.theme.defaultTextStyle
 import com.hong7.coinnews.utils.DateUtils
 import com.hong7.coinnews.utils.NavigationUtils
@@ -193,7 +196,7 @@ private fun NewsListScreenContent(
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.ExtraBold
                         ),
-                        color = Blue800
+                        color = Grey800
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -216,7 +219,7 @@ private fun NewsListScreenContent(
                     thickness = 0.7.dp,
                     color = Grey200,
                 )
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 CoinFiltersRow(
                     coins = filter.coins,
                     selectedCoin = selectedCoin,
@@ -227,14 +230,14 @@ private fun NewsListScreenContent(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 )
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(
                     thickness = 0.7.dp,
                     color = Grey200,
                 )
                 if (isNewsLoading) {
                     Column(
-                        modifier = modifier,
+                        modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -318,7 +321,7 @@ private fun NewsList(
                     onNewsClick = onNewsClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 24.dp)
                 )
                 HorizontalDivider(
                     thickness = 0.7.dp,
@@ -394,33 +397,35 @@ private fun NewsContentItem(
         ) {
             onNewsClick(news)
         },
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
         Text(
             text = news.title,
-            style = defaultTextStyle.copy(
-                fontSize = 16.sp,
-                lineHeight = 20.sp,
+            style = coinNewsTypography.titleMedium.copy(
+                color = titleColor,
+                fontWeight = FontWeight.Bold
             ),
-            color = titleColor,
-            fontWeight = FontWeight.Bold,
             maxLines = 3,
         )
-        Text(
-            text = news.description,
-            style = defaultTextStyle.copy(
-                fontSize = 16.sp,
-                lineHeight = 20.sp,
-            ),
-            overflow = TextOverflow.Ellipsis,
-            color = Grey600,
-            fontWeight = FontWeight.Medium,
-            maxLines = 3,
-        )
-        NewsMetaData(
-            news = news,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text(
+                text = news.description,
+                style = coinNewsTypography.bodyLarge.copy(
+                    color = Grey500,
+                    fontWeight = FontWeight.Medium
+                ),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 3,
+            )
+            NewsMetaData(
+                news = news,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+        }
+
     }
 }
 
@@ -435,11 +440,10 @@ private fun NewsMetaData(
     ) {
         Text(
             text = news.author + "・" + news.createdAt?.let { DateUtils.getTimeAgo(it) },
-            style = defaultTextStyle.copy(
-                fontSize = 14.sp,
-                lineHeight = 14.sp,
+            style = coinNewsTypography.bodySmall.copy(
+                fontWeight = FontWeight.Medium
             ),
-            color = Color(0xFFAAAAAA)
+            color = Grey500
         )
     }
 }

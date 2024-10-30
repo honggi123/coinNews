@@ -8,9 +8,8 @@ data class VideoListResponse(
     val etag: String,
     val nextPageToken: String? = null,
     val prevPageToken: String? = null,
-    val regionCode: String,
     val pageInfo: NetworkPageInfo,
-    val items: List<NetworkSearchResultItem>
+    val items: List<NetworkPlaylistItem>
 )
 
 @Serializable
@@ -18,37 +17,52 @@ data class NetworkPageInfo(
     val totalResults: Int,
     val resultsPerPage: Int
 )
-
 @Serializable
-data class NetworkSearchResultItem(
+data class NetworkPlaylistItem(
     val kind: String,
     val etag: String,
-    val id: NetworkResourceId,
-    val snippet: NetworkSearchSnippet
+    val id: String,
+    val snippet: NetworkSnippet,
+)
+
+@Serializable
+data class NetworkSnippet(
+    val publishedAt: String,
+    val channelId: String,
+    val title: String,
+    val description: String,
+    val thumbnails: Map<String, NetworkThumbnail>,
+    val channelTitle: String,
+    val videoOwnerChannelTitle: String,
+    val videoOwnerChannelId: String,
+    val playlistId: String,
+    val position: Int,
+    val resourceId: NetworkResourceId
+)
+
+@Serializable
+data class NetworkThumbnail(
+    val url: String,
+    val width: Int? = null,
+    val height: Int? = null
 )
 
 @Serializable
 data class NetworkResourceId(
     val kind: String,
-    val videoId: String? = null,
-    val channelId: String? = null,
-    val playlistId: String? = null
+    val videoId: String
 )
 
 @Serializable
-data class NetworkSearchSnippet(
-    val publishedAt: String,
-    val channelId: String,
-    val title: String,
-    val description: String,
-    val thumbnails: Map<String, NetworkThumbnailInfo>,
-    val channelTitle: String,
-    val liveBroadcastContent: String
+data class NetworkContentDetails(
+    val videoId: String,
+    val startAt: String? = null,
+    val endAt: String? = null,
+    val note: String? = null,
+    val videoPublishedAt: String
 )
 
 @Serializable
-data class NetworkThumbnailInfo(
-    val url: String,
-    val width: Int? = null,
-    val height: Int? = null
+data class NetworkStatus(
+    val privacyStatus: String
 )

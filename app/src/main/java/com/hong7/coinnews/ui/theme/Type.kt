@@ -56,7 +56,6 @@ val coinNewsTypography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp,
         fontWeight = FontWeight.Medium,
-        lineBreak = LineBreak.Heading
     ),
     titleSmall = defaultTextStyle.copy(
         fontSize = 14.sp,

@@ -156,7 +156,7 @@ private fun TopAppBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_cancel),
+                painter = painterResource(id = R.drawable.ic_arrow_back),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxHeight()
