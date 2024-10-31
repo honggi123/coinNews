@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,9 +46,10 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.hong7.coinnews.model.News
-import com.hong7.coinnews.ui.InfluencerDetailNav
 import com.hong7.coinnews.ui.MainNav
 import com.hong7.coinnews.ui.NewsDetailNav
+import com.hong7.coinnews.ui.NewsNav
+import com.hong7.coinnews.ui.VideoListNav
 import com.hong7.coinnews.ui.theme.Grey400
 import com.hong7.coinnews.ui.theme.Grey50
 import com.hong7.coinnews.ui.theme.Grey600
@@ -95,7 +97,6 @@ fun HomeScreen(
                 navController = navController
             )
         }
-
     }
 }
 
@@ -107,6 +108,8 @@ internal fun HomeScreenContent(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
+    val context = LocalContext.current
+
     Column(modifier = modifier) {
         SectionHeader(
             title = "인기 있는 인플루언서",
@@ -124,7 +127,7 @@ internal fun HomeScreenContent(
                     onClick = {
                         NavigationUtils.navigate(
                             navController,
-                            InfluencerDetailNav.navigateWithArg(influencerList[index].id),
+                            VideoListNav.navigateWithArg(influencerList[index].id),
                         )
                     },
                     modifier = Modifier,
@@ -137,13 +140,7 @@ internal fun HomeScreenContent(
                 title = "최근 암호화폐 뉴스",
                 trailingText = "전체보기",
                 onTrailingClick = {
-                    navController.navigate(MainNav.News.route) {
-                        navController.graph.findStartDestination()?.let { startDestination ->
-                            popUpTo(startDestination.id) { saveState = true }
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    NavigationUtils.navigate(navController, NewsNav.route)
                 },
             )
             LazyRow(
@@ -155,15 +152,20 @@ internal fun HomeScreenContent(
                     end = 32.dp
                 ),
             ) {
-                items(recentNewsList) { nearbyJobOpening ->
-                    with(nearbyJobOpening) {
+                items(recentNewsList) { news ->
+                    with(news) {
                         RecentNewsItem(
                             title = title,
                             description = description,
                             author = author,
                             modifier = Modifier
                                 .width(256.dp)
-                                .height(176.dp)
+                                .height(126.dp)
+                                .clickable {
+                                    NavigationUtils.navigate(
+                                        navController,
+                                        NewsDetailNav.navigateWithArg(news)
+                                    )                                }
                             // TODO
                         )
                     }
@@ -196,15 +198,6 @@ internal fun RecentNewsItem(
             ),
         )
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(
-                text = description,
-                color = Grey400,
-                style = MaterialTheme.typography.bodyMedium.merge(
-                    fontWeight = FontWeight.Medium,
-                ),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
             author?.let {
                 Text(
                     text = author,
@@ -219,7 +212,7 @@ internal fun RecentNewsItem(
 }
 
 @Composable
-internal fun InfluencerItem(
+private fun InfluencerItem(
     imageUrl: String,
     name: String,
     onClick: () -> Unit,
@@ -249,7 +242,6 @@ internal fun InfluencerItem(
                     },
                 contentScale = ContentScale.Crop,
             )
-
             Text(
                 text = name,
                 modifier = Modifier,
@@ -265,10 +257,9 @@ internal fun InfluencerItem(
 }
 
 @Composable
-internal fun SectionHeader(
+private fun SectionHeader(
     title: String,
     modifier: Modifier = Modifier,
-    subtitle: String = "",
     trailingText: String = "",
     onTrailingClick: (() -> Unit)? = null,
 ) {
@@ -291,7 +282,6 @@ internal fun SectionHeader(
                 fontWeight = FontWeight.Bold,
             )
         )
-
         Text(
             text = trailingText,
             modifier = Modifier

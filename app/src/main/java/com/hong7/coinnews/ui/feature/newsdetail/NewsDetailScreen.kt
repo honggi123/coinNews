@@ -63,85 +63,51 @@ import java.time.LocalDateTime
 @Composable
 fun NewsDetailScreen(
     onBackClick: () -> Unit,
+    newsUrl: String?,
     snackbarHostState: SnackbarHostState,
-    viewModel: NewsDetailViewModel = hiltViewModel()
 ) {
-    val isScraped by viewModel.isScraped.collectAsStateWithLifecycle()
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        viewModel.messageEvent.collect { message ->
-            snackbarHostState.showSnackbar(message)
-        }
-    }
-
-    when (val state = uiState) {
-        is NewsDetailUiState.Success -> {
-            NewsDetailScreenContent(
-                news = state.news,
-                isScraped = isScraped,
-                onBackClick = onBackClick,
-                onToggleClick = viewModel::onToggleClick,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        else -> {} // todo
-    }
+    NewsDetailScreenContent(
+        newsUrl = newsUrl ?: throw NullPointerException(),  // TODO
+        onBackClick = onBackClick,
+        modifier = Modifier.fillMaxSize()
+    )
 }
+
 
 @Composable
 private fun NewsDetailScreenContent(
-    news: News?,
-    isScraped: Boolean,
+    newsUrl: String,
     onBackClick: () -> Unit,
-    onToggleClick: (NewsWithInterest) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 TopAppBar(
-                    news = news,
-                    isScraped = isScraped,
+                    newsUrl = newsUrl,
                     onBackClick = onBackClick,
-                    onToggleClick = onToggleClick,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
             }
         }
     ) { paddingValues ->
-        if (news != null) {
-            NewsContent(
-                url = news.url,
-                date = LocalDateTime.now(),
-                modifier = modifier
-                    .padding(paddingValues)
-            )
-        } else {
-            EmptyNewsContent(
-                text = "해당 뉴스가 존재하지 않습니다.",
-                modifier = modifier
-                    .padding(paddingValues)
-            )
-        }
+        NewsContent(
+            url = newsUrl,
+            date = LocalDateTime.now(),
+            modifier = modifier
+                .padding(paddingValues)
+        )
     }
 }
 
 @Composable
 private fun TopAppBar(
-    news: News?,
-    isScraped: Boolean,
+    newsUrl: String,
     onBackClick: () -> Unit,
-    onToggleClick: (NewsWithInterest) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val interestIconPainter = if (isScraped) {
-        painterResource(id = R.drawable.ic_star_fill)
-    } else {
-        painterResource(id = R.drawable.ic_star_border)
-    }
+
     val interactionSource = remember { MutableInteractionSource() }
 
     Column(
@@ -165,7 +131,7 @@ private fun TopAppBar(
                     ) { onBackClick() },
                 tint = Grey900
             )
-            Spacer(modifier = Modifier.width(24.dp))
+            Spacer(modifier = Modifier.width(48.dp))
             Row(
                 modifier = Modifier
                     .weight(1f)
@@ -176,7 +142,7 @@ private fun TopAppBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = news?.url ?: "",
+                    text = newsUrl,
                     color = Grey500,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Normal,
@@ -185,25 +151,7 @@ private fun TopAppBar(
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                 )
             }
-            Spacer(modifier = Modifier.width(24.dp))
-            Icon(
-                painter = interestIconPainter,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .clickableWithoutRipple(
-                        interactionSource = interactionSource,
-                    ) {
-                        if (news?.url != null) {
-                            onToggleClick(
-                                NewsWithInterest(news, isScraped)
-                            )
-                        }
-                    },
-                tint = Grey700
-            )
         }
-
     }
 }
 

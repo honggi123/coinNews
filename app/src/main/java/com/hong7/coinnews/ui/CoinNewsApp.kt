@@ -1,5 +1,7 @@
 package com.hong7.coinnews.ui
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -22,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -31,22 +34,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.hong7.coinnews.ui.feature.filtersetting.FilterSettingScreen
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import com.hong7.coinnews.ui.feature.home.HomeScreen
-import com.hong7.coinnews.ui.feature.influencer_detail.InfluencerDetailScreen
-import com.hong7.coinnews.ui.feature.news.NewsScreen
-import com.hong7.coinnews.ui.main.MainViewModel
+import com.hong7.coinnews.ui.feature.watchlist.list.WatchListScreen
 import com.hong7.coinnews.ui.feature.newsdetail.NewsDetailScreen
-import com.hong7.coinnews.ui.feature.scrap.ScrapNewsScreen
+import com.hong7.coinnews.ui.feature.newslist.NewsListScreen
 import com.hong7.coinnews.ui.feature.setting.SettingScreen
+import com.hong7.coinnews.ui.feature.videolist.VideoListScreen
+import com.hong7.coinnews.ui.feature.watchlist.add.AddWatchListScreen
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey500
 
 @Composable
-fun CoinNewsApp(viewModel: MainViewModel) {
+fun CoinNewsApp() {
+    val context = LocalContext.current
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    Thread.setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler(context, navController))
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -77,6 +84,17 @@ fun CoinNewsApp(viewModel: MainViewModel) {
     }
 }
 
+class UncaughtExceptionHandler(
+    val context: Context,
+    val navController: NavHostController
+) : Thread.UncaughtExceptionHandler {
+    override fun uncaughtException(thread: Thread, throwable: Throwable) {
+        Firebase.crashlytics.recordException(throwable)
+        navController.popBackStack()
+        Toast.makeText(context, "문제가 발생했습니다. 다시 시도해 주세요.", Toast.LENGTH_LONG).show()
+    }
+}
+
 @Composable
 private fun CoinNewsNavGraph(
     modifier: Modifier = Modifier,
@@ -89,22 +107,33 @@ private fun CoinNewsNavGraph(
         modifier = modifier
     ) {
         composable(
-            route = MainNav.News.route
-        ) {
-            NewsScreen(navController, snackbarHostState)
-        }
-        composable(
-            route = MainNav.Scrap.route,
-        ) {
-            ScrapNewsScreen(
-                navController,
-                snackbarHostState
-            )
-        }
-        composable(
             route = MainNav.Home.route,
         ) {
             HomeScreen(snackbarHostState, navController)
+        }
+        composable(
+            route = MainNav.Setting.route,
+        ) {
+            SettingScreen(
+                navController,
+                modifier.fillMaxSize()
+            )
+        }
+        composable(
+            route = MainNav.WatchList.route,
+        ) {
+            WatchListScreen(
+                navController,
+                modifier.fillMaxSize()
+            )
+        }
+        composable(
+            route = AddWatchListNav.route,
+        ) {
+            AddWatchListScreen(
+                navController,
+                modifier.fillMaxSize()
+            )
         }
         composable(
             route = NewsDetailNav.routeWithArgName(),
@@ -122,16 +151,18 @@ private fun CoinNewsNavGraph(
                 )
             }
         ) {
+            val newsUrl = it.arguments?.getString(NewsDetailNav.argName)
+
             NewsDetailScreen(
                 onBackClick = {
                     navController.popBackStack()
                 },
+                newsUrl = newsUrl,
                 snackbarHostState = snackbarHostState
             )
         }
         composable(
-            route = InfluencerDetailNav.routeWithArgName(),
-            arguments = InfluencerDetailNav.arguments,
+            route = NewsNav.route,
             enterTransition = {
                 slideIntoContainer(
                     animationSpec = tween(400),
@@ -145,36 +176,33 @@ private fun CoinNewsNavGraph(
                 )
             }
         ) {
-            InfluencerDetailScreen(
+            NewsListScreen(
+                navController = navController,
+                snackbarHostState = snackbarHostState
+            )
+        }
+        composable(
+            route = VideoListNav.routeWithArgName(),
+            arguments = VideoListNav.arguments,
+            enterTransition = {
+                slideIntoContainer(
+                    animationSpec = tween(400),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    animationSpec = tween(400),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right
+                )
+            }
+        ) {
+            VideoListScreen(
                 snackbarHostState = snackbarHostState,
                 navController = navController
             )
         }
-        composable(
-            route = CoinListNav.route,
-            enterTransition = {
-                slideIntoContainer(
-                    animationSpec = tween(400),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    animationSpec = tween(400),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right
-                )
-            }
-        ) {
-            FilterSettingScreen(navController)
-        }
-        composable(
-            route = SettingNav.route,
-        ) {
-            SettingScreen(
-                navController,
-                modifier.fillMaxSize()
-            )
-        }
+
     }
 }
 
@@ -189,8 +217,8 @@ private fun MyBottomNavigation(
     val currentRoute = navBackStackEntry?.destination?.route
     val items = listOf(
         MainNav.Home,
-        MainNav.News,
-        MainNav.Scrap
+        MainNav.WatchList,
+        MainNav.Setting
     )
 
     AnimatedVisibility(

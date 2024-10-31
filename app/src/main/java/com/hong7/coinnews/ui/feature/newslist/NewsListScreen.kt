@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.feature.news
+package com.hong7.coinnews.ui.feature.newslist
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,11 +19,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
@@ -34,12 +35,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,20 +52,16 @@ import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.Coin
-import com.hong7.coinnews.model.Filter
-import com.hong7.coinnews.ui.CoinListNav
 import com.hong7.coinnews.ui.NewsDetailNav
 import com.hong7.coinnews.ui.component.ClickableChip
 import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.Blue600
-import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
-import com.hong7.coinnews.ui.theme.Grey300
 import com.hong7.coinnews.ui.theme.Grey500
-import com.hong7.coinnews.ui.theme.Grey600
 import com.hong7.coinnews.ui.theme.Grey800
+import com.hong7.coinnews.ui.theme.Grey900
 import com.hong7.coinnews.ui.theme.coinNewsTypography
 import com.hong7.coinnews.ui.theme.defaultTextStyle
 import com.hong7.coinnews.utils.DateUtils
@@ -73,12 +70,11 @@ import com.hong7.coinnews.utils.NavigationUtils
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun NewsScreen(
+fun NewsListScreen(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
     viewModel: NewsViewModel = hiltViewModel()
 ) {
-    val selectedCoin by viewModel.selectedCoin.collectAsStateWithLifecycle()
     val uistate by viewModel.uiState.collectAsStateWithLifecycle()
     val watchedNews by viewModel.watchedNewsIds.collectAsStateWithLifecycle()
 
@@ -94,15 +90,6 @@ fun NewsScreen(
                 watchedNewsIds = watchedNews,
                 isNewsLoading = state.isNewsLoading,
                 newsList = state.newsList,
-                selectedCoin = selectedCoin,
-                filter = state.filter,
-                onCoinClick = remember(viewModel) { { viewModel.onCoinClick(it) } },
-                onFilterSettingClick = {
-                    NavigationUtils.navigate(
-                        navController,
-                        CoinListNav.route
-                    )
-                },
                 onNewsClick = {
                     NavigationUtils.navigate(
                         navController,
@@ -110,21 +97,12 @@ fun NewsScreen(
                     )
                     viewModel.onNewsClick(it.id)
                 },
+                onBackClick = {
+                    navController.popBackStack()
+                },
                 modifier = Modifier.fillMaxWidth(),
             )
 
-        }
-
-        is NewsScreenUiState.FilterEmpty -> {
-            EmptyFilterContent(
-                onFilterSettingClick = {
-                    NavigationUtils.navigate(
-                        navController,
-                        CoinListNav.route
-                    )
-                },
-                modifier = Modifier.fillMaxSize()
-            )
         }
 
         else -> Unit
@@ -172,16 +150,12 @@ private fun LoadingContent(
 private fun NewsListScreenContent(
     watchedNewsIds: Set<String>,
     isNewsLoading: Boolean,
-    filter: Filter,
     newsList: List<News>?,
-    selectedCoin: Coin?,
-    onFilterSettingClick: () -> Unit,
-    onCoinClick: (Coin) -> Unit,
     onNewsClick: (News) -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state = rememberLazyListState()
-    val filterState = rememberLazyListState()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
@@ -199,6 +173,16 @@ private fun NewsListScreenContent(
                         color = Grey800
                     )
                 },
+                navigationIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_back),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .clickable { onBackClick() },
+                        tint = Grey900
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White,
                     scrolledContainerColor = Color.White
@@ -212,49 +196,30 @@ private fun NewsListScreenContent(
             modifier = modifier.padding(contentPadding),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                HorizontalDivider(
-                    thickness = 0.7.dp,
-                    color = Grey200,
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                CoinFiltersRow(
-                    coins = filter.coins,
-                    selectedCoin = selectedCoin,
-                    onCoinClick = onCoinClick,
-                    onFilterSettingClick = onFilterSettingClick,
-                    state = filterState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(
-                    thickness = 0.7.dp,
-                    color = Grey200,
-                )
-                if (isNewsLoading) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(38.dp)
-                        )
-                    }
-                } else {
-                    NewsList(
-                        watchedNewsIds = watchedNewsIds,
-                        newsList = newsList ?: emptyList(),
-                        onNewsClick = onNewsClick,
-                        modifier = Modifier.fillMaxWidth(),
-                        state = state
+            HorizontalDivider(
+                thickness = 0.7.dp,
+                color = Grey200,
+            )
+            if (isNewsLoading) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(38.dp)
                     )
                 }
+            } else {
+                NewsList(
+                    watchedNewsIds = watchedNewsIds,
+                    newsList = newsList ?: emptyList(),
+                    onNewsClick = onNewsClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    state = state
+                )
             }
+
         }
     }
 }
@@ -397,7 +362,7 @@ private fun NewsContentItem(
         ) {
             onNewsClick(news)
         },
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
             text = news.title,
@@ -407,25 +372,10 @@ private fun NewsContentItem(
             ),
             maxLines = 3,
         )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Text(
-                text = news.description,
-                style = coinNewsTypography.bodyLarge.copy(
-                    color = Grey500,
-                    fontWeight = FontWeight.Medium
-                ),
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 3,
-            )
-            NewsMetaData(
-                news = news,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-        }
-
+        NewsMetaData(
+            news = news,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -447,50 +397,3 @@ private fun NewsMetaData(
         )
     }
 }
-
-//
-//@Preview
-//@Composable
-//fun PreviewNewsContent(
-//    @PreviewParameter(NewsContentPreviewParamProvider::class) newss: Flow<PagingData<News>>
-//) {
-//    CoinNewsAppTheme {
-//        NewsListScreenContent(
-//            newss = newss.collectAsLazyPagingItems(),
-//            filters = listOf(
-//                CoinFilter("비트코인", "BTC", symbol = ""),
-//                CoinFilter("이더리움", "ETC", symbol = "")
-//            ),
-//            onCoinFilterClick = {},
-//            onFilterSettingClick = {},
-//            selectedFilter = Filter(CoinFilter("비트코인", "BTC", ""), CountryScope.Local),
-//            onNewsClick = {},
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(10.dp)
-//                .background(White)
-//        )
-//    }
-//}
-//
-//private class NewsContentPreviewParamProvider :
-//    PreviewParameterProvider<Flow<PagingData<News>>> {
-//
-//    override val values: Sequence<Flow<PagingData<News>>> =
-//        sequenceOf(
-//            flowOf(
-//                PagingData.from(
-//                    listOf(
-//                        News(
-//                            id = "1",
-//                            title = "블롬버그 \"버블 조짐 있다\"vs 월스트리트저널 \"과거 만큼은 아니다\"",
-//                            url = "url",
-////                            description = "한편, 한화투자증권은 2021년 2월에 암호화폐 거래소 업비트와 주식 거래 플랫폼 증권플러스 등을 운영하는 두나무 보통주 약 200만주를 583억원에 매수한 바 있다.",
-//                            author = "블록미디어",
-//                            createdAt = Instant.now().toEpochMilli()
-//                        )
-//                    )
-//                )
-//            )
-//        )
-//}

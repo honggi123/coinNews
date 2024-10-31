@@ -1,19 +1,15 @@
 package com.hong7.coinnews.ui.feature.home
 
 import androidx.lifecycle.viewModelScope
-import com.hong7.coinnews.data.repository.FilterRepository
 import com.hong7.coinnews.data.repository.NewsRepository
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.exception.ResponseResource
 import com.hong7.coinnews.ui.base.BaseViewModel
-import com.hong7.coinnews.ui.feature.news.NewsScreenUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 

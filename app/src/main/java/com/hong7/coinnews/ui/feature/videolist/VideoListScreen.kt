@@ -1,7 +1,6 @@
-package com.hong7.coinnews.ui.feature.influencer_detail
+package com.hong7.coinnews.ui.feature.videolist
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,7 +41,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -53,16 +50,10 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberAsyncImagePainter
 import com.hong7.coinnews.R
-import com.hong7.coinnews.model.News
-import com.hong7.coinnews.model.NewsWithInterest
 import com.hong7.coinnews.model.VideoItem
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
-import com.hong7.coinnews.ui.theme.Blue800
-import com.hong7.coinnews.ui.theme.Grey100
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
-import com.hong7.coinnews.ui.theme.Grey500
-import com.hong7.coinnews.ui.theme.Grey700
 import com.hong7.coinnews.ui.theme.Grey800
 import com.hong7.coinnews.ui.theme.Grey900
 import com.hong7.coinnews.ui.theme.defaultTextStyle
@@ -73,10 +64,10 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InfluencerDetailScreen(
+fun VideoListScreen(
     snackbarHostState: SnackbarHostState,
     navController: NavHostController,
-    viewModel: InfluencerDetailViewModel = hiltViewModel()
+    viewModel: VideoListViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
