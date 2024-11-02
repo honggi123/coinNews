@@ -3,6 +3,7 @@ package com.hong7.coinnews.di
 import android.content.Context
 import com.hong7.coinnews.database.AppDatabase
 import com.hong7.coinnews.database.dao.CoinDao
+import com.hong7.coinnews.database.dao.WatchListDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +24,11 @@ class DataBaseModule {
     @Provides
     fun provideNewsDao(appDatabase: AppDatabase): CoinDao {
         return appDatabase.coinDao()
+    }
+
+    @Provides
+    fun provideWatchListDao(appDatabase: AppDatabase): WatchListDao {
+        return appDatabase.watchListDao()
     }
 }
 

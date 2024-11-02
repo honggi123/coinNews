@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GetAllCoinListResponse(
     val data: List<NetworkCoin>,
-    val status: NetworkCoinStatus
+    val status: CoinResponseStatus
 )
 @Serializable
 data class NetworkCoin(
@@ -27,14 +27,3 @@ data class NetworkPlatform(
     val token_address: String
 )
 
-@Serializable
-data class NetworkCoinStatus(
-    val timestamp: String,
-    @SerialName("error_code")
-    val errorCode: Int,
-    @SerialName("error_message")
-    val errorMessage: String,
-    val elapsed: Int,
-    @SerialName("credit_count")
-    val creditCard: Int
-)

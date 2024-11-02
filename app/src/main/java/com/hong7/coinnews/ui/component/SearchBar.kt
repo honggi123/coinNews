@@ -46,7 +46,6 @@ fun SearchBar(
     query: String,
     onValueChange: (String) -> Unit,
     onBackClick: () -> Unit,
-    onSearchClick: () -> Unit,
     onClearQueryClick: () -> Unit,
     modifier: Modifier = Modifier,
     placeholderText: String = "코인 검색",
@@ -63,6 +62,7 @@ fun SearchBar(
             contentDescription = "SearchBar_ArrowLeft",
             modifier = Modifier
                 .size(36.dp)
+                .padding(8.dp)
                 .clickable(onClick = onBackClick),
             tint = Grey400,
         )
@@ -83,7 +83,7 @@ fun SearchBar(
             ),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    onSearchClick()
+
                 }
             ),
             singleLine = true,
@@ -145,7 +145,6 @@ fun SearchBarPreview(){
             query = query,
             onValueChange = { query = it },
             onBackClick = {},
-            onSearchClick = {},
             onClearQueryClick = {},
             modifier = Modifier
                 .fillMaxWidth()

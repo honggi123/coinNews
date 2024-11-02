@@ -12,6 +12,7 @@ import com.hong7.coinnews.model.exception.ResponseResource
 import com.hong7.coinnews.model.exception.UnknownException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import timber.log.Timber
 
 open class BaseViewModel : ViewModel() {
 
@@ -27,7 +28,10 @@ open class BaseViewModel : ViewModel() {
             is InternetServerException -> "서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
             is ForbiddenException -> "접근 권한이 없습니다."
             is NetworkNotConnectedException -> "인터넷 연결이 필요합니다. 연결 상태를 확인해주세요."
-            else -> "알 수 없는 오류가 발생했습니다. 다시 시도해주세요."
+            else -> {
+                Timber.tag("uncaughtNetworkException").e(result.exception)
+                throw result.exception
+            }
         }
         _messageEvent.emit(message)
     }

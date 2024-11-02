@@ -92,9 +92,8 @@ class UncaughtExceptionHandler(
 ) : Thread.UncaughtExceptionHandler {
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
         Firebase.crashlytics.recordException(throwable)
-        Timber.tag("uncaughtException").e(throwable.message.toString())
-        navController.popBackStack()
-        Toast.makeText(context, "문제가 발생했습니다. 다시 시도해 주세요.", Toast.LENGTH_LONG).show()
+        Timber.tag("uncaughtException").e(throwable)
+        Toast.makeText(context, "문제가 발생했습니다. 잠시후 다시 시도해 주세요.", Toast.LENGTH_LONG).show()
     }
 }
 
@@ -127,6 +126,7 @@ private fun CoinNewsNavGraph(
         ) {
             WatchListScreen(
                 navController,
+                snackbarHostState,
                 modifier.fillMaxSize()
             )
         }

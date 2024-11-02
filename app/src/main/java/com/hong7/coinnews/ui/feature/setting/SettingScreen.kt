@@ -37,24 +37,11 @@ fun SettingScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "App Information",
+                        text = "설정",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Grey700
                     )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
-                        },
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_back),
-                            contentDescription = "",
-                            tint = Grey700
-                        )
-                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
@@ -70,9 +57,9 @@ fun SettingScreen(
             Column(
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(100.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Top,
             ) {
                 Text(
                     text = "Version : ${BuildConfig.VERSION_NAME}",

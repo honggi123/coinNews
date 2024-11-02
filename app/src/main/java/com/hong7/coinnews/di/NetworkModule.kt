@@ -1,5 +1,6 @@
 package com.hong7.coinnews.di
 
+import com.hong7.coinnews.network.BigDecimalSerializer
 import com.hong7.coinnews.network.retrofit.CoinMarketCapService
 import com.hong7.coinnews.network.retrofit.NaverService
 import com.hong7.coinnews.network.retrofit.YoutubeService
@@ -9,11 +10,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.serializersModuleOf
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.math.BigDecimal
 import javax.inject.Singleton
 
 @Module
@@ -65,11 +68,18 @@ object NetworkModule {
     @Provides
     fun provideCoinPaprikaService(client: OkHttpClient): CoinMarketCapService {
         val BASE_URL = "https://pro-api.coinmarketcap.com/"
+        val json = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+            allowStructuredMapKeys = true
+            serializersModule = serializersModuleOf(BigDecimal::class, BigDecimalSerializer)
+        }
+        val contentType = "application/json".toMediaType()
 
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(CoinMarketCapService::class.java)
     }

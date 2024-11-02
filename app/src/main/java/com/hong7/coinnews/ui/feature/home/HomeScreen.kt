@@ -71,7 +71,7 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Home",
+                        text = "홈",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.ExtraBold
                         ),

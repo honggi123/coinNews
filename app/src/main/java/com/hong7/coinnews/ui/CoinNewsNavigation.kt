@@ -93,9 +93,9 @@ object NavigationRouteName {
 }
 
 object NavigationTitle {
-    const val MAIN_HOME = "Home"
-    const val MAIN_WATCHLIST = "WatchList"
-    const val MAIN_SETTING = "Setting"
+    const val MAIN_HOME = "홈"
+    const val MAIN_WATCHLIST = "왓치리스트"
+    const val MAIN_SETTING = "설정"
 
     const val NEWS = "news"
     const val NEWS_DETAIL = "News Detail"

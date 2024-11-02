@@ -27,7 +27,6 @@ class VideoPagingSource(
                 nextKey = if (items.isEmpty()) null else response.nextPageToken,
             )
         } catch (e: Exception) {
-            Log.e("prrint",e.message.toString())
             LoadResult.Error(e)
         }
     }
