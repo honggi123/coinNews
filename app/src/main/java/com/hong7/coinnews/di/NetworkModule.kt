@@ -1,5 +1,6 @@
 package com.hong7.coinnews.di
 
+import com.hong7.coinnews.network.retrofit.CoinMarketCapService
 import com.hong7.coinnews.network.retrofit.NaverService
 import com.hong7.coinnews.network.retrofit.YoutubeService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -37,9 +38,10 @@ object NetworkModule {
     fun provideNewsService(client: OkHttpClient): NaverService {
         val json = Json { ignoreUnknownKeys = true }
         val contentType = "application/json".toMediaType()
+        val BASE_URL = "https://openapi.naver.com/"
 
         return Retrofit.Builder()
-            .baseUrl("https://openapi.naver.com")
+            .baseUrl(BASE_URL)
             .client(client)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
@@ -57,5 +59,18 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(YoutubeService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCoinPaprikaService(client: OkHttpClient): CoinMarketCapService {
+        val BASE_URL = "https://pro-api.coinmarketcap.com/"
+
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(CoinMarketCapService::class.java)
     }
 }

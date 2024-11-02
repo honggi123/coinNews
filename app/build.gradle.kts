@@ -131,7 +131,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.5")
 
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 
     implementation("androidx.compose.animation:animation:1.8.0-alpha04")
 
@@ -152,6 +152,9 @@ dependencies {
     implementation("com.valentinilk.shimmer:compose-shimmer:1.3.0")
 
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
+
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.room:room-testing:2.6.1")

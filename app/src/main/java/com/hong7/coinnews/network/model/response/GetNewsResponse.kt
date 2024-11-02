@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NewsResponse(
+data class GetNewsResponse(
     val total: Int,
     val items: List<NetworkNews>,
     @SerialName("start") val page: Int,

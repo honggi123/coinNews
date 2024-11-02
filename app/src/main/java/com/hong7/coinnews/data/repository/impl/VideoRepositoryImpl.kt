@@ -8,7 +8,6 @@ import com.hong7.coinnews.data.paging.VideoPagingSource
 import com.hong7.coinnews.data.repository.VideoRepository
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.VideoItem
-import com.hong7.coinnews.network.model.response.VideoListResponse
 import com.hong7.coinnews.network.retrofit.YoutubeService
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

@@ -3,7 +3,7 @@ package com.hong7.coinnews.network.model.response
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class VideoListResponse(
+data class GetVideoListResponse(
     val kind: String,
     val etag: String,
     val nextPageToken: String? = null,

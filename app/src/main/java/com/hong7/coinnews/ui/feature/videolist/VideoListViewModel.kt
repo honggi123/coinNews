@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.hong7.coinnews.data.repository.VideoRepository
-import com.hong7.coinnews.model.Filter
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.VideoItem
 import com.hong7.coinnews.ui.base.BaseViewModel
@@ -41,7 +40,6 @@ sealed interface InfluencerDetailUiState {
 
     data class Success(
         val newsList: List<News>?,
-        val filter: Filter
     ) : InfluencerDetailUiState
 
     data class Failed(

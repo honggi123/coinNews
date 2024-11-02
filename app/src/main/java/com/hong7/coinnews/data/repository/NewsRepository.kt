@@ -12,7 +12,7 @@ interface NewsRepository {
 
     fun getRecentNewsByQuery(query: String): Flow<ResponseResource<List<News>>>
 
-    fun getScrapedNewsList(): Flow<List<News>>
+//    fun getScrapedNewsList(): Flow<List<News>>
 
 //    suspend fun addNewsScraped(news: News)
 

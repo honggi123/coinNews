@@ -1,6 +1,7 @@
 package com.hong7.coinnews.ui
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
@@ -42,10 +43,11 @@ import com.hong7.coinnews.ui.feature.newsdetail.NewsDetailScreen
 import com.hong7.coinnews.ui.feature.newslist.NewsListScreen
 import com.hong7.coinnews.ui.feature.setting.SettingScreen
 import com.hong7.coinnews.ui.feature.videolist.VideoListScreen
-import com.hong7.coinnews.ui.feature.watchlist.add.AddWatchListScreen
+import com.hong7.coinnews.ui.feature.watchlist.search.SearchWatchListScreen
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey500
+import timber.log.Timber
 
 @Composable
 fun CoinNewsApp() {
@@ -90,6 +92,7 @@ class UncaughtExceptionHandler(
 ) : Thread.UncaughtExceptionHandler {
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
         Firebase.crashlytics.recordException(throwable)
+        Timber.tag("uncaughtException").e(throwable.message.toString())
         navController.popBackStack()
         Toast.makeText(context, "문제가 발생했습니다. 다시 시도해 주세요.", Toast.LENGTH_LONG).show()
     }
@@ -130,7 +133,7 @@ private fun CoinNewsNavGraph(
         composable(
             route = AddWatchListNav.route,
         ) {
-            AddWatchListScreen(
+            SearchWatchListScreen(
                 navController,
                 modifier.fillMaxSize()
             )

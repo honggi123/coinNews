@@ -16,14 +16,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
+import com.hong7.coinnews.ui.AddWatchListNav
 import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey800
+import com.hong7.coinnews.utils.NavigationUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WatchListScreen(
-    navController: NavController,
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -46,7 +49,10 @@ fun WatchListScreen(
                 actions = {
                     IconButton(
                         onClick = {
-
+                            NavigationUtils.navigate(
+                                navController,
+                                AddWatchListNav.route
+                            )
                         },
                     ) {
                         Icon(

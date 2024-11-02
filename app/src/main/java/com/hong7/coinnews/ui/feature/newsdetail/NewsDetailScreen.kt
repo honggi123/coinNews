@@ -49,7 +49,6 @@ import com.google.firebase.perf.FirebasePerformance
 import com.google.firebase.perf.metrics.Trace
 import com.hong7.coinnews.R
 import com.hong7.coinnews.model.News
-import com.hong7.coinnews.model.NewsWithInterest
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey100
@@ -118,7 +117,7 @@ private fun TopAppBar(
                 .fillMaxWidth()
                 .height(60.dp)
                 .padding(horizontal = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -131,7 +130,7 @@ private fun TopAppBar(
                     ) { onBackClick() },
                 tint = Grey900
             )
-            Spacer(modifier = Modifier.width(48.dp))
+            Spacer(modifier = Modifier.width(24.dp))
             Row(
                 modifier = Modifier
                     .weight(1f)
@@ -141,15 +140,17 @@ private fun TopAppBar(
                     ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = newsUrl,
-                    color = Grey500,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Normal,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-                )
+                Box(modifier = Modifier.width(228.dp)) {
+                    Text(
+                        text = newsUrl,
+                        color = Grey500,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Normal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                    )
+                }
             }
         }
     }

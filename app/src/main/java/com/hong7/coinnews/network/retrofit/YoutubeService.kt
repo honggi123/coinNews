@@ -1,6 +1,6 @@
 package com.hong7.coinnews.network.retrofit
 
-import com.hong7.coinnews.network.model.response.VideoListResponse
+import com.hong7.coinnews.network.model.response.GetVideoListResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -14,5 +14,5 @@ interface YoutubeService {
         @Query("playlistId") playListId: String,
         @Query("pageToken") pageToken: String,
         @Query("maxResults") maxResults: Int = 10
-    ): VideoListResponse
+    ): GetVideoListResponse
 }
