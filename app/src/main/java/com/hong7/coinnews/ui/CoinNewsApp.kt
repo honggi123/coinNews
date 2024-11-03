@@ -93,7 +93,7 @@ class UncaughtExceptionHandler(
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
         Firebase.crashlytics.recordException(throwable)
         Timber.tag("uncaughtException").e(throwable)
-        Toast.makeText(context, "문제가 발생했습니다. 잠시후 다시 시도해 주세요.", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "현재 시스템 오류가 발생했습니다. 앱을 재설치하거나, 잠시후 다시 시도해 주세요.", Toast.LENGTH_LONG).show()
     }
 }
 

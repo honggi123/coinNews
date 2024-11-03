@@ -1,5 +1,7 @@
 package com.hong7.coinnews.ui.feature.watchlist.list
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -33,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -184,6 +187,7 @@ fun WatchListScreenContent(
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     var refreshing by remember { mutableStateOf(false) }
     LaunchedEffect(refreshing) {
         if (refreshing) {
@@ -209,7 +213,7 @@ fun WatchListScreenContent(
                 text = "업데이트 : " + DateUtils.formatLocalDateTime(updatedDateTime),
                 style = coinNewsTypography.bodySmall.copy(
                     fontWeight = FontWeight.Normal,
-                    color = Grey200
+                    color = Grey400
                 ),
             )
             LazyVerticalGrid(
@@ -222,7 +226,10 @@ fun WatchListScreenContent(
                     val coinQuote = watchList.values.toList()[index]
                     WatchListItem(
                         coinQuote = coinQuote,
-                        onClick = { }
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://coinmarketcap.com/ko/currencies/${coinQuote.slug}"))
+                            context.startActivity(intent)
+                        }
                     )
                 }
                 item { 

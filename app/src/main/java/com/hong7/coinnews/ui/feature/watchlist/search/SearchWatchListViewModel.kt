@@ -55,14 +55,13 @@ class SearchWatchListViewModel @Inject constructor(
     fun toggleSelected(coin: Coin) {
         viewModelScope.launch {
             if (watchListCoins.value.contains(coin.id)) {
+                watchListRepository.removeWatchListCoin(coin)
+            } else {
                 if (watchListCoins.value.size >= 10) {
                     // TODO
                 } else {
-                    watchListRepository.removeWatchListCoin(coin)
+                    watchListRepository.addWatchListCoin(coin)
                 }
-
-            } else {
-                watchListRepository.addWatchListCoin(coin)
             }
         }
     }
