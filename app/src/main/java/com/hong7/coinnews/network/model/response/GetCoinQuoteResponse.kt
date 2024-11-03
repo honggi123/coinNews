@@ -27,8 +27,8 @@ data class NetworkCoinQuote(
     @SerialName("cmc_rank") val cmcRank: Int?,
     @SerialName("last_updated") val lastUpdated: String?,
     val tags: List<NetworkTag>?,
-    @SerialName("self_reported_circulating_supply") val selfReportedCirculatingSupply: Long?,
-    @SerialName("self_reported_market_cap") val selfReportedMarketCap: Long?,
+    @SerialName("self_reported_circulating_supply") val selfReportedCirculatingSupply: Double?,
+    @SerialName("self_reported_market_cap") val selfReportedMarketCap: Double?,
     val quote: Map<String, NetworkAsset>?
 )
 
@@ -48,7 +48,7 @@ data class NetworkAsset(
     @SerialName("percent_change_24h") val percentChange24h: Double?,
     @SerialName("percent_change_7d") val percentChange7d: Double?,
     @SerialName("percent_change_30d") val percentChange30d: Double?,
-    @SerialName("market_cap") @Contextual val marketCap: BigDecimal?,
+    @SerialName("market_cap") val marketCap: Double?,
     @SerialName("market_cap_dominance") val marketCapDominance: Double?,
     @SerialName("fully_diluted_market_cap") val fullyDilutedMarketCap: Double?,
     @SerialName("last_updated") val lastUpdated: String?

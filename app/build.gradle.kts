@@ -23,8 +23,8 @@ android {
         applicationId = "com.hong7.coinnews"
         minSdk = 26
         targetSdk = 35
-        versionCode = 17
-        versionName = "1.1.0"
+        versionCode = 19
+        versionName = "1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -95,6 +95,8 @@ dependencies {
 
     implementation(files("../libs/jsoup-1.17.2.jar"))
     kapt("androidx.room:room-compiler:2.6.1")
+
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.24.13-rc")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")

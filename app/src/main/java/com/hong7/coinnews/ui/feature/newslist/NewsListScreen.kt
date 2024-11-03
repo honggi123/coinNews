@@ -166,7 +166,7 @@ private fun NewsListScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "News",
+                        text = "뉴스",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.ExtraBold
                         ),
@@ -178,7 +178,8 @@ private fun NewsListScreenContent(
                         painter = painterResource(id = R.drawable.ic_arrow_back),
                         contentDescription = null,
                         modifier = Modifier
-                            .fillMaxHeight()
+                            .size(36.dp)
+                            .padding(8.dp)
                             .clickable { onBackClick() },
                         tint = Grey900
                     )

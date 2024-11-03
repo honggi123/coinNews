@@ -18,8 +18,8 @@ data class CoinQuote(
     val cmcRank: Int?,
     val lastUpdated: String?,
     val tags: List<Tag>?,
-    val selfReportedCirculatingSupply: Long?,
-    val selfReportedMarketCap: Long?,
+    val selfReportedCirculatingSupply: Double?,
+    val selfReportedMarketCap: Double?,
     val quote: Map<String, Asset>?
 )
 
@@ -37,7 +37,7 @@ data class Asset(
     val percentChange24h: Double?,
     val percentChange7d: Double?,
     val percentChange30d: Double?,
-    val marketCap: BigDecimal?,
+    val marketCap: Double?,
     val marketCapDominance: Double?,
     val fullyDilutedMarketCap: Double?,
     val lastUpdated: String?

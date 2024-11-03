@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -94,25 +95,25 @@ private fun SearchWatchListScreenContent(
             thickness = 1.dp,
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = "코인 목록",
-            color = Grey700,
-            style = MaterialTheme.typography.body2.merge(
-                fontWeight = FontWeight.Bold,
-            ),
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp)
-        )
+        Spacer(modifier = Modifier.height(12.dp))
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier.weight(1F),
-            contentPadding = PaddingValues(24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // todo: empty_result
+            item(span = { GridItemSpan(2) }) {
+                Text(
+                    text = "코인 목록",
+                    color = Grey700,
+                    style = MaterialTheme.typography.body2.merge(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
 
             items(searchResults.size) { index ->
                 searchResults[index].let { result ->
@@ -121,7 +122,8 @@ private fun SearchWatchListScreenContent(
                         name = "${result.name} (${result.symbol})",
                         onClick = {
                             onSearchResultClick(result)
-                        }
+                        },
+                        modifier = Modifier.padding(bottom = 12.dp)
                     )
                 }
             }
@@ -134,9 +136,10 @@ private fun SearchItem(
     selected: Boolean,
     name: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .run {

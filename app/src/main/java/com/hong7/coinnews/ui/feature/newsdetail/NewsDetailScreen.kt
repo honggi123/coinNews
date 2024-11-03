@@ -135,8 +135,7 @@ private fun TopAppBar(
             )
             Spacer(modifier = Modifier.width(24.dp))
             Row(
-                modifier = Modifier
-                    .weight(1f)
+                modifier = Modifier.width(228.dp)
                     .background(
                         color = Grey100,
                         shape = RoundedCornerShape(6.dp),
@@ -189,6 +188,9 @@ private fun NewsContent(
     Box(
         modifier = modifier,
     ) {
+        if (isLoading) {
+            LoadingContent()
+        }
         AndroidView(
             factory = { context ->
                 WebView(context).apply {
@@ -227,15 +229,11 @@ private fun NewsContent(
                         }
                     }
                     settings.javaScriptEnabled = false
-                    settings.javaScriptCanOpenWindowsAutomatically = false
                     loadUrl(url.toString())
                 }
             },
             modifier = Modifier.fillMaxSize()
         )
-        if (isLoading) {
-            LoadingContent()
-        }
     }
 }
 

@@ -165,7 +165,8 @@ internal fun HomeScreenContent(
                                     NavigationUtils.navigate(
                                         navController,
                                         NewsDetailNav.navigateWithArg(news)
-                                    )                                }
+                                    )
+                                }
                             // TODO
                         )
                     }
@@ -319,6 +320,11 @@ val mockInfluencerList = listOf(
         "UUuj_rpY3vgPHAwBrIGOLT5A",
         "블록미디어",
         "https://yt3.ggpht.com/ijTAIugFCjHhTuq7MPAzMHGiIZ-db9vszdr73Xq-W9BkfwyCDfaQgyqDTtuKDEMNjGCl8xzHBg=s800-c-k-c0x00ffffff-no-rj"
+    ),
+    Influencer(
+        "UUvhsQm_E8wx2t5haDnCejMg",
+        "코인이슈 경제채널",
+        "https://yt3.ggpht.com/TODiJUH5GuD6xQgb3TBlYsXmvA92XlX4R1nVl-Ts0Vmel5lV10okXHXryJUfTvfuoxCLrUYd66w=s800-c-k-c0x00ffffff-no-rj"
     )
 )
 

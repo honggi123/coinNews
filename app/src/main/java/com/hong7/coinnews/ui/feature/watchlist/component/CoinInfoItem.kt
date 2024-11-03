@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,24 +29,24 @@ import java.math.BigDecimal
 fun CoinInfoItem(
     name: String,
     price: Double?,
-    marketCap: BigDecimal?,
+    marketCap: Double?,
     percentageChange24h: Double?,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    Column(
         modifier = modifier
             .background(
                 color = Grey800,
                 shape = RoundedCornerShape(6.dp),
             )
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight(),
-            verticalArrangement = Arrangement.Top
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = name,
@@ -57,8 +58,15 @@ fun CoinInfoItem(
                     fontWeight = FontWeight.Medium,
                 ),
             )
+        }
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+            horizontalArrangement = Arrangement.Start
+        ) {
             Text(
-                text = price?.let { PriceUtils.getPriceCommaString(it) + "원" }  ?: "",
+                text = price?.let { PriceUtils.getPriceCommaString(it) + "원" } ?: "",
                 modifier = Modifier,
                 color = Color.White,
                 textAlign = TextAlign.Start,
@@ -69,12 +77,12 @@ fun CoinInfoItem(
             )
         }
 
-        Column(
+        Row(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.End
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.Bottom
         ) {
 //            Text(
 //                text = marketCap.toString(),
@@ -88,7 +96,7 @@ fun CoinInfoItem(
             percentageChange24h?.let {
                 Text(
                     text = PriceUtils.cutToOneDecimal(percentageChange24h).toString() + "%",
-                    color = if(percentageChange24h > 0) Color.Green else Color.Red,
+                    color = if (percentageChange24h > 0) Color.Green else Color.Red,
                     textAlign = TextAlign.Start,
                     maxLines = 1,
                     style = coinNewsTypography.bodyMedium.copy(
@@ -106,7 +114,7 @@ fun previewCoinInfoItem() {
     CoinInfoItem(
         name = "Bitcoin",
         price = 0.0,
-        marketCap = 0.0.toBigDecimal(),
+        marketCap = 0.0,
         percentageChange24h = 4.49,
         modifier = Modifier.height(120.dp)
     )
