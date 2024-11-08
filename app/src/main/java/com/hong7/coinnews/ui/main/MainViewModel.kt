@@ -18,7 +18,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val coinRepositoy: CoinRepositoy,
     private val workManager: WorkManager
 ) : ViewModel() {
 
@@ -27,11 +26,7 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            if (coinRepositoy.isCoinListEmpty()) {
-                initAllCoinList()
-            } else {
-                _isLoading.value = false
-            }
+            initAllCoinList()
         }
     }
 
@@ -39,11 +34,14 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val workerRequest = InitAllCoinListWorker.enqueue(workManager)
             val workInfo = workManager.getWorkInfoByIdLiveData(workerRequest.id).asFlow()
+            _isLoading.value = false
+
             workInfo.collectLatest {
                 if (it.state.isFinished) {
                     _isLoading.value = false
                 }
             }
+            _isLoading.value = false
         }
     }
 }

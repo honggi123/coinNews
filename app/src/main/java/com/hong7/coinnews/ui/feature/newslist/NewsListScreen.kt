@@ -1,6 +1,8 @@
 package com.hong7.coinnews.ui.feature.newslist
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -75,6 +77,8 @@ fun NewsListScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: NewsViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     val uistate by viewModel.uiState.collectAsStateWithLifecycle()
     val watchedNews by viewModel.watchedNewsIds.collectAsStateWithLifecycle()
 
@@ -90,12 +94,10 @@ fun NewsListScreen(
                 watchedNewsIds = watchedNews,
                 isNewsLoading = state.isNewsLoading,
                 newsList = state.newsList,
-                onNewsClick = {
-                    NavigationUtils.navigate(
-                        navController,
-                        NewsDetailNav.navigateWithArg(it)
-                    )
-                    viewModel.onNewsClick(it.id)
+                onNewsClick = { newsItem ->
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsItem.url))
+                    context.startActivity(intent)
+                    viewModel.onNewsClick(newsItem.id)
                 },
                 onBackClick = {
                     navController.popBackStack()
@@ -162,35 +164,6 @@ private fun NewsListScreenContent(
     )
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "뉴스",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.ExtraBold
-                        ),
-                        color = Grey800
-                    )
-                },
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_back),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .padding(8.dp)
-                            .clickable { onBackClick() },
-                        tint = Grey900
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                    scrolledContainerColor = Color.White
-                ),
-                scrollBehavior = scrollBehavior
-            )
-        },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { contentPadding ->
         Column(
@@ -222,39 +195,6 @@ private fun NewsListScreenContent(
             }
 
         }
-    }
-}
-
-@Composable
-private fun CoinFiltersRow(
-    coins: List<Coin>,
-    selectedCoin: Coin?,
-    onCoinClick: (Coin) -> Unit,
-    onFilterSettingClick: () -> Unit,
-    state: LazyListState,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        LazyRow(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            state = state
-        ) {
-            items(coins.size, key = { coins[it].id }) {
-                SelectableChip(
-                    selected = coins[it] == selectedCoin,
-                    text = if (coins[it].name == "암호화폐") "전체" else coins[it].name,
-                    onClick = { onCoinClick(coins[it]) }
-                )
-            }
-        }
-        SettingButton(
-            text = "설정",
-            onClick = onFilterSettingClick
-        )
     }
 }
 
@@ -390,7 +330,7 @@ private fun NewsMetaData(
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = news.author + "・" + news.createdAt?.let { DateUtils.getTimeAgo(it) },
+            text = news.createdAt?.let { DateUtils.getTimeAgo(it) }.toString(),
             style = coinNewsTypography.bodySmall.copy(
                 fontWeight = FontWeight.Medium
             ),

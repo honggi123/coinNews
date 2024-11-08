@@ -1,7 +1,6 @@
 package com.hong7.coinnews.ui
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
@@ -37,13 +36,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
-import com.hong7.coinnews.ui.feature.home.HomeScreen
-import com.hong7.coinnews.ui.feature.watchlist.list.WatchListScreen
-import com.hong7.coinnews.ui.feature.newsdetail.NewsDetailScreen
+import com.hong7.coinnews.ui.feature.info.InfoRoute
+import com.hong7.coinnews.ui.feature.market.market.MarketScreen
 import com.hong7.coinnews.ui.feature.newslist.NewsListScreen
 import com.hong7.coinnews.ui.feature.setting.SettingScreen
-import com.hong7.coinnews.ui.feature.videolist.VideoListScreen
-import com.hong7.coinnews.ui.feature.watchlist.search.SearchWatchListScreen
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey500
@@ -105,13 +101,13 @@ private fun CoinNewsNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = MainNav.Home.route,
+        startDestination = MainNav.Info.route,
         modifier = modifier
     ) {
         composable(
-            route = MainNav.Home.route,
+            route = MainNav.Info.route,
         ) {
-            HomeScreen(snackbarHostState, navController)
+            InfoRoute(navController, snackbarHostState)
         }
         composable(
             route = MainNav.Setting.route,
@@ -122,46 +118,12 @@ private fun CoinNewsNavGraph(
             )
         }
         composable(
-            route = MainNav.WatchList.route,
+            route = MainNav.Market.route,
         ) {
-            WatchListScreen(
+            MarketScreen(
                 navController,
                 snackbarHostState,
                 modifier.fillMaxSize()
-            )
-        }
-        composable(
-            route = AddWatchListNav.route,
-        ) {
-            SearchWatchListScreen(
-                navController,
-                modifier.fillMaxSize()
-            )
-        }
-        composable(
-            route = NewsDetailNav.routeWithArgName(),
-            arguments = NewsDetailNav.arguments,
-            enterTransition = {
-                slideIntoContainer(
-                    animationSpec = tween(400),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    animationSpec = tween(400),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right
-                )
-            }
-        ) {
-            val newsUrl = it.arguments?.getString(NewsDetailNav.argName)
-
-            NewsDetailScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                newsUrl = newsUrl,
-                snackbarHostState = snackbarHostState
             )
         }
         composable(
@@ -184,27 +146,27 @@ private fun CoinNewsNavGraph(
                 snackbarHostState = snackbarHostState
             )
         }
-        composable(
-            route = VideoListNav.routeWithArgName(),
-            arguments = VideoListNav.arguments,
-            enterTransition = {
-                slideIntoContainer(
-                    animationSpec = tween(400),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    animationSpec = tween(400),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right
-                )
-            }
-        ) {
-            VideoListScreen(
-                snackbarHostState = snackbarHostState,
-                navController = navController
-            )
-        }
+//        composable(
+//            route = VideoListNav.routeWithArgName(),
+//            arguments = VideoListNav.arguments,
+//            enterTransition = {
+//                slideIntoContainer(
+//                    animationSpec = tween(400),
+//                    towards = AnimatedContentTransitionScope.SlideDirection.Left
+//                )
+//            },
+//            exitTransition = {
+//                slideOutOfContainer(
+//                    animationSpec = tween(400),
+//                    towards = AnimatedContentTransitionScope.SlideDirection.Right
+//                )
+//            }
+//        ) {
+//            VideoListScreen(
+//                snackbarHostState = snackbarHostState,
+//                navController = navController
+//            )
+//        }
 
     }
 }
@@ -219,8 +181,8 @@ private fun MyBottomNavigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val items = listOf(
-        MainNav.Home,
-        MainNav.WatchList,
+        MainNav.Info,
+        MainNav.Market,
         MainNav.Setting
     )
 

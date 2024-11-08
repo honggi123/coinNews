@@ -2,11 +2,27 @@ package com.hong7.coinnews.utils
 
 object PriceUtils {
 
-    fun getPriceCommaString(value: Double): String {
-        return String.format("%,.2f", value)
+    fun roundAfterMultiplyingBy100(value: Double): Double {
+        return (value * 10_000).let { Math.round(it) / 100.0 }
     }
 
-    fun cutToOneDecimal(value: Double): Double {
-        return String.format("%.1f", value).toDouble()
+    fun formatToKoreanWon(value: Long): String {
+        return when {
+            value >= 1_000_000_000_000 -> {
+                "${value / 1_000_000_000_000}조원"
+            }
+
+            value >= 100_000_000 -> {
+                "${value / 100_000_000}억원"
+            }
+
+            value >= 10_000_000 -> {
+                "${value / 10_000_000}천만원"
+            }
+
+            else -> {
+                "${value}원"
+            }
+        }
     }
 }

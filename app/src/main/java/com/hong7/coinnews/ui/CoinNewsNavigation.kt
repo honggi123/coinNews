@@ -16,9 +16,9 @@ sealed class MainNav(
     @DrawableRes val icon: Int,
     val route: String
 ) {
-    object Home : MainNav(NavigationTitle.MAIN_HOME, R.drawable.ic_home_24, NavigationRouteName.MAIN_HOME)
+    object Info : MainNav(NavigationTitle.MAIN_INFO, R.drawable.ic_home_24, NavigationRouteName.MAIN_INFO)
 
-    object WatchList : MainNav(NavigationTitle.MAIN_WATCHLIST, R.drawable.ic_align_vertical_bottom_24, NavigationRouteName.MAIN_WATCHLIST)
+    object Market : MainNav(NavigationTitle.MAIN_MARKET, R.drawable.ic_align_vertical_bottom_24, NavigationRouteName.MAIN_MARKET)
 
     object Setting : MainNav(NavigationTitle.MAIN_SETTING, R.drawable.ic_setting, NavigationRouteName.MAIN_SETTING)
 
@@ -82,8 +82,8 @@ interface DestinationArg<T> : Destination {
 }
 
 object NavigationRouteName {
-    const val MAIN_HOME = "main_home"
-    const val MAIN_WATCHLIST = "main_watchlist"
+    const val MAIN_INFO = "main_info"
+    const val MAIN_MARKET = "main_market"
     const val MAIN_SETTING = "main_setting"
 
     const val NEWS = "news"
@@ -93,8 +93,8 @@ object NavigationRouteName {
 }
 
 object NavigationTitle {
-    const val MAIN_HOME = "홈"
-    const val MAIN_WATCHLIST = "왓치리스트"
+    const val MAIN_INFO = "정보"
+    const val MAIN_MARKET = "마켓"
     const val MAIN_SETTING = "설정"
 
     const val NEWS = "news"

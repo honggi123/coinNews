@@ -27,10 +27,8 @@ class NewsViewModel @Inject constructor(
     private val newsRepository: NewsRepository,
 ) : BaseViewModel() {
 
-    val selectedCoin = MutableStateFlow<Coin?>(null)
-
     val uiState: StateFlow<NewsScreenUiState> =
-        newsRepository.getRecentNewsByQuery(CRYPTO_SEARCH_KEYWORD)
+        newsRepository.getRecentNewsByQuery(CRYPTO_SEARCH_KEYWORD, 20)
             .flatMapLatest {
                 when (it) {
                     is ResponseResource.Success -> {

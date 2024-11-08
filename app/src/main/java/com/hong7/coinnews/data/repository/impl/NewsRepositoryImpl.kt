@@ -1,5 +1,6 @@
 package com.hong7.coinnews.data.repository.impl
 
+import android.util.Size
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -27,8 +28,8 @@ class NewsRepositoryImpl @Inject constructor(
         ).flow
     }
 
-    override fun getRecentNewsByQuery(query: String): Flow<ResponseResource<List<News>>> = flow {
-        val news = naverService.fetchNews(query = query, start = 1, pageSize = 30).items
+    override fun getRecentNewsByQuery(query: String, size: Int): Flow<ResponseResource<List<News>>> = flow {
+        val news = naverService.fetchNews(query = query, start = 1, pageSize = size).items
             .map { it.toDomain() }
         emit(news)
     }.asResponseResourceFlow()

@@ -1,7 +1,7 @@
 package com.hong7.coinnews.di
 
-import com.hong7.coinnews.network.BigDecimalSerializer
-import com.hong7.coinnews.network.retrofit.CoinMarketCapService
+import com.hong7.coinnews.network.derpecated.BigDecimalSerializer
+import com.hong7.coinnews.network.retrofit.UpbitService
 import com.hong7.coinnews.network.retrofit.NaverService
 import com.hong7.coinnews.network.retrofit.YoutubeService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -66,8 +66,8 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideCoinPaprikaService(client: OkHttpClient): CoinMarketCapService {
-        val BASE_URL = "https://pro-api.coinmarketcap.com/"
+    fun provideUpbitService(client: OkHttpClient): UpbitService {
+        val BASE_URL = "https://api.upbit.com/"
         val json = Json {
             ignoreUnknownKeys = true
             coerceInputValues = true
@@ -81,6 +81,6 @@ object NetworkModule {
             .client(client)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
-            .create(CoinMarketCapService::class.java)
+            .create(UpbitService::class.java)
     }
 }

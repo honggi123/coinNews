@@ -12,7 +12,7 @@ private const val INITIAL_PAGE = 1
 
 class NewsPagingSource @Inject constructor(
     private val service: NaverService,
-    private val query: String
+    private val query: String,
 ) : PagingSource<Int, News>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, News> {

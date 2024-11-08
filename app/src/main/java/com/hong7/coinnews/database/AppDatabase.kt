@@ -6,15 +6,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.hong7.coinnews.database.dao.CoinDao
-import com.hong7.coinnews.database.dao.WatchListDao
 import com.hong7.coinnews.database.entity.CoinEntity
-import com.hong7.coinnews.database.entity.WatchListCoinEntity
 import com.hong7.coinnews.database.migration.AutoMigrationSpecs
 import com.hong7.coinnews.database.migration.Migration.MIGRATION_1_2
 
 @Database(
-    entities = [CoinEntity::class, WatchListCoinEntity::class],
-    version = 4,
+    entities = [CoinEntity::class],
+    version = 5,
     autoMigrations = [
         AutoMigration(
             from = 2,
@@ -25,6 +23,11 @@ import com.hong7.coinnews.database.migration.Migration.MIGRATION_1_2
             from = 3,
             to = 4,
             spec = AutoMigrationSpecs.MIGRATION_3_4_SPEC::class
+        ),
+        AutoMigration(
+            from = 4,
+            to = 5,
+            spec = AutoMigrationSpecs.MIGRATION_4_5_SPEC::class
         )
     ],
     exportSchema = true
@@ -33,7 +36,6 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun coinDao(): CoinDao
 
-    abstract fun watchListDao(): WatchListDao
 
     companion object {
         @Volatile

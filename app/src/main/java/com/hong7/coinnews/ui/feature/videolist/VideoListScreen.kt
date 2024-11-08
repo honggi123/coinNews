@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,7 +53,9 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberAsyncImagePainter
 import com.hong7.coinnews.R
+import com.hong7.coinnews.model.Influencer
 import com.hong7.coinnews.model.VideoItem
+import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.extensions.clickableWithoutRipple
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
@@ -65,7 +70,6 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideoListScreen(
-    snackbarHostState: SnackbarHostState,
     navController: NavHostController,
     viewModel: VideoListViewModel = hiltViewModel()
 ) {
@@ -74,99 +78,89 @@ fun VideoListScreen(
     )
     val pagingItems = viewModel.pagingVideoItems.collectAsLazyPagingItems()
 
-    InfluencerDetailScreenContent(
+    VideoListScreenContent(
         pagingItems,
         scrollBehavior,
         onBackClick = {
             navController.popBackStack()
         },
+        viewModel,
         Modifier.fillMaxSize()
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InfluencerDetailScreenContent(
+fun VideoListScreenContent(
     pagingItems: LazyPagingItems<VideoItem>,
     scrollBehavior: TopAppBarScrollBehavior,
     onBackClick: () -> Unit,
+    viewModel: VideoListViewModel,
     modifier: Modifier = Modifier
 ) {
+    val filterState = rememberLazyListState()
+
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.ExtraBold
-                        ),
-                        color = Grey800
-                    )
-                },
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_back),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .clickable { onBackClick() },
-                        tint = Grey900
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                    scrolledContainerColor = Color.White
-                ),
-                scrollBehavior = scrollBehavior
-            )
-        },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { contentPadding ->
-        videoList(
-            pagingItems = pagingItems,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(contentPadding)
-        )
+        Column(
+            modifier = modifier.padding(contentPadding),
+        ) {
+            HorizontalDivider(
+                thickness = 0.7.dp,
+                color = Grey200,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            VideoFilterRow(
+                influencers = viewModel.mockInfluencerList,
+                selectedFilter = viewModel.selectedInfluencer.value,
+                onFilterClick = viewModel::onInfluencerSelect,
+                state = filterState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(
+                thickness = 0.7.dp,
+                color = Grey200,
+            )
+            videoList(
+                pagingItems = pagingItems,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
 }
 
 @Composable
-private fun TopAppBar(
-    onBackClick: () -> Unit,
+private fun VideoFilterRow(
+    influencers: List<Influencer>,
+    selectedFilter: Influencer?,
+    onFilterClick: (Influencer) -> Unit,
+    state: LazyListState,
     modifier: Modifier = Modifier
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-
-    Column(
-        modifier = modifier
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .padding(horizontal = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        LazyRow(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            state = state
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_back),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .clickableWithoutRipple(
-                        interactionSource = interactionSource,
-                    ) { onBackClick() },
-                tint = Grey900
-            )
-            Spacer(modifier = Modifier.width(24.dp))
-
+            items(influencers.size, key = { influencers[it].id }) {
+                SelectableChip(
+                    selected = influencers[it].id == selectedFilter?.id,
+                    text = influencers[it].name,
+                    onClick = { onFilterClick(influencers[it]) }
+                )
+            }
         }
-
     }
 }
+
 
 @Composable
 fun videoList(

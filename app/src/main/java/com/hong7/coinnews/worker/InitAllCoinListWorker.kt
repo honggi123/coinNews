@@ -6,15 +6,18 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest.MIN_BACKOFF_MILLIS
 import androidx.work.WorkerParameters
 import com.hong7.coinnews.data.mapper.toEntity
 import com.hong7.coinnews.database.dao.CoinDao
-import com.hong7.coinnews.network.retrofit.CoinMarketCapService
+import com.hong7.coinnews.network.retrofit.UpbitService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.coroutineScope
@@ -26,15 +29,15 @@ class InitAllCoinListWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val coinDao: CoinDao,
-    private val coinMarketCapService: CoinMarketCapService
+    private val upbitService: UpbitService
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result = coroutineScope {
         try {
-            val coinList = coinMarketCapService.fetchCoinList()
-                .data
+            val coinList = upbitService.fetchCoinList()
                 .map { it.toEntity() }
-            coinDao.insertAll(coinList)
+            val krwCoinList = coinList.filter { it.marketId.contains("KRW") }
+            coinDao.insertAll(krwCoinList)
             Result.success()
         } catch (ex: Exception) {
             Timber.tag("InitAllCoinListWorker").e(ex)
@@ -45,9 +48,10 @@ class InitAllCoinListWorker @AssistedInject constructor(
 
     companion object {
 
-        // TODO 실행 중복 막기
-        fun enqueue(workManager: WorkManager): OneTimeWorkRequest {
-            val workRequest = OneTimeWorkRequestBuilder<InitAllCoinListWorker>()
+        fun enqueue(workManager: WorkManager): PeriodicWorkRequest {
+            val workRequest = PeriodicWorkRequestBuilder<InitAllCoinListWorker>(
+                1, TimeUnit.DAYS
+            )
                 .setConstraints(
                     Constraints.Builder()
                         .setRequiredNetworkType(
@@ -61,7 +65,11 @@ class InitAllCoinListWorker @AssistedInject constructor(
                     TimeUnit.MILLISECONDS
                 )
                 .build()
-            workManager.enqueue(workRequest)
+            workManager.enqueueUniquePeriodicWork(
+                "InitAllCoinListWork",
+                ExistingPeriodicWorkPolicy.REPLACE,    //  중복 실행 막기
+                workRequest
+            )
             return workRequest
         }
     }

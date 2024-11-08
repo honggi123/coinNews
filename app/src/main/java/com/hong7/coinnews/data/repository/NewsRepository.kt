@@ -10,6 +10,6 @@ interface NewsRepository {
 
     fun getNews(query: String): Flow<PagingData<News>>
 
-    fun getRecentNewsByQuery(query: String): Flow<ResponseResource<List<News>>>
+    fun getRecentNewsByQuery(query: String, size: Int): Flow<ResponseResource<List<News>>>
 
 }

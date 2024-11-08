@@ -24,4 +24,7 @@ class AutoMigrationSpecs {
     @DeleteTable("filter")
     class MIGRATION_3_4_SPEC : AutoMigrationSpec
 
+    @DeleteTable("coin")
+    @DeleteTable("watchlist")
+    class MIGRATION_4_5_SPEC : AutoMigrationSpec
 }
