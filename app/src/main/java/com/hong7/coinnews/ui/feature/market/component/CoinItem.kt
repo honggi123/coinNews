@@ -65,7 +65,7 @@ fun CoinItem(
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                text = price.toString(),    //todo
+                text = price?.let { PriceUtils.formatPrice(it) } ?: "가격 정보 없음",    //todo
                 modifier = Modifier,
                 color = Grey700,
                 textAlign = TextAlign.Start,
@@ -85,7 +85,7 @@ fun CoinItem(
             percentageChange24h?.let {
                 Text(
                     text = "${PriceUtils.roundAfterMultiplyingBy100(percentageChange24h)}%",
-                    color = if (percentageChange24h > 0) Color.Green else Color.Red,
+                    color = if (percentageChange24h > 0) Color.Red else Color.Blue,
                     textAlign = TextAlign.Start,
                     maxLines = 1,
                     style = coinNewsTypography.bodySmall.copy(

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.Switch
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -19,6 +20,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +31,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.hong7.coinnews.BuildConfig
 import com.hong7.coinnews.R
@@ -41,9 +48,12 @@ import com.hong7.coinnews.ui.theme.coinNewsTypography
 @Composable
 fun SettingScreen(
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: SettingViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val priceAlertEnabled = viewModel.priceAlertEnabled.collectAsStateWithLifecycle()
+    val volumeAlertEnabled = viewModel.volumeAlertEnabled.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -69,8 +79,60 @@ fun SettingScreen(
                 .padding(it)
                 .padding(24.dp),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "전체 거래량 알림",
+                    color = Grey500,
+                    style = coinNewsTypography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                )
+                Switch(
+                    checked = volumeAlertEnabled.value,
+                    onCheckedChange = { viewModel.toggleVolumeAlertEnabled(it) }
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "비트코인 거래량 쏠림 알림 (4시간 간격)",
+                    color = Grey500,
+                    style = coinNewsTypography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                )
+                Switch(
+                    checked = priceAlertEnabled.value,
+                    onCheckedChange = { viewModel.togglePriceAlertEnabled(it) }
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "전체 가격 변동 알림",
+                    color = Grey500,
+                    style = coinNewsTypography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                )
+                Switch(
+                    checked = priceAlertEnabled.value,
+                    onCheckedChange = { viewModel.togglePriceAlertEnabled(it) }
+                )
+            }
+            Divider(color = Grey100, thickness = 1.dp)
             Text(
                 text = "문의하기",
                 color = Grey500,
@@ -86,7 +148,6 @@ fun SettingScreen(
                     context.startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"))
                 }
             )
-            Divider(color = Grey100, thickness = 1.dp)
             Column(
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {

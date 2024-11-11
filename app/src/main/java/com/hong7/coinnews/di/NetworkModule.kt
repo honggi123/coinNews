@@ -1,6 +1,7 @@
 package com.hong7.coinnews.di
 
 import com.hong7.coinnews.network.derpecated.BigDecimalSerializer
+import com.hong7.coinnews.network.retrofit.GoogleCloudService
 import com.hong7.coinnews.network.retrofit.UpbitService
 import com.hong7.coinnews.network.retrofit.NaverService
 import com.hong7.coinnews.network.retrofit.YoutubeService
@@ -82,5 +83,24 @@ object NetworkModule {
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(UpbitService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGoogleCloudService(client: OkHttpClient): GoogleCloudService {
+        val BASE_URL = "https://us-central1-coin-news-418815.cloudfunctions.net/"
+        val json = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+            allowStructuredMapKeys = true
+        }
+        val contentType = "application/json".toMediaType()
+
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(json.asConverterFactory(contentType))
+            .build()
+            .create(GoogleCloudService::class.java)
     }
 }

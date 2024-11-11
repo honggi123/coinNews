@@ -1,9 +1,23 @@
 package com.hong7.coinnews.utils
 
+import java.text.DecimalFormat
+
 object PriceUtils {
 
     fun roundAfterMultiplyingBy100(value: Double): Double {
         return (value * 10_000).let { Math.round(it) / 100.0 }
+    }
+
+    fun formatPrice(value: Double): String {
+        val decimalFormat = DecimalFormat("#.################")
+        val priceStr = decimalFormat.format(value)
+        val parts = priceStr.split(".")
+
+        return if (parts[0].toInt() > 0) {
+            parts[0].replace(Regex("(\\d)(?=(\\d{3})+(?!\\d))"), "$1,")
+        } else {
+            priceStr
+        }
     }
 
     fun formatToKoreanWon(value: Long): String {

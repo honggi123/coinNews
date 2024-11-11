@@ -1,24 +1,25 @@
 package com.hong7.coinnews.ui.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.hong7.coinnews.data.repository.CoinRepositoy
-import com.hong7.coinnews.model.Coin
+import com.google.firebase.messaging.FirebaseMessaging
+import com.hong7.coinnews.preference.PreferenceManager
 import com.hong7.coinnews.worker.InitAllCoinListWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import javax.inject.Inject
+
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
+    private val preferenceManager: PreferenceManager
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
@@ -27,6 +28,12 @@ class MainViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             initAllCoinList()
+        }
+    }
+
+    fun saveFcmToken(token: String) {
+        viewModelScope.launch {
+            preferenceManager.putFcmToken(token)
         }
     }
 

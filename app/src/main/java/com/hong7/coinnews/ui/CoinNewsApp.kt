@@ -34,8 +34,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
+import com.google.firebase.messaging.FirebaseMessaging
+import com.hong7.coinnews.preference.PreferenceManager
 import com.hong7.coinnews.ui.feature.info.InfoRoute
 import com.hong7.coinnews.ui.feature.market.market.MarketScreen
 import com.hong7.coinnews.ui.feature.newslist.NewsListScreen
@@ -50,8 +53,6 @@ fun CoinNewsApp() {
     val context = LocalContext.current
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    Thread.setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler(context, navController))
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -82,17 +83,6 @@ fun CoinNewsApp() {
     }
 }
 
-class UncaughtExceptionHandler(
-    val context: Context,
-    val navController: NavHostController
-) : Thread.UncaughtExceptionHandler {
-    override fun uncaughtException(thread: Thread, throwable: Throwable) {
-        Firebase.crashlytics.recordException(throwable)
-        Timber.tag("uncaughtException").e(throwable)
-        Toast.makeText(context, "현재 시스템 오류가 발생했습니다. 앱을 재설치하거나, 잠시후 다시 시도해 주세요.", Toast.LENGTH_LONG).show()
-    }
-}
-
 @Composable
 private fun CoinNewsNavGraph(
     modifier: Modifier = Modifier,
@@ -101,7 +91,7 @@ private fun CoinNewsNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = MainNav.Info.route,
+        startDestination = MainNav.Market.route,
         modifier = modifier
     ) {
         composable(

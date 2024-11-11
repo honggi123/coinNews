@@ -30,7 +30,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String", "CRTPTO_NEWS_API_KEY", getApiKey("CRTPTO_NEWS_API_KEY"))
+        buildConfigField("String", "GOOGLE_CLOUD_SERVICE_API_KEY", getApiKey("GOOGLE_CLOUD_SERVICE_API_KEY"))
         buildConfigField("String", "NAVER_API_KEY", getApiKey("NAVER_API_KEY"))
         buildConfigField("String", "NAVER_API_SECRETE", getApiKey("NAVER_API_SECRETE"))
 
@@ -87,6 +87,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
         }
     }
 }
@@ -140,14 +141,16 @@ dependencies {
     implementation("androidx.compose.material:material:1.6.6")
     implementation("androidx.core:core-splashscreen:1.2.0-alpha01")
 
+    // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-perf")
-
+    implementation("com.google.firebase:firebase-auth-ktx")
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
-    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-functions")
 
     implementation("androidx.navigation:navigation-compose:2.8.3")
 
@@ -160,6 +163,11 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.room:room-testing:2.6.1")
+
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.17.0")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
