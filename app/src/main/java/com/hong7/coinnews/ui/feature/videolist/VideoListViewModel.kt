@@ -72,8 +72,6 @@ class VideoListViewModel @Inject constructor(
 sealed interface InfluencerDetailUiState {
     object Loading : InfluencerDetailUiState
 
-    object FilterEmpty : InfluencerDetailUiState
-
     data class Success(
         val newsList: List<News>?,
     ) : InfluencerDetailUiState

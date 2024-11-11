@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -99,6 +100,7 @@ fun VideoListScreenContent(
     modifier: Modifier = Modifier
 ) {
     val filterState = rememberLazyListState()
+    val selectedInfluencer = viewModel.selectedInfluencer.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -113,7 +115,7 @@ fun VideoListScreenContent(
             Spacer(modifier = Modifier.height(16.dp))
             VideoFilterRow(
                 influencers = viewModel.mockInfluencerList,
-                selectedFilter = viewModel.selectedInfluencer.value,
+                selectedFilter = selectedInfluencer.value,
                 onFilterClick = viewModel::onInfluencerSelect,
                 state = filterState,
                 modifier = Modifier
