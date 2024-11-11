@@ -30,9 +30,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String", "GOOGLE_CLOUD_SERVICE_API_KEY", getApiKey("GOOGLE_CLOUD_SERVICE_API_KEY"))
         buildConfigField("String", "NAVER_API_KEY", getApiKey("NAVER_API_KEY"))
         buildConfigField("String", "NAVER_API_SECRETE", getApiKey("NAVER_API_SECRETE"))
+        buildConfigField("String", "YOUTUBE_API_KEY", getApiKey("YOUTUBE_API_KEY"))
 
         javaCompileOptions {
             annotationProcessorOptions {

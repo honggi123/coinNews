@@ -72,7 +72,7 @@ fun startMonitorService(preferenceManager: PreferenceManager, context: Context){
             preferenceManager.getCoinVolumeAlertEnabled(),
             preferenceManager.getCoinPriceChangeAlertEnabled()
         ) { volumeEnabled, priceEnabled ->
-            volumeEnabled && priceEnabled
+            volumeEnabled || priceEnabled
         }.collectLatest { enabled ->
             if (enabled) {
                 ContextCompat.startForegroundService(context, serviceIntent)

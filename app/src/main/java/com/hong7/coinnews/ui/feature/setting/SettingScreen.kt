@@ -104,23 +104,6 @@ fun SettingScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "비트코인 거래량 쏠림 알림 (4시간 간격)",
-                    color = Grey500,
-                    style = coinNewsTypography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
-                )
-                Switch(
-                    checked = priceAlertEnabled.value,
-                    onCheckedChange = { viewModel.togglePriceAlertEnabled(it) }
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
                     text = "전체 가격 변동 알림",
                     color = Grey500,
                     style = coinNewsTypography.bodyLarge.copy(

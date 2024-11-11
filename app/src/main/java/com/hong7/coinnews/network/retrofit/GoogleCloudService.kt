@@ -11,7 +11,7 @@ interface GoogleCloudService {
 
     @POST("sendPushNotification")
     suspend fun sendPushNotificaiton(
-        @Header("Authorization") authorization: String = "bearer ${BuildConfig.GOOGLE_CLOUD_SERVICE_API_KEY}",
+        @Header("Authorization") authorization: String,
         @Body request: SendNotificationRequest
     ): SendPushNotificationResponse
 }
