@@ -46,6 +46,7 @@ import com.hong7.coinnews.ui.feature.market.model.SortCategory
 import com.hong7.coinnews.ui.feature.market.model.SortType
 import com.hong7.coinnews.ui.theme.Grey400
 import com.hong7.coinnews.ui.theme.Grey50
+import com.hong7.coinnews.ui.theme.Grey700
 import com.hong7.coinnews.ui.theme.Grey800
 import com.hong7.coinnews.ui.theme.coinNewsTypography
 import com.hong7.coinnews.utils.DateUtils
@@ -80,32 +81,12 @@ fun MarketScreen(
                             fontWeight = FontWeight.ExtraBold
                         ),
                         color =
-                        Grey800
+                        Grey700
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
-//                actions = {
-//                    IconButton(
-//                        onClick = {
-//                            NavigationUtils.navigate(
-//                                navController,
-//                                AddWatchListNav.route
-//                            )
-//                        },
-//                    ) {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.ic_add_24),
-//                            contentDescription = "",
-//                            modifier = Modifier
-//                                .size(36.dp)
-//                                .padding(8.dp),
-//                            tint = Grey500
-//                        )
-//                    }
-//                },
-//                scrollBehavior = scrollBehavior
             )
         }
     ) {
@@ -183,7 +164,7 @@ fun MarketScreenContent(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "업데이트 : " + DateUtils.formatLocalDateTime(updatedDateTime),
+                text = "새로고침 : " + DateUtils.formatLocalDateTime(updatedDateTime),
                 style = coinNewsTypography.bodySmall.copy(
                     fontWeight = FontWeight.Normal,
                     color = Grey400
@@ -234,7 +215,6 @@ private fun MarketListItem(
 ) {
     Row(
         modifier = modifier
-            .background(Grey50, RoundedCornerShape(12.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,

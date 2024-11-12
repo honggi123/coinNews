@@ -103,7 +103,7 @@ fun VideoListScreenContent(
     val selectedInfluencer = viewModel.selectedInfluencer.collectAsStateWithLifecycle()
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        modifier = modifier
     ) { contentPadding ->
         Column(
             modifier = modifier.padding(contentPadding),

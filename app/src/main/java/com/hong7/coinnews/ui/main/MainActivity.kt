@@ -1,9 +1,12 @@
 package com.hong7.coinnews.ui.main
 
+import android.app.ActivityManager
 import android.content.Context
+import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -64,7 +67,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun startMonitorService(preferenceManager: PreferenceManager, context: Context){
+fun startMonitorService(preferenceManager: PreferenceManager, context: Context) {
     val serviceIntent = Intent(context, CoinMonitorForegroundService::class.java)
 
     GlobalScope.launch {
@@ -72,16 +75,27 @@ fun startMonitorService(preferenceManager: PreferenceManager, context: Context){
             preferenceManager.getCoinVolumeAlertEnabled(),
             preferenceManager.getCoinPriceChangeAlertEnabled()
         ) { volumeEnabled, priceEnabled ->
+            Timber.tag("MainAct").i(volumeEnabled.toString())
+            Timber.tag("MainAct").i(priceEnabled.toString())
+
             volumeEnabled || priceEnabled
         }.collectLatest { enabled ->
             if (enabled) {
-                ContextCompat.startForegroundService(context, serviceIntent)
+                val isRunning = context.getForegroundState("com.hong7.coinnews.CoinMonitorForegroundService")
+                if (!isRunning) {
+                    context.stopService(serviceIntent)
+                    context.startForegroundService(serviceIntent)
+                }
             } else {
                 context.stopService(serviceIntent)
             }
         }
     }
+}
 
+fun Context.getForegroundState(pkgName: String): Boolean {
+    val am = this.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+    return am.runningAppProcesses.any { it.processName == pkgName && it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND }
 }
 
 class UncaughtExceptionHandler(

@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.RadioButton
 import androidx.compose.material.Switch
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +56,8 @@ fun SettingScreen(
     val context = LocalContext.current
     val priceAlertEnabled = viewModel.priceAlertEnabled.collectAsStateWithLifecycle()
     val volumeAlertEnabled = viewModel.volumeAlertEnabled.collectAsStateWithLifecycle()
+    val selectedVolumeRate = viewModel.selectedVolumeRate.collectAsStateWithLifecycle()
+    val selectedPriceRate = viewModel.selectedPriceRate.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -79,7 +83,6 @@ fun SettingScreen(
                 .padding(it)
                 .padding(24.dp),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -87,7 +90,7 @@ fun SettingScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "전체 거래량 알림",
+                    text = "거래량 급등 포착 알림",
                     color = Grey500,
                     style = coinNewsTypography.bodyLarge.copy(
                         fontWeight = FontWeight.Bold,
@@ -99,12 +102,39 @@ fun SettingScreen(
                 )
             }
             Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                viewModel.volumeRatePercentages.forEach { rate ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(
+                            selected = (rate == selectedVolumeRate.value),
+                            onClick = {
+                                viewModel.selectVolumeRate(rate)
+                            }
+                        )
+                        Text(
+                            text = "${rate}%",
+                            color = Grey500,
+                            style = coinNewsTypography.bodySmall.copy(
+                                fontWeight = FontWeight.Medium,
+                            ),
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider(color = Grey100, thickness = 1.dp)
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "전체 가격 변동 알림",
+                    text = "급등 포착 알림",
                     color = Grey500,
                     style = coinNewsTypography.bodyLarge.copy(
                         fontWeight = FontWeight.Bold,
@@ -115,7 +145,33 @@ fun SettingScreen(
                     onCheckedChange = { viewModel.togglePriceAlertEnabled(it) }
                 )
             }
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                viewModel.priceRatePercentages.forEach { rate ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(
+                            selected = (rate == selectedPriceRate.value),
+                            onClick = {
+                                viewModel.selectPriceRate(rate)
+                            }
+                        )
+                        Text(
+                            text = "${rate}%",
+                            color = Grey500,
+                            style = coinNewsTypography.bodySmall.copy(
+                                fontWeight = FontWeight.Medium,
+                            ),
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
             Divider(color = Grey100, thickness = 1.dp)
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "문의하기",
                 color = Grey500,
@@ -131,6 +187,7 @@ fun SettingScreen(
                     context.startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"))
                 }
             )
+            Spacer(modifier = Modifier.height(16.dp))
             Column(
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {

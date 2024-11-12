@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.feature.info
+package com.hong7.coinnews.ui.feature.deprecated.info
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
@@ -40,6 +40,7 @@ import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey300
+import com.hong7.coinnews.ui.theme.Grey700
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
@@ -66,11 +67,11 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "정보",
+                        text = "코인 정보",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.ExtraBold
                         ),
-                        color = Blue800
+                        color = Grey700
                     )
                 },
 //                actions = {

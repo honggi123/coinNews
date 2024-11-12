@@ -11,7 +11,6 @@ interface GoogleCloudService {
 
     @POST("sendPushNotification")
     suspend fun sendPushNotificaiton(
-        @Header("Authorization") authorization: String,
         @Body request: SendNotificationRequest
     ): SendPushNotificationResponse
 }

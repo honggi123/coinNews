@@ -7,6 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -37,13 +40,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // remoteMessage.notification?.body!! 여기에 내용이 저장되어있다.
         // Log.d(TAG, "Notification Message Body: " + remoteMessage.notification?.body!!)
 
-        if(message.data.isNotEmpty()){
+        if (message.data.isNotEmpty()) {
             Timber.i("바디: ", message.data["body"].toString())
             Timber.i("타이틀: ", message.data["title"].toString())
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(this, "${message.data["body"].toString()}", Toast.LENGTH_LONG).show()
+            }
             sendNotification(message)
-        }
-
-        else {
+        } else {
             Timber.i("수신에러: ", "data가 비어있습니다. 메시지를 수신하지 못했습니다.")
             Timber.i("data값: ", message.data.toString())
         }
@@ -57,8 +61,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // PendingIntent : Intent 의 실행 권한을 외부의 어플리케이션에게 위임한다.
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP) // Activity Stack 을 경로만 남긴다. A-B-C-D-B => A-B
-        val pendingIntent = PendingIntent.getActivity(this, uniId, intent,
-            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getActivity(
+            this, uniId, intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         // 알림 채널 이름
         val channelId = "channel"
@@ -79,10 +85,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // 오레오 버전 이후에는 채널이 필요하다.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Notice", NotificationManager.IMPORTANCE_DEFAULT)
-            notificationManager.createNotificationChannel(channel)
-        }
+        val channel =
+            NotificationChannel(channelId, "Notice", NotificationManager.IMPORTANCE_DEFAULT)
+        notificationManager.createNotificationChannel(channel)
+
 
         // 알림 생성
         notificationManager.notify(uniId, notificationBuilder.build())

@@ -164,10 +164,10 @@ private fun NewsListScreenContent(
     )
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        modifier = modifier
     ) { contentPadding ->
         Column(
-            modifier = modifier.padding(contentPadding),
+            modifier = Modifier.padding(contentPadding),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             HorizontalDivider(
@@ -193,7 +193,6 @@ private fun NewsListScreenContent(
                     state = state
                 )
             }
-
         }
     }
 }

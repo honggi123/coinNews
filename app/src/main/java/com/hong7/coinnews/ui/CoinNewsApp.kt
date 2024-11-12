@@ -39,10 +39,11 @@ import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hong7.coinnews.preference.PreferenceManager
-import com.hong7.coinnews.ui.feature.info.InfoRoute
+import com.hong7.coinnews.ui.feature.deprecated.info.InfoRoute
 import com.hong7.coinnews.ui.feature.market.market.MarketScreen
 import com.hong7.coinnews.ui.feature.newslist.NewsListScreen
 import com.hong7.coinnews.ui.feature.setting.SettingScreen
+import com.hong7.coinnews.ui.feature.videolist.VideoListScreen
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey500
@@ -91,7 +92,7 @@ private fun CoinNewsNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = MainNav.Market.route,
+        startDestination = MainNav.Info.route,
         modifier = modifier
     ) {
         composable(

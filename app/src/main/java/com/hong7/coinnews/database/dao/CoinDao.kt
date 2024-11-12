@@ -17,6 +17,8 @@ interface CoinDao {
     @Query("SELECT * FROM coin_table")
     fun getCoins(): Flow<List<CoinEntity>>
 
+    @Query("DELETE FROM coin_table")
+    fun deleteAllCoins()
 //    @Query("SELECT * FROM coin WHERE name LIKE '%' || :query || '%'")
 //    fun getCoinsByName(query: String): Flow<List<CoinEntity>>
 }

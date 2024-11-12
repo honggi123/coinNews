@@ -2,7 +2,8 @@ package com.hong7.coinnews.network.retrofit
 
 import com.hong7.coinnews.network.model.NetworkCoin
 import com.hong7.coinnews.network.model.NetworkCoinPrice
-import com.hong7.coinnews.network.model.response.CandleResponse
+import com.hong7.coinnews.network.model.response.DaysCandleResponse
+import com.hong7.coinnews.network.model.response.MinutesCandleResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -22,5 +23,11 @@ interface UpbitService {
         @Path("unit") unit: Int = 240,
         @Query("market") market: String,
         @Query("count") count: Int = 200
-    ): List<CandleResponse>
+    ): List<MinutesCandleResponse>
+
+    @GET("v1/candles/days")
+    suspend fun fetchDaysCandles(
+        @Query("market") market: String,
+        @Query("count") count: Int = 200
+    ): List<DaysCandleResponse>
 }

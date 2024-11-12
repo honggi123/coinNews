@@ -37,6 +37,7 @@ class InitAllCoinListWorker @AssistedInject constructor(
             val coinList = upbitService.fetchCoinList()
                 .map { it.toEntity() }
             val krwCoinList = coinList.filter { it.marketId.contains("KRW") }
+            coinDao.deleteAllCoins()
             coinDao.insertAll(krwCoinList)
             Result.success()
         } catch (ex: Exception) {

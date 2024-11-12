@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,11 +23,12 @@ class MainViewModel @Inject constructor(
     private val preferenceManager: PreferenceManager
 ) : ViewModel() {
 
-    private val _isLoading = MutableStateFlow(true)
+    private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
     init {
         viewModelScope.launch {
+            initAlertSetting()
             initAllCoinList()
         }
     }
@@ -34,6 +36,24 @@ class MainViewModel @Inject constructor(
     fun saveFcmToken(token: String) {
         viewModelScope.launch {
             preferenceManager.putFcmToken(token)
+        }
+    }
+
+    private fun initAlertSetting() {
+        viewModelScope.launch {
+            preferenceManager.getCoinVolumeAlertRatio().collectLatest { ratioSetting ->
+                if (ratioSetting == null) {
+                    preferenceManager.putCoinVolumeAlertRatio(5000)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            preferenceManager.getCoinPriceChangeAlertRatio().collectLatest { ratioSetting ->
+                if (ratioSetting == null) {
+                    preferenceManager.putCoinPriceChangeAlertRatio(30)
+                }
+            }
         }
     }
 

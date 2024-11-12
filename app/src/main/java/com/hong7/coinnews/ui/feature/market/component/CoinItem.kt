@@ -34,10 +34,6 @@ fun CoinItem(
 ) {
     Row(
         modifier = modifier
-            .background(
-                color = Grey50,
-                shape = RoundedCornerShape(6.dp),
-            )
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

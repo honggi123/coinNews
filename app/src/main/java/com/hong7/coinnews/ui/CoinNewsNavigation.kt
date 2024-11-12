@@ -16,7 +16,7 @@ sealed class MainNav(
     @DrawableRes val icon: Int,
     val route: String
 ) {
-    object Info : MainNav(NavigationTitle.MAIN_INFO, R.drawable.ic_home_24, NavigationRouteName.MAIN_INFO)
+    object Info : MainNav(NavigationTitle.MAIN_INFO, R.drawable.ic_newspaper_24, NavigationRouteName.MAIN_INFO)
 
     object Market : MainNav(NavigationTitle.MAIN_MARKET, R.drawable.ic_align_vertical_bottom_24, NavigationRouteName.MAIN_MARKET)
 
@@ -93,7 +93,7 @@ object NavigationRouteName {
 }
 
 object NavigationTitle {
-    const val MAIN_INFO = "정보"
+    const val MAIN_INFO = "코인 정보"
     const val MAIN_MARKET = "마켓"
     const val MAIN_SETTING = "설정"
 
