@@ -105,7 +105,7 @@ fun SettingScreen(
                 )
             }
             Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 viewModel.volumeRatePercentages.forEach { rate ->

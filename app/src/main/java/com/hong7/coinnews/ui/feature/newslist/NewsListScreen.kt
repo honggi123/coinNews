@@ -107,6 +107,11 @@ fun NewsListScreen(
 
         }
 
+        is NewsScreenUiState.Failed -> {
+            LoadingContent(
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         else -> Unit
     }
 }

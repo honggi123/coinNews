@@ -7,6 +7,8 @@ import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -82,7 +84,8 @@ fun startMonitorService(preferenceManager: PreferenceManager, context: Context) 
             volumeEnabled || priceEnabled
         }.collectLatest { enabled ->
             if (enabled) {
-                val isRunning = context.getForegroundState("com.hong7.coinnews.CoinMonitorForegroundService")
+                val isRunning =
+                    context.getForegroundState("com.hong7.coinnews.CoinMonitorForegroundService")
                 if (!isRunning) {
                     context.stopService(serviceIntent)
                     context.startForegroundService(serviceIntent)
@@ -105,16 +108,19 @@ class UncaughtExceptionHandler(
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
         Firebase.crashlytics.recordException(throwable)
         Timber.tag("uncaughtException").e(throwable)
-        AlertDialog.Builder(context)
-            .setTitle("오류 발생")
-            .setMessage("현재 시스템 오류가 발생했습니다. 앱을 재설치하거나, 잠시 후 다시 시도해 주세요.")
-            .setCancelable(false)
-            .setPositiveButton("확인") { dialog, _ ->
-                dialog.dismiss()
-                val serviceIntent = Intent(context, CoinMonitorForegroundService::class.java)
-                context.stopService(serviceIntent)
-                System.exit(1)
-            }
-            .show()
+
+        Handler(Looper.getMainLooper()).post {
+            AlertDialog.Builder(context)
+                .setTitle("오류 발생")
+                .setMessage("현재 시스템 오류가 발생했습니다. 앱을 재설치하거나, 잠시 후 다시 시도해 주세요.")
+                .setCancelable(false)
+                .setPositiveButton("확인") { dialog, _ ->
+                    dialog.dismiss()
+                    val serviceIntent = Intent(context, CoinMonitorForegroundService::class.java)
+                    context.stopService(serviceIntent)
+                    System.exit(1)
+                }
+                .show()
+        }
     }
 }
