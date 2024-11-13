@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hong7.coinnews.ui.theme.Grey50
@@ -52,6 +53,7 @@ fun CoinItem(
                 style = coinNewsTypography.bodySmall.copy(
                     fontWeight = FontWeight.Medium,
                 ),
+                overflow = TextOverflow.Ellipsis
             )
         }
         Row(
