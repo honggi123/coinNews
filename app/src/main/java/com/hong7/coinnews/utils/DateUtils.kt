@@ -36,6 +36,11 @@ object DateUtils {
         return LocalDateTime.parse(dateTimeString, formatter)
     }
 
+    fun formatLocalDateTime(dateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern("HH시 mm분 ss초")
+        return dateTime.format(formatter)
+    }
+
     fun formatDateTimeWithUtcOffset(dateTimeString: String): LocalDateTime {
         val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
         return LocalDateTime.parse(dateTimeString, formatter)

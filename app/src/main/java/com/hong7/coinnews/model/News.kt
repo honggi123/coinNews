@@ -11,8 +11,4 @@ data class News(
     val createdAt: LocalDateTime? = null
 )
 
-data class NewsWithInterest(
-    val news: News,
-    val isInterested: Boolean
-)
 

@@ -1,5 +1,7 @@
 package com.hong7.coinnews.utils
 
+import android.content.Intent
+import android.net.Uri
 import androidx.navigation.NavHostController
 import com.hong7.coinnews.model.News
 

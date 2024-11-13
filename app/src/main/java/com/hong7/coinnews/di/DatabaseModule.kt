@@ -1,10 +1,8 @@
 package com.hong7.coinnews.di
 
 import android.content.Context
-import com.hong7.coinnews.database.dao.AppDatabase
-import com.hong7.coinnews.database.dao.UserFilterDao
-import com.hong7.coinnews.database.InterestedNewsDao
-import com.hong7.coinnews.database.dao.NewsDao
+import com.hong7.coinnews.database.AppDatabase
+import com.hong7.coinnews.database.dao.CoinDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,18 +21,8 @@ class DataBaseModule {
     }
 
     @Provides
-    fun provideUserFilterDao(appDatabase: AppDatabase): UserFilterDao {
-        return appDatabase.filterDao()
-    }
-
-    @Provides
-    fun provideInterestedNewsDao(appDatabase: AppDatabase): InterestedNewsDao {
-        return appDatabase.interestedNewsDao()
-    }
-
-    @Provides
-    fun provideNewsDao(appDatabase: AppDatabase): NewsDao {
-        return appDatabase.newsDao()
+    fun provideNewsDao(appDatabase: AppDatabase): CoinDao {
+        return appDatabase.coinDao()
     }
 }
 

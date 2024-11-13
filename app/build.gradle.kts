@@ -18,21 +18,21 @@ fun getApiKey(propertyKey: String): String {
 
 android {
     namespace = "com.hong7.coinnews"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "com.hong7.coinnews"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 14
-        versionName = "1.0.1"
+        targetSdk = 35
+        versionCode = 22
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String", "CRTPTO_NEWS_API_KEY", getApiKey("CRTPTO_NEWS_API_KEY"))
         buildConfigField("String", "NAVER_API_KEY", getApiKey("NAVER_API_KEY"))
         buildConfigField("String", "NAVER_API_SECRETE", getApiKey("NAVER_API_SECRETE"))
+        buildConfigField("String", "YOUTUBE_API_KEY", getApiKey("YOUTUBE_API_KEY"))
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -87,6 +87,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
         }
     }
 }
@@ -96,11 +97,13 @@ dependencies {
     implementation(files("../libs/jsoup-1.17.2.jar"))
     kapt("androidx.room:room-compiler:2.6.1")
 
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.24.13-rc")
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.activity:activity-compose:1.9.3")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation("androidx.compose.ui:ui:1.6.5")
+    implementation("androidx.compose.ui:ui:1.7.4")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3:1.3.0-alpha05")
@@ -123,34 +126,49 @@ dependencies {
 
     implementation("com.jakewharton.timber:timber:5.0.1")
 
-    implementation("androidx.paging:paging-common-ktx:3.2.1")
-    implementation("androidx.paging:paging-compose:3.2.1")
-    implementation("androidx.paging:paging-runtime-ktx:3.2.1")
+    implementation("androidx.paging:paging-common-ktx:3.3.2")
+    implementation("androidx.paging:paging-compose:3.3.2")
+    implementation("androidx.paging:paging-runtime-ktx:3.3.2")
 
     implementation("androidx.room:room-ktx:2.6.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.5")
 
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 
-    implementation("androidx.compose.animation:animation:1.7.0-alpha07")
+    implementation("androidx.compose.animation:animation:1.8.0-alpha04")
 
     implementation("androidx.compose.material:material:1.6.6")
     implementation("androidx.core:core-splashscreen:1.2.0-alpha01")
+    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
 
+    // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-perf")
-
+    implementation("com.google.firebase:firebase-auth-ktx")
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
-    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-functions")
+
+    implementation("androidx.navigation:navigation-compose:2.8.3")
 
     implementation("com.valentinilk.shimmer:compose-shimmer:1.3.0")
 
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
+
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.room:room-testing:2.6.1")
+
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.17.0")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

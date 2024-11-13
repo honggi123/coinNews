@@ -2,8 +2,10 @@ package com.hong7.coinnews.model
 
 
 data class Coin(
-    val id: String,
-    val name: String,
-    val symbol: String,
-    val isSelected: Boolean = false
+    val marketId: String,
+    val koreanName: String,
+    val englishName: String,
+    val tradePrice: Double? = null,
+    val changeRate: Double? = null,
+    val accTradePrice24h: Double? = null,
 )
