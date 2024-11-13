@@ -1,6 +1,7 @@
 package com.hong7.coinnews.ui.main
 
 import android.app.ActivityManager
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
@@ -104,7 +105,16 @@ class UncaughtExceptionHandler(
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
         Firebase.crashlytics.recordException(throwable)
         Timber.tag("uncaughtException").e(throwable)
-        Toast.makeText(context, "현재 시스템 오류가 발생했습니다. 앱을 재설치하거나, 잠시후 다시 시도해 주세요.", Toast.LENGTH_LONG)
+        AlertDialog.Builder(context)
+            .setTitle("오류 발생")
+            .setMessage("현재 시스템 오류가 발생했습니다. 앱을 재설치하거나, 잠시 후 다시 시도해 주세요.")
+            .setCancelable(false)
+            .setPositiveButton("확인") { dialog, _ ->
+                dialog.dismiss()
+                val serviceIntent = Intent(context, CoinMonitorForegroundService::class.java)
+                context.stopService(serviceIntent)
+                System.exit(1)
+            }
             .show()
     }
 }

@@ -61,9 +61,9 @@ class PreferenceManager @Inject constructor(
         }
     }
 
-    fun getFcmToken(): Flow<String?> {
+    fun getFcmToken(): Flow<String> {
         return context.dataStore.data.map { preferences ->
-            preferences[FIREBASE_TOKEN_KEY]
+            preferences[FIREBASE_TOKEN_KEY] ?: throw NullPointerException()
         }.distinctUntilChanged()
     }
 

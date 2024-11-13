@@ -16,6 +16,60 @@ import kotlinx.coroutines.flow.onStart
 import retrofit2.HttpException
 import java.io.IOException
 
+suspend fun <T> runAsResponseResource(block: suspend () -> T): ResponseResource<T> {
+    return try {
+        val result = block()
+        ResponseResource.Success(result)
+    } catch (error: Throwable) {
+        val exception = when (error) {
+            is HttpException -> {
+                when (error.code()) {
+                    400 -> BadRequestException(
+                        message = "BadRequestException: ${error.code()}",
+                        cause = error
+                    )
+
+                    403 -> ForbiddenException(
+                        message = "ForbiddenException: ${error.code()}",
+                        cause = error
+                    )
+
+                    404 -> NotFoundException(
+                        message = "NotFoundException: ${error.code()}",
+                        cause = error
+                    )
+
+                    409 -> ConflictException(
+                        message = "ConflictException: ${error.code()}",
+                        cause = error
+                    )
+
+                    in 500..599 -> InternetServerException(
+                        message = error.message(),
+                        cause = error
+                    )
+
+                    else -> UnknownException(
+                        message = "UnknownException: ${error.code()}",
+                        cause = error
+                    )
+                }
+            }
+
+            is IOException -> NetworkNotConnectedException(
+                message = "NetworkNotConnectedException",
+                cause = error
+            )
+
+            else -> UnknownException(
+                message = "UnknownException",
+                cause = error
+            )
+        }
+        ResponseResource.Error(exception)
+    }
+}
+
 fun <T> Flow<T>.asResponseResourceFlow(): Flow<ResponseResource<T>> {
     return this
         .map<T, ResponseResource<T>> {
@@ -26,14 +80,31 @@ fun <T> Flow<T>.asResponseResourceFlow(): Flow<ResponseResource<T>> {
             val exception = when (error) {
                 is HttpException -> {
                     when (error.code()) {
-                        400 -> BadRequestException(message = "BadRequestException: ${error.code()}", cause = error)
-                        403 -> ForbiddenException(message = "ForbiddenException: ${error.code()}", cause = error)
-                        404 -> NotFoundException(message = "NotFoundException: ${error.code()}", cause = error)
-                        409 -> ConflictException(message = "ConflictException: ${error.code()}", cause = error)
+                        400 -> BadRequestException(
+                            message = "BadRequestException: ${error.code()}",
+                            cause = error
+                        )
+
+                        403 -> ForbiddenException(
+                            message = "ForbiddenException: ${error.code()}",
+                            cause = error
+                        )
+
+                        404 -> NotFoundException(
+                            message = "NotFoundException: ${error.code()}",
+                            cause = error
+                        )
+
+                        409 -> ConflictException(
+                            message = "ConflictException: ${error.code()}",
+                            cause = error
+                        )
+
                         in 500..599 -> InternetServerException(
                             message = error.message(),
                             cause = error
                         )
+
                         else -> UnknownException(
                             message = "UnknownException: ${error.code()}",
                             cause = error

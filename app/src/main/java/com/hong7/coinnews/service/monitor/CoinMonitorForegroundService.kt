@@ -7,20 +7,35 @@ import android.app.Service
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.auth.oauth2.IdTokenCredentials
 import com.google.auth.oauth2.IdTokenProvider
 import com.google.auth.oauth2.ImpersonatedCredentials
 import com.hong7.coinnews.R
+import com.hong7.coinnews.data.extensions.asResponseResourceFlow
+import com.hong7.coinnews.data.extensions.runAsResponseResource
 import com.hong7.coinnews.database.dao.CoinDao
+import com.hong7.coinnews.database.entity.CoinEntity
+import com.hong7.coinnews.model.Coin
+import com.hong7.coinnews.model.exception.BadRequestException
+import com.hong7.coinnews.model.exception.ConflictException
+import com.hong7.coinnews.model.exception.ForbiddenException
+import com.hong7.coinnews.model.exception.InternetServerException
+import com.hong7.coinnews.model.exception.NetworkNotConnectedException
+import com.hong7.coinnews.model.exception.NotFoundException
+import com.hong7.coinnews.model.exception.ResponseResource
 import com.hong7.coinnews.network.model.request.SendNotificationRequest
 import com.hong7.coinnews.network.retrofit.GoogleCloudService
 import com.hong7.coinnews.network.retrofit.UpbitService
 import com.hong7.coinnews.preference.PreferenceManager
 import com.hong7.coinnews.ui.main.MainActivity
+import com.hong7.coinnews.utils.PriceUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +52,8 @@ import timber.log.Timber
 import java.io.FileInputStream
 import java.io.IOException
 import java.lang.Math.sqrt
+import java.time.Duration
+import java.time.LocalDateTime
 import java.util.Arrays
 import javax.inject.Inject
 
@@ -56,21 +73,17 @@ class CoinMonitorForegroundService : Service() {
     @Inject
     lateinit var preferenceManager: PreferenceManager
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+
+    private val lastPriceAlertTimes = mutableMapOf<CoinEntity, LocalDateTime>()
+    private val lastVolumeAlertTimes = mutableMapOf<CoinEntity, LocalDateTime>()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotification()
         coroutineScope.launch {
             preferenceManager.getFcmToken().collectLatest { token ->
-                // TODO token null
-
-
-                if (token != null) {
-                    startVolumeMonitor(token)
-                    startPricePercentageMonitor(token)
-                } else {
-                    throw NullPointerException()
-                }
+                startVolumeMonitor(token)
+                startPricePercentageMonitor(token)
             }
         }
 
@@ -83,48 +96,77 @@ class CoinMonitorForegroundService : Service() {
                 preferenceManager.getCoinVolumeAlertEnabled(),
                 preferenceManager.getCoinVolumeAlertRatio()
             ) { enabled, ratio ->
+                if (ratio == null) {
+                    throw NullPointerException("알림 비율이 설정되지 않았습니다.")
+                }
                 Pair(enabled, ratio)
             }.collectLatest { (enabled, ratio) ->
                 dao.getCoins().collectLatest { list ->
                     while (enabled) {
                         list.map { coin ->
                             delay(1000)
+                            val lastAlertTime =
+                                lastVolumeAlertTimes.getOrDefault(coin, null)
+                            if (lastAlertTime != null) {
+                                if (Duration.between(
+                                        lastAlertTime,
+                                        LocalDateTime.now()
+                                    ).toHours() < 1
+                                ) {
+                                    return@map
+                                }
+                            }
 
-                            val response =
+                            val response = runAsResponseResource {
                                 upbitService.fetchLatestCandles(market = coin.marketId)
-//                                val volumes = response.map { it.candleAccTradeVolume }
-//
-//                                // 표준 편차
-//                                val mean = volumes.average()
-//                                val variance = volumes.map { (it - mean) * (it - mean) }.average()
-//                                val standardDeviation = sqrt(variance)
-//
-//                                val threshold = mean + 2 * standardDeviation
+                            }
 
-                            val volumes = response.map { it.candleAccTradeVolume }
-                            val firstVolume = volumes.first()
-                            val threshold = volumes.drop(1).average() * (ratio?.div(100)
-                                ?: throw NullPointerException())
+                            when (response) {
+                                is ResponseResource.Success -> {
+                                    val volumes = response.data.map { it.candleAccTradeVolume }
+                                    val firstVolume = volumes.first()
+                                    val threshold = volumes.drop(1).average() * (ratio.div(100))
 
-                            if (firstVolume >= threshold) {
-                                // 거래량 급등
-                                Timber.i("${coin.koreanName} ${ratio} 거래량 급등 포착!!!")
+                                    if (firstVolume >= threshold) {
+                                        // 거래량 급등
+                                        Timber.i("${coin.koreanName} ${ratio} 거래량 급등 포착!!!")
 
-                                // TODO accessToken null 처리
+                                        // TODO accessToken null 처리
 
 //                                val accessToken = getAccessToken(
 //                                    "coin-news-418815@appspot.gserviceaccount.com",
 //                                    "https://www.googleapis.com/auth/cloud-platform"
 //                                )
-                                googleCloudService.sendPushNotificaiton(
-                                    request = SendNotificationRequest(
-                                        "종목명 : ${coin.koreanName} 거래량 급등",
-                                        "${ratio}% 거래량 변동성이 포착되었습니다!!",
-                                        token
-                                    )
-                                )
-                            } else {
-                                Timber.i("거래량 변동성 ${ratio} 없음 : ${coin.koreanName}")
+
+                                        val response = googleCloudService.sendPushNotificaiton(
+                                            request = SendNotificationRequest(
+                                                "❗ ${coin.koreanName} 거래량 급등 ❗",
+                                                "${ratio}% 이상의 거래량 변동성 포착!!",
+                                                token
+                                            )
+                                        )
+                                        if (response.success) {
+                                            lastVolumeAlertTimes.put(coin, LocalDateTime.now())
+                                        }
+
+                                    } else {
+                                        Timber.i("거래량 변동성 ${ratio} 없음 : ${coin.koreanName}")
+                                    }
+                                }
+
+                                is ResponseResource.Error -> {
+                                    hanldeApiError(retryBlock = {
+                                        coroutineScope.launch {
+                                            runAsResponseResource {
+                                                upbitService.fetchLatestCandles(market = coin.marketId)
+                                            }
+                                        }
+                                    }, result = response)
+                                }
+
+                                is ResponseResource.Loading -> {
+
+                                }
                             }
                         }
                     }
@@ -132,7 +174,6 @@ class CoinMonitorForegroundService : Service() {
                 }
             }
         }
-
     }
 
     private fun startPricePercentageMonitor(token: String) {
@@ -141,46 +182,127 @@ class CoinMonitorForegroundService : Service() {
                 preferenceManager.getCoinPriceChangeAlertEnabled(),
                 preferenceManager.getCoinPriceChangeAlertRatio()
             ) { enabled, ratio ->
+                if (ratio == null) {
+                    throw NullPointerException("알림 비율이 설정되지 않았습니다.")
+                }
                 Pair(enabled, ratio)
             }.collectLatest { (enabled, ratio) ->
                 dao.getCoins().collect { list ->
                     while (enabled) {
                         list.map { coin ->
                             delay(1000)
-
+                            val lastAlertTime =
+                                lastPriceAlertTimes.getOrDefault(coin, null)
+                            if (lastAlertTime != null) {
+                                if (Duration.between(
+                                        lastAlertTime,
+                                        LocalDateTime.now()
+                                    ).toHours() < 1
+                                ) {
+                                    return@map
+                                }
+                            }
                             val response =
-                                upbitService.fetchLatestCandles(60, market = coin.marketId)
-                            val tradePrices = response.map { it.tradePrice }
+                                runAsResponseResource {
+                                    upbitService.fetchDaysCandles(market = coin.marketId)
+                                }
 
-                            val nowPrice = tradePrices.first()
-                            val previousPrices = tradePrices.drop(1)
-                            val previousPrice =
-                                previousPrices.firstOrNull() ?: throw NullPointerException() // TODO
-                            val threshold = previousPrice * (1 + (ratio?.div(100.0) ?: throw NullPointerException()))
-                            if (nowPrice >= threshold)
-                             {
-                                // 가격 급등
-                                Timber.i("${coin.koreanName} 가격 변동성 포착!!!")
+                            when (response) {
+                                is ResponseResource.Success -> {
+                                    val todayChangeRate =
+                                        response.data.map { it.changeRate }.first()
+
+                                    if (todayChangeRate >= (ratio.div(100.0))
+                                    ) {
+                                        // 가격 급등
+                                        Timber.i("${coin.koreanName} 가격 변동성 포착!!!")
 
 //                                val accessToken = getAccessToken(
 //                                    "coinalert-gcp@coin-news-418815.iam.gserviceaccount.com\n",
 //                                    "https://www.googleapis.com/auth/cloud-platform"
 //                                )
-//                                googleCloudService.sendPushNotificaiton(
-//                                    request = SendNotificationRequest(
-//                                        "종목명 : ${coin.koreanName} 가격 급등",
-//                                        "${ratio}% 가격 변동성이 포착되었습니다!!",
-//                                        token
-//                                    )
-//                                )
-                            } else {
-                                Timber.i("가격 ${ratio} 변동성 없음 : ${coin.koreanName}")
+                                        val response = googleCloudService.sendPushNotificaiton(
+                                            request = SendNotificationRequest(
+                                                "❗ ${coin.koreanName} 가격 급등 ❗",
+                                                "전일 대비 ${
+                                                    String.format(
+                                                        "%.1f",
+                                                        todayChangeRate * 100
+                                                    )
+                                                }% 포착",
+                                                token
+                                            )
+                                        )
+
+                                        if (response.success) {
+                                            lastPriceAlertTimes.put(coin, LocalDateTime.now())
+                                        }
+                                    } else {
+                                        Timber.i("가격 ${ratio} 변동성 없음 : ${coin.koreanName}")
+                                    }
+                                }
+
+                                is ResponseResource.Error -> {
+                                    hanldeApiError(
+                                        retryBlock = {
+                                            coroutineScope.launch {
+                                                upbitService.fetchDaysCandles(market = coin.marketId)
+                                            }
+                                        },
+                                        result = response
+                                    )
+                                }
+
+                                is ResponseResource.Loading -> {
+
+                                }
                             }
                         }
                     }
                     delay(10_000L)
                 }
             }
+        }
+    }
+
+    private suspend fun hanldeApiError(retryBlock: () -> Unit, result: ResponseResource.Error) {
+        val message = when (result.exception) {
+            is InternetServerException -> {
+                retry(delayMillis = 600000L, block = retryBlock)
+                "서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+            }
+
+            is NetworkNotConnectedException -> {
+                retry(delayMillis = 3000L, block = retryBlock)
+                "인터넷 연결이 필요합니다. 연결 상태를 확인해주세요."
+            }
+
+            else -> {
+                Timber.tag("uncaughtNetworkException").e(result.exception)
+                throw result.exception
+            }
+        }
+
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "${message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private suspend fun retry(
+        maxRetries: Int = 3,
+        delayMillis: Long = 1000L,
+        block: () -> Unit
+    ) {
+        var attempt = 0
+        try {
+            block()
+        } catch (e: Exception) {
+            attempt++
+            delay(delayMillis)
+            if (attempt <= maxRetries) {
+                block()
+            }
+            return
         }
     }
 
@@ -242,7 +364,7 @@ class CoinMonitorForegroundService : Service() {
             )
         )
 
-        notificationManager.notify(1, builder.build()) // id : 정의해야하는 각 알림의 고유한 int값
+        notificationManager.notify(1, builder.build())
         val notification = builder.build()
         startForeground(1, notification)
         notificationManager.notify(1, notification)

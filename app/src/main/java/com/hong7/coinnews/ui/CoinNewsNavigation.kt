@@ -95,7 +95,7 @@ object NavigationRouteName {
 object NavigationTitle {
     const val MAIN_INFO = "코인 정보"
     const val MAIN_MARKET = "마켓"
-    const val MAIN_SETTING = "설정"
+    const val MAIN_SETTING = "알림 설정"
 
     const val NEWS = "news"
     const val NEWS_DETAIL = "News Detail"

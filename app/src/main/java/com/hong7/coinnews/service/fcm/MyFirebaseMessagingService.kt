@@ -1,5 +1,6 @@
 package com.hong7.coinnews.service.fcm
 
+import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -34,7 +35,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        Timber.d(TAG, "From: " + message!!.from)
+        Timber.d(TAG, "From: " + message.from)
 
         // Notification 메시지를 수신할 경우는
         // remoteMessage.notification?.body!! 여기에 내용이 저장되어있다.
@@ -43,8 +44,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         if (message.data.isNotEmpty()) {
             Timber.i("바디: ", message.data["body"].toString())
             Timber.i("타이틀: ", message.data["title"].toString())
-            Handler(Looper.getMainLooper()).post {
-                Toast.makeText(this, "${message.data["body"].toString()}", Toast.LENGTH_LONG).show()
+            if(isAppInForeground(this)){
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(this, "${message.data["body"].toString()}", Toast.LENGTH_LONG).show()
+                }
             }
             sendNotification(message)
         } else {
@@ -92,5 +95,18 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         // 알림 생성
         notificationManager.notify(uniId, notificationBuilder.build())
+    }
+
+    private fun isAppInForeground(context: Context): Boolean {
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val appProcesses = activityManager.runningAppProcesses ?: return false
+
+        for (appProcess in appProcesses) {
+            if (appProcess.processName == context.packageName &&
+                appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                return true
+            }
+        }
+        return false
     }
 }

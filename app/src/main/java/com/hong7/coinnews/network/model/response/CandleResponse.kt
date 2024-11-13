@@ -28,7 +28,6 @@ data class DaysCandleResponse(
     @SerialName("trade_price") val tradePrice: Double,
     @SerialName("timestamp") val timestamp: Long,
     @SerialName("candle_acc_trade_price") val candleAccTradePrice: Double,
-    @SerialName("change_price") val changePrice: Double,
+    @SerialName("change_price") val changePrice: Double?,
     @SerialName("change_rate") val changeRate: Double,
-    @SerialName("converted_trade_price") val convertedTradePrice: Double,
 )

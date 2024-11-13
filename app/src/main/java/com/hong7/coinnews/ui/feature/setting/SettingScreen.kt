@@ -1,6 +1,10 @@
 package com.hong7.coinnews.ui.feature.setting
 
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,10 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Switch
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,25 +23,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.normal.TedPermission
 import com.hong7.coinnews.BuildConfig
-import com.hong7.coinnews.R
-import com.hong7.coinnews.ui.theme.Grey
 import com.hong7.coinnews.ui.theme.Grey100
-import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey400
 import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey700
@@ -64,7 +58,7 @@ fun SettingScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "설정",
+                        text = "알림 설정",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Grey700
@@ -98,7 +92,16 @@ fun SettingScreen(
                 )
                 Switch(
                     checked = volumeAlertEnabled.value,
-                    onCheckedChange = { viewModel.toggleVolumeAlertEnabled(it) }
+                    onCheckedChange = { enabled ->
+                        if (enabled) {
+                            checkAlertPermission(
+                                context,
+                                { viewModel.toggleVolumeAlertEnabled(enabled) }
+                            )
+                        } else {
+                            viewModel.toggleVolumeAlertEnabled(enabled)
+                        }
+                    }
                 )
             }
             Row(
@@ -116,7 +119,7 @@ fun SettingScreen(
                             }
                         )
                         Text(
-                            text = "${rate}%",
+                            text = "+${rate}%",
                             color = Grey500,
                             style = coinNewsTypography.bodySmall.copy(
                                 fontWeight = FontWeight.Medium,
@@ -134,7 +137,7 @@ fun SettingScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "급등 포착 알림",
+                    text = "가격 급등 포착 알림",
                     color = Grey500,
                     style = coinNewsTypography.bodyLarge.copy(
                         fontWeight = FontWeight.Bold,
@@ -142,7 +145,16 @@ fun SettingScreen(
                 )
                 Switch(
                     checked = priceAlertEnabled.value,
-                    onCheckedChange = { viewModel.togglePriceAlertEnabled(it) }
+                    onCheckedChange = { enabled ->
+                        if (enabled) {
+                            checkAlertPermission(
+                                context,
+                                { viewModel.togglePriceAlertEnabled(enabled) }
+                            )
+                        } else {
+                            viewModel.togglePriceAlertEnabled(enabled)
+                        }
+                    }
                 )
             }
             Row(
@@ -160,7 +172,7 @@ fun SettingScreen(
                             }
                         )
                         Text(
-                            text = "${rate}%",
+                            text = "+${rate}%",
                             color = Grey500,
                             style = coinNewsTypography.bodySmall.copy(
                                 fontWeight = FontWeight.Medium,
@@ -208,4 +220,39 @@ fun SettingScreen(
             }
         }
     }
+}
+
+private fun checkAlertPermission(context: Context, onGranted: () -> Unit) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (isNotificationEnabled(context)) {
+            onGranted()
+        } else {
+            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+            }
+            context.startActivity(intent)
+        }
+    } else {
+        TedPermission.create()
+            .setPermissionListener(object : PermissionListener {
+                override fun onPermissionGranted() {
+                    onGranted()
+                    // TODO: 권한이 허용된 후 추가 작업
+                }
+
+                override fun onPermissionDenied(deniedPermissions: List<String?>?) {
+                    // TODO: 권한이 거부된 경우 처리
+                }
+            })
+            .setDeniedMessage("권한을 허용해 주셔야\n사용 가능합니다.")
+            .setPermissions(
+                android.Manifest.permission.POST_NOTIFICATIONS,
+            )
+            .check()
+    }
+}
+
+private fun isNotificationEnabled(context: Context): Boolean {
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    return notificationManager.areNotificationsEnabled()
 }

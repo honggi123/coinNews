@@ -23,8 +23,8 @@ android {
         applicationId = "com.hong7.coinnews"
         minSdk = 26
         targetSdk = 35
-        versionCode = 21
-        versionName = "1.1.2"
+        versionCode = 22
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -140,6 +140,7 @@ dependencies {
 
     implementation("androidx.compose.material:material:1.6.6")
     implementation("androidx.core:core-splashscreen:1.2.0-alpha01")
+    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
 
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
