@@ -23,8 +23,8 @@ android {
         applicationId = "com.hong7.coinnews"
         minSdk = 26
         targetSdk = 35
-        versionCode = 22
-        versionName = "1.2.0"
+        versionCode = 25
+        versionName = "1.2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

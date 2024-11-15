@@ -1,6 +1,5 @@
-package com.hong7.coinnews.ui.feature.market.market
+package com.hong7.coinnews.ui.feature.bithumb
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hong7.coinnews.data.repository.CoinRepositoy
 import com.hong7.coinnews.model.Coin
@@ -16,11 +15,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class MarketViewModel @Inject constructor(
+class BithumbViewModel @Inject constructor(
     val coinRepositoy: CoinRepositoy
 ) : BaseViewModel() {
 
@@ -93,25 +93,16 @@ class MarketViewModel @Inject constructor(
     private var loadJob: Job? = null
 
     private fun loadMarketCoins() {
-        loadJob = coinRepositoy.getCoins().map { coins ->
-            coinRepositoy.getCoinPrice(coins.map { it.marketId })
+        loadJob = viewModelScope.launch {
+            coinRepositoy.getBithumbCoins()
                 .collectLatest { result ->
                     when (result) {
                         is ResponseResource.Success -> {
-                            val coinPriceMap = result.data.associateBy { it.market }
-                            val coinsWithPrice = coins.map {
-                                val coinPrice = coinPriceMap.get(it.marketId)
-                                it.copy(
-                                    tradePrice = coinPrice?.tradePrice,
-                                    changeRate = coinPrice?.changeRate,
-                                    accTradePrice24h = coinPrice?.accTradePrice24h
-                                )
-                            }
                             if (uiState.value is MarketUiState.Success) {
                                 _uiState.value =
                                     (uiState.value as MarketUiState.Success).copy(
                                         LocalDateTime.now(),
-                                        coinList = coinsWithPrice
+                                        coinList = result.data
                                     )
                             } else {
                                 _uiState.value =
@@ -119,7 +110,7 @@ class MarketViewModel @Inject constructor(
                                         LocalDateTime.now(),
                                         sortList,
                                         sortList.first(),
-                                        coinList = coinsWithPrice
+                                        coinList = result.data
                                     )
                             }
                         }
@@ -133,7 +124,7 @@ class MarketViewModel @Inject constructor(
                         }
                     }
                 }
-        }.launchIn(viewModelScope)
+        }
     }
 }
 

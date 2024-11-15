@@ -1,6 +1,7 @@
 package com.hong7.coinnews.di
 
 import com.hong7.coinnews.network.derpecated.BigDecimalSerializer
+import com.hong7.coinnews.network.retrofit.BithumbService
 import com.hong7.coinnews.network.retrofit.GoogleCloudService
 import com.hong7.coinnews.network.retrofit.UpbitService
 import com.hong7.coinnews.network.retrofit.NaverService
@@ -83,6 +84,26 @@ object NetworkModule {
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(UpbitService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideBithumbService(client: OkHttpClient): BithumbService {
+        val BASE_URL = "https://api.bithumb.com/"
+        val json = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+            allowStructuredMapKeys = true
+            serializersModule = serializersModuleOf(BigDecimal::class, BigDecimalSerializer)
+        }
+        val contentType = "application/json".toMediaType()
+
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(json.asConverterFactory(contentType))
+            .build()
+            .create(BithumbService::class.java)
     }
 
     @Singleton

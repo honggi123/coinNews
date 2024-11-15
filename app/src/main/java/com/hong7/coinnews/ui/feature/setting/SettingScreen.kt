@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,6 +41,7 @@ import com.hong7.coinnews.ui.theme.Grey400
 import com.hong7.coinnews.ui.theme.Grey500
 import com.hong7.coinnews.ui.theme.Grey700
 import com.hong7.coinnews.ui.theme.coinNewsTypography
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,137 +75,142 @@ fun SettingScreen(
         modifier = modifier
     ) {
         Column(
-            modifier = modifier
-                .fillMaxWidth()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(it)
                 .padding(24.dp),
             horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "거래량 급등 포착 알림",
-                    color = Grey500,
-                    style = coinNewsTypography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
-                )
-                Switch(
-                    checked = volumeAlertEnabled.value,
-                    onCheckedChange = { enabled ->
-                        if (enabled) {
-                            checkAlertPermission(
-                                context,
-                                { viewModel.toggleVolumeAlertEnabled(enabled) }
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "거래량 급등 알림",
+                        color = Grey500,
+                        style = coinNewsTypography.bodyLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                        ),
+                    )
+                    Switch(
+                        checked = volumeAlertEnabled.value,
+                        onCheckedChange = { enabled ->
+                            if (enabled) {
+                                checkAlertPermission(
+                                    context,
+                                    { viewModel.toggleVolumeAlertEnabled(enabled) }
+                                )
+                            } else {
+                                viewModel.toggleVolumeAlertEnabled(enabled)
+                            }
+                        }
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    viewModel.volumeRatePercentages.forEach { rate ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = (rate == selectedVolumeRate.value),
+                                onClick = {
+                                    viewModel.selectVolumeRate(rate)
+                                }
                             )
-                        } else {
-                            viewModel.toggleVolumeAlertEnabled(enabled)
+                            Text(
+                                text = "+${rate}%",
+                                color = Grey500,
+                                style = coinNewsTypography.bodySmall.copy(
+                                    fontWeight = FontWeight.Medium,
+                                ),
+                            )
                         }
                     }
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                viewModel.volumeRatePercentages.forEach { rate ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        RadioButton(
-                            selected = (rate == selectedVolumeRate.value),
-                            onClick = {
-                                viewModel.selectVolumeRate(rate)
-                            }
-                        )
-                        Text(
-                            text = "+${rate}%",
-                            color = Grey500,
-                            style = coinNewsTypography.bodySmall.copy(
-                                fontWeight = FontWeight.Medium,
-                            ),
-                        )
-                    }
                 }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Divider(color = Grey100, thickness = 1.dp)
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "가격 급등 포착 알림",
-                    color = Grey500,
-                    style = coinNewsTypography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
-                )
-                Switch(
-                    checked = priceAlertEnabled.value,
-                    onCheckedChange = { enabled ->
-                        if (enabled) {
-                            checkAlertPermission(
-                                context,
-                                { viewModel.togglePriceAlertEnabled(enabled) }
+                Spacer(modifier = Modifier.height(4.dp))
+                Divider(color = Grey100, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "가격 급등 알림",
+                        color = Grey500,
+                        style = coinNewsTypography.bodyLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                        ),
+                    )
+                    Switch(
+                        checked = priceAlertEnabled.value,
+                        onCheckedChange = { enabled ->
+                            if (enabled) {
+                                checkAlertPermission(
+                                    context,
+                                    { viewModel.togglePriceAlertEnabled(enabled) }
+                                )
+                            } else {
+                                viewModel.togglePriceAlertEnabled(enabled)
+                            }
+                        }
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    viewModel.priceRatePercentages.forEach { rate ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = (rate == selectedPriceRate.value),
+                                onClick = {
+                                    viewModel.selectPriceRate(rate)
+                                }
                             )
-                        } else {
-                            viewModel.togglePriceAlertEnabled(enabled)
+                            Text(
+                                text = "+${rate}%",
+                                color = Grey500,
+                                style = coinNewsTypography.bodySmall.copy(
+                                    fontWeight = FontWeight.Medium,
+                                ),
+                            )
                         }
                     }
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                viewModel.priceRatePercentages.forEach { rate ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        RadioButton(
-                            selected = (rate == selectedPriceRate.value),
-                            onClick = {
-                                viewModel.selectPriceRate(rate)
-                            }
-                        )
-                        Text(
-                            text = "+${rate}%",
-                            color = Grey500,
-                            style = coinNewsTypography.bodySmall.copy(
-                                fontWeight = FontWeight.Medium,
-                            ),
-                        )
-                    }
                 }
+                Spacer(modifier = Modifier.height(4.dp))
+                Divider(color = Grey100, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(4.dp))
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Divider(color = Grey100, thickness = 1.dp)
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "문의하기",
-                color = Grey500,
-                style = coinNewsTypography.bodyLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                ),
-                modifier = Modifier.clickable {
-                    val intent = Intent(Intent.ACTION_SEND).apply {
-                        type = "message/rfc822"
-                        putExtra(Intent.EXTRA_EMAIL, arrayOf("ghdrl7526@gmail.com"))
-                        putExtra(Intent.EXTRA_SUBJECT, "[코인왓치] 문의 사항")
-                    }
-                    context.startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"))
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.weight(1f))
             Column(
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
+                Text(
+                    text = "문의하기",
+                    color = Grey500,
+                    style = coinNewsTypography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                    modifier = Modifier.clickable {
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "message/rfc822"
+                            putExtra(Intent.EXTRA_EMAIL, arrayOf("ghdrl7526@gmail.com"))
+                            putExtra(Intent.EXTRA_SUBJECT, "[코인왓치] 문의 사항")
+                        }
+                        context.startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"))
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "버전 : ${BuildConfig.VERSION_NAME}",
                     color = Grey400,
@@ -253,6 +261,7 @@ private fun checkAlertPermission(context: Context, onGranted: () -> Unit) {
 }
 
 private fun isNotificationEnabled(context: Context): Boolean {
-    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val notificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     return notificationManager.areNotificationsEnabled()
 }

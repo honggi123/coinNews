@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 private const val CRYPTO_SEARCH_KEYWORD =
-    "코인 | 비트코인 | 암호화폐 | 이더리움"
+    "가상자산 | 비트코인 | 암호화폐 | 이더리움 | 두나무 | 빗썸 | 바이낸스 | 솔라나 | 밈 코인"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
