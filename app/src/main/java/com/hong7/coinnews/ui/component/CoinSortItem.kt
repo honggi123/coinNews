@@ -1,4 +1,4 @@
-package com.hong7.coinnews.ui.feature.market.component
+package com.hong7.coinnews.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,13 +7,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -29,9 +25,6 @@ import com.hong7.coinnews.R
 import com.hong7.coinnews.ui.feature.market.model.Sort
 import com.hong7.coinnews.ui.feature.market.model.SortCategory
 import com.hong7.coinnews.ui.feature.market.model.SortType
-import com.hong7.coinnews.ui.theme.Grey300
-import com.hong7.coinnews.ui.theme.Grey500
-import com.hong7.coinnews.ui.theme.Grey700
 import com.hong7.coinnews.ui.theme.Grey900
 import com.hong7.coinnews.ui.theme.coinNewsTypography
 
@@ -45,10 +38,10 @@ fun CoinSortItem(
     Row(
         modifier = modifier
             .background(
-                color = Grey900,
+                color = Color.White,
                 shape = RoundedCornerShape(6.dp),
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -60,7 +53,7 @@ fun CoinSortItem(
             Text(
                 text = "종목명",
                 modifier = Modifier,
-                color = Color.White,
+                color = Grey900,
                 textAlign = TextAlign.Start,
                 maxLines = 1,
                 style = coinNewsTypography.bodySmall.copy(
@@ -72,7 +65,6 @@ fun CoinSortItem(
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight()
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -89,24 +81,21 @@ fun CoinSortItem(
                         SortCategory.VOLUME -> "거래량"
                         SortCategory.PERCENTAGECHANGE -> "전일대비"
                     },
-                    color = Color.White,
+                    color = Grey900,
                     textAlign = TextAlign.Start,
                     maxLines = 1,
                     style = coinNewsTypography.bodySmall.copy(
                         fontWeight = FontWeight.Medium,
                     ),
                 )
-                Column(
-                    modifier = Modifier.width(14.dp)
-                        .fillMaxHeight()
-                ) {
+                Column {
                     if (selectedSort.sortCategory == sort.sortCategory) {
                         when (selectedSort.sortType) {
                             SortType.ASCENDING -> {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_arrow_drop_up),
                                     contentDescription = "",
-                                    colorFilter = ColorFilter.tint(Color.White),
+                                    colorFilter = ColorFilter.tint(Grey900),
                                     modifier = Modifier.size(14.dp)
                                 )
                             }
@@ -115,7 +104,7 @@ fun CoinSortItem(
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_arrow_drop_down),
                                     contentDescription = "",
-                                    colorFilter = ColorFilter.tint(Color.White),
+                                    colorFilter = ColorFilter.tint(Grey900),
                                     modifier = Modifier.size(14.dp)
                                 )
                             }

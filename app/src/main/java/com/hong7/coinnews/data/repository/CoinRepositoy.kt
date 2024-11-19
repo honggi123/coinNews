@@ -10,4 +10,7 @@ interface CoinRepositoy {
     fun getCoins(): Flow<List<Coin>>
 
     fun getCoinPrice(markets: List<String>): Flow<ResponseResource<List<CoinPrice>>>
+
+    fun getBithumbCoins(): Flow<ResponseResource<List<Coin>>>
+
 }

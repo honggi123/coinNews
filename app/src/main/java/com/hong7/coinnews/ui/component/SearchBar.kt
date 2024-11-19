@@ -76,10 +76,10 @@ fun SearchBar(
                 fontWeight = FontWeight.Medium,
             ),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search,
-                keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
-                autoCorrect = true
+                autoCorrectEnabled = true,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Search
             ),
             keyboardActions = KeyboardActions(
                 onSearch = {
@@ -120,7 +120,7 @@ fun SearchBar(
                 }
             },
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
+                backgroundColor = White,
                 cursorColor = Salmon600,
                 focusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
@@ -132,7 +132,7 @@ fun SearchBar(
 
 @Preview
 @Composable
-fun SearchBarPreview(){
+fun SearchBarPreview() {
 
     var query by remember { mutableStateOf("") }
 

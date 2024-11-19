@@ -1,6 +1,5 @@
-package com.hong7.coinnews.ui.feature.market.market
+package com.hong7.coinnews.ui.feature.bithumb
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -13,15 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,27 +33,21 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.hong7.coinnews.model.Coin
-import com.hong7.coinnews.ui.feature.market.component.CoinItem
-import com.hong7.coinnews.ui.feature.market.component.CoinSortItem
+import com.hong7.coinnews.ui.component.CoinItem
+import com.hong7.coinnews.ui.component.CoinSortItem
 import com.hong7.coinnews.ui.feature.market.model.Sort
 import com.hong7.coinnews.ui.feature.market.model.SortCategory
 import com.hong7.coinnews.ui.feature.market.model.SortType
-import com.hong7.coinnews.ui.theme.Grey400
-import com.hong7.coinnews.ui.theme.Grey50
-import com.hong7.coinnews.ui.theme.Grey700
-import com.hong7.coinnews.ui.theme.Grey800
-import com.hong7.coinnews.ui.theme.coinNewsTypography
-import com.hong7.coinnews.utils.DateUtils
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MarketScreen(
+fun BithumbScreen(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
-    viewModel: MarketViewModel = hiltViewModel()
+    viewModel: BithumbViewModel = hiltViewModel()
 ) {
 
     LaunchedEffect(Unit) {
@@ -70,26 +58,7 @@ fun MarketScreen(
 
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "마켓",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.ExtraBold
-                        ),
-                        color =
-                        Grey700
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                ),
-            )
-        }
-    ) {
+    Scaffold {
         when (val state = uiState.value) {
             is MarketUiState.Success -> {
                 MarketScreenContent(
@@ -117,6 +86,7 @@ fun MarketScreen(
 }
 
 @Composable
+
 private fun LoadingContent(
     modifier: Modifier = Modifier
 ) {
@@ -160,25 +130,16 @@ fun MarketScreenContent(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 12.dp),
+                .padding(horizontal = 6.dp, vertical = 6.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = "새로고침 : " + DateUtils.formatLocalDateTime(updatedDateTime),
-                style = coinNewsTypography.bodySmall.copy(
-                    fontWeight = FontWeight.Normal,
-                    color = Grey400
-                ),
-            )
-
             CoinSortItem(
                 sortList = sortList,
                 selectedSort = selectedSort,
                 onSortClick = onSortClick,
                 modifier = Modifier.fillMaxWidth()
-                    .height(30.dp)
             )
-
+            HorizontalDivider()
             LazyColumn(
                 modifier = Modifier.weight(1F),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -195,7 +156,7 @@ fun MarketScreenContent(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(34.dp)
+                            .height(50.dp)
                     )
                 }
                 item {
@@ -225,6 +186,7 @@ private fun MarketListItem(
     ) {
         CoinItem(
             name = coin.koreanName,
+            ticker = coin.marketId,
             price = coin.tradePrice,
             volume24h = coin.accTradePrice24h,
             percentageChange24h = coin.changeRate,

@@ -1,11 +1,9 @@
 package com.hong7.coinnews.ui.feature.setting
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hong7.coinnews.preference.PreferenceManager
 import com.hong7.coinnews.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -59,13 +57,13 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun selectPriceRate(ratio: Int){
+    fun selectPriceRate(ratio: Int) {
         viewModelScope.launch {
             preferenceManager.putCoinPriceChangeAlertRatio(ratio)
         }
     }
 
-    fun selectVolumeRate(ratio: Int){
+    fun selectVolumeRate(ratio: Int) {
         viewModelScope.launch {
             preferenceManager.putCoinVolumeAlertRatio(ratio)
         }

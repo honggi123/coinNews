@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
-import com.hong7.coinnews.ui.theme.Grey700
 
 @Composable
 fun ClickableChip(
@@ -49,7 +48,8 @@ fun ClickableChip(
 private fun SelectableChipPreview() {
     CoinNewsAppTheme {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .background(Color.White)
         ) {
             ClickableChip(

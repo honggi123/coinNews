@@ -1,6 +1,5 @@
 package com.hong7.coinnews.ui.component
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -20,10 +19,8 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey
-import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey900
 
@@ -74,8 +71,9 @@ fun SelectableChip(
 private fun SelectableChipPreview() {
     CoinNewsAppTheme {
         Box(
-            modifier = Modifier.fillMaxSize()
-                .background(Color.White)
+            modifier = Modifier
+                .fillMaxSize()
+                .background(White)
         ) {
             SelectableChip(
                 selected = false,

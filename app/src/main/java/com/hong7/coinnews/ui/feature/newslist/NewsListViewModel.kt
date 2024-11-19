@@ -2,7 +2,6 @@ package com.hong7.coinnews.ui.feature.newslist
 
 import androidx.lifecycle.viewModelScope
 import com.hong7.coinnews.data.repository.NewsRepository
-import com.hong7.coinnews.model.Coin
 import com.hong7.coinnews.model.News
 import com.hong7.coinnews.model.exception.ResponseResource
 import com.hong7.coinnews.ui.base.BaseViewModel
@@ -12,14 +11,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 private const val CRYPTO_SEARCH_KEYWORD =
-    "코인 | 비트코인 | 암호화폐 | 이더리움"
+    "가상자산 | 비트코인 | 암호화폐 | 이더리움 | 두나무 | 빗썸 | 바이낸스 | 솔라나 | 밈 코인"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel

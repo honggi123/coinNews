@@ -1,9 +1,9 @@
 package com.hong7.coinnews.di
 
-import com.hong7.coinnews.network.derpecated.BigDecimalSerializer
+import com.hong7.coinnews.network.retrofit.BithumbService
 import com.hong7.coinnews.network.retrofit.GoogleCloudService
-import com.hong7.coinnews.network.retrofit.UpbitService
 import com.hong7.coinnews.network.retrofit.NaverService
+import com.hong7.coinnews.network.retrofit.UpbitService
 import com.hong7.coinnews.network.retrofit.YoutubeService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -11,13 +11,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.serializersModuleOf
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.math.BigDecimal
 import javax.inject.Singleton
 
 @Module
@@ -73,7 +71,6 @@ object NetworkModule {
             ignoreUnknownKeys = true
             coerceInputValues = true
             allowStructuredMapKeys = true
-            serializersModule = serializersModuleOf(BigDecimal::class, BigDecimalSerializer)
         }
         val contentType = "application/json".toMediaType()
 
@@ -83,6 +80,25 @@ object NetworkModule {
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(UpbitService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideBithumbService(client: OkHttpClient): BithumbService {
+        val BASE_URL = "https://api.bithumb.com/"
+        val json = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+            allowStructuredMapKeys = true
+        }
+        val contentType = "application/json".toMediaType()
+
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(json.asConverterFactory(contentType))
+            .build()
+            .create(BithumbService::class.java)
     }
 
     @Singleton

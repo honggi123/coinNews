@@ -38,33 +38,4 @@ class NewsRepositoryImpl @Inject constructor(
     companion object {
         private const val NETWORK_PAGE_SIZE = 20
     }
-
-
-//    override fun getRecentNewsByCoin(coin: Coin): Flow<ResponseResource<List<News>>> = flow {
-//        val news = coroutineScope {
-//            val query = "\"${coin.name}\""
-//            val naverNewsDeffered = async { fetchNaverNews(query) }
-//            naverNewsDeffered.await()
-//        }
-//        news.sortedByDescending { it.createdAt }
-//        emit(news)
-//    }.asResponseResourceFlow()
-
-//    override fun isNewsScraped(newsId: String): Flow<Boolean> {
-//        return interestedNewsDao.isInterested(newsId)
-//    }
-//
-//    override suspend fun addNewsScraped(news: News) {
-//        interestedNewsDao.insert(news.toScrapEntity())
-//    }
-//
-//    override suspend fun deleteNewsScraped(news: News) {
-//        interestedNewsDao.delete(news.id)
-//    }
-
-//    override fun getScrapedNewsList(): Flow<List<News>> {
-//        return interestedNewsDao.fetchAllNews()
-//            .map { it.map { it.toDomain() } }
-//    }
-
 }

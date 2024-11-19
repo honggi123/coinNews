@@ -1,6 +1,5 @@
 package com.hong7.coinnews.ui.feature.videolist
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -14,15 +13,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 @HiltViewModel
 class VideoListViewModel @Inject constructor(
     private val videoRepository: VideoRepository,
-    savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
 
     // TODO

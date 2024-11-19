@@ -12,10 +12,12 @@ object PriceUtils {
         val decimalFormat = DecimalFormat("#.################")
         val priceStr = decimalFormat.format(value)
         val parts = priceStr.split(".")
-
         return if (parts[0].toInt() > 0) {
-            parts[0].replace(Regex("(\\d)(?=(\\d{3})+(?!\\d))"), "$1,")
+            // 1의 자리도 있는 경우
+            var formattedValue = parts[0].replace(Regex("(\\d)(?=(\\d{3})+(?!\\d))"), "$1,")
+            formattedValue
         } else {
+            // 소숫점
             priceStr
         }
     }

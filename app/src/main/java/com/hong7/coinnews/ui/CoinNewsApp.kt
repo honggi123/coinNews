@@ -1,10 +1,6 @@
 package com.hong7.coinnews.ui
 
-import android.content.Context
-import android.widget.Toast
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,20 +30,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.Firebase
-import com.google.firebase.crashlytics.crashlytics
-import com.google.firebase.messaging.FirebaseMessaging
-import com.hong7.coinnews.preference.PreferenceManager
 import com.hong7.coinnews.ui.feature.deprecated.info.InfoRoute
-import com.hong7.coinnews.ui.feature.market.market.MarketScreen
-import com.hong7.coinnews.ui.feature.newslist.NewsListScreen
+import com.hong7.coinnews.ui.feature.market.MarketRoute
 import com.hong7.coinnews.ui.feature.setting.SettingScreen
-import com.hong7.coinnews.ui.feature.videolist.VideoListScreen
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme
 import com.hong7.coinnews.ui.theme.Grey500
-import timber.log.Timber
 
 @Composable
 fun CoinNewsApp() {
@@ -101,6 +89,14 @@ private fun CoinNewsNavGraph(
             InfoRoute(navController, snackbarHostState)
         }
         composable(
+            route = MainNav.Market.route,
+        ) {
+            MarketRoute(
+                navController,
+                snackbarHostState,
+            )
+        }
+        composable(
             route = MainNav.Setting.route,
         ) {
             SettingScreen(
@@ -108,57 +104,6 @@ private fun CoinNewsNavGraph(
                 modifier.fillMaxSize()
             )
         }
-        composable(
-            route = MainNav.Market.route,
-        ) {
-            MarketScreen(
-                navController,
-                snackbarHostState,
-                modifier.fillMaxSize()
-            )
-        }
-        composable(
-            route = NewsNav.route,
-            enterTransition = {
-                slideIntoContainer(
-                    animationSpec = tween(400),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    animationSpec = tween(400),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right
-                )
-            }
-        ) {
-            NewsListScreen(
-                navController = navController,
-                snackbarHostState = snackbarHostState
-            )
-        }
-//        composable(
-//            route = VideoListNav.routeWithArgName(),
-//            arguments = VideoListNav.arguments,
-//            enterTransition = {
-//                slideIntoContainer(
-//                    animationSpec = tween(400),
-//                    towards = AnimatedContentTransitionScope.SlideDirection.Left
-//                )
-//            },
-//            exitTransition = {
-//                slideOutOfContainer(
-//                    animationSpec = tween(400),
-//                    towards = AnimatedContentTransitionScope.SlideDirection.Right
-//                )
-//            }
-//        ) {
-//            VideoListScreen(
-//                snackbarHostState = snackbarHostState,
-//                navController = navController
-//            )
-//        }
-
     }
 }
 
