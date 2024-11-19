@@ -1,8 +1,6 @@
 package com.hong7.coinnews.ui
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +32,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.hong7.coinnews.ui.feature.deprecated.info.InfoRoute
 import com.hong7.coinnews.ui.feature.market.MarketRoute
-import com.hong7.coinnews.ui.feature.newslist.NewsListScreen
 import com.hong7.coinnews.ui.feature.setting.SettingScreen
 import com.hong7.coinnews.ui.theme.Blue600
 import com.hong7.coinnews.ui.theme.CoinNewsAppTheme

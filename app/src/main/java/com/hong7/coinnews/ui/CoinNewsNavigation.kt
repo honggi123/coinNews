@@ -6,7 +6,6 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.hong7.coinnews.R
 import com.hong7.coinnews.model.News
-import com.hong7.coinnews.utils.GsonUtils
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -16,11 +15,23 @@ sealed class MainNav(
     @DrawableRes val icon: Int,
     val route: String
 ) {
-    object Info : MainNav(NavigationTitle.MAIN_INFO, R.drawable.ic_newspaper_24, NavigationRouteName.MAIN_INFO)
+    object Info : MainNav(
+        NavigationTitle.MAIN_INFO,
+        R.drawable.ic_newspaper_24,
+        NavigationRouteName.MAIN_INFO
+    )
 
-    object Market : MainNav(NavigationTitle.MAIN_MARKET, R.drawable.ic_align_vertical_bottom_24, NavigationRouteName.MAIN_MARKET)
+    object Market : MainNav(
+        NavigationTitle.MAIN_MARKET,
+        R.drawable.ic_align_vertical_bottom_24,
+        NavigationRouteName.MAIN_MARKET
+    )
 
-    object Setting : MainNav(NavigationTitle.MAIN_SETTING, R.drawable.ic_setting, NavigationRouteName.MAIN_SETTING)
+    object Setting : MainNav(
+        NavigationTitle.MAIN_SETTING,
+        R.drawable.ic_setting,
+        NavigationRouteName.MAIN_SETTING
+    )
 
 }
 

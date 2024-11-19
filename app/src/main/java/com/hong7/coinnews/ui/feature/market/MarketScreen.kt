@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
@@ -14,10 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -35,10 +31,7 @@ import androidx.navigation.NavHostController
 import com.hong7.coinnews.R
 import com.hong7.coinnews.ui.component.SelectableChip
 import com.hong7.coinnews.ui.feature.bithumb.BithumbScreen
-import com.hong7.coinnews.ui.feature.newslist.NewsListScreen
 import com.hong7.coinnews.ui.feature.upbit.UpbitScreen
-import com.hong7.coinnews.ui.feature.videolist.VideoListScreen
-import com.hong7.coinnews.ui.theme.Blue800
 import com.hong7.coinnews.ui.theme.Grey1000
 import com.hong7.coinnews.ui.theme.Grey200
 import com.hong7.coinnews.ui.theme.Grey700
@@ -82,13 +75,20 @@ fun MarketScreen(
 
                         },
                         containerColor = MaterialTheme.colorScheme.background,
-                        modifier = Modifier.width(200.dp)
+                        modifier = Modifier
+                            .width(200.dp)
                             .padding(horizontal = 8.dp)
                     ) {
                         HomeTabRowContent(
                             tabs,
                             pagerState.currentPage,
-                            onSectionIndexChange = { coroutineScope.launch { pagerState.animateScrollToPage(it) } },
+                            onSectionIndexChange = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(
+                                        it
+                                    )
+                                }
+                            },
                         )
                     }
                 },

@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BithumbViewModel @Inject constructor(
-    val coinRepositoy: CoinRepositoy
+    val coinRepositoy: CoinRepositoy,
 ) : BaseViewModel() {
 
     private val sortList = listOf(
@@ -36,9 +36,7 @@ class BithumbViewModel @Inject constructor(
         loadMarketCoins()
     }
 
-    fun refresh() {
-        loadMarketCoins()
-    }
+    fun refresh() = loadMarketCoins()
 
     fun onSortClick(selectedSortCategory: SortCategory, selectedSortType: SortType) {
         _uiState.value = when (val state = uiState.value) {
@@ -115,13 +113,8 @@ class BithumbViewModel @Inject constructor(
                             }
                         }
 
-                        is ResponseResource.Error -> {
-                            onErrorResonse(result)
-                        }
-
-                        else -> {
-
-                        }
+                        is ResponseResource.Error -> onErrorResonse(result)
+                        else -> Unit
                     }
                 }
         }

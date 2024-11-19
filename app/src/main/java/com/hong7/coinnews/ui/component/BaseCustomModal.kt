@@ -118,12 +118,12 @@ private fun Button(
 
 @Preview
 @Composable
-fun BaseCustomModalPreview(){
+fun BaseCustomModalPreview() {
     CoinNewsAppTheme {
         BaseCustomModal(
             onDismissClick = {},
             onActionClick = {},
             modifier = Modifier.fillMaxWidth(),
-        ){}
+        ) {}
     }
 }

@@ -1,6 +1,5 @@
 package com.hong7.coinnews.data.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.hong7.coinnews.data.mapper.toDomain

@@ -1,7 +1,6 @@
 package com.hong7.coinnews.preference
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -10,9 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
-import java.util.Calendar
 import javax.inject.Inject
 
 class PreferenceManager @Inject constructor(
@@ -25,7 +22,8 @@ class PreferenceManager @Inject constructor(
 
         private val FIREBASE_TOKEN_KEY = stringPreferencesKey("firebase_token")
         private val COIN_VOLUME_ALERT_ENABLED_KEY = booleanPreferencesKey("COIN_VOLUME_ALERT_ONOFF")
-        private val COIN_PRICE_ALERT_ENABLED_KEY = booleanPreferencesKey("COIN_PRICE_PERCENTAGE_ALERT_ONOFF")
+        private val COIN_PRICE_ALERT_ENABLED_KEY =
+            booleanPreferencesKey("COIN_PRICE_PERCENTAGE_ALERT_ONOFF")
 
         private val COIN_VOLUME_ALERT_RATIO_KEY = intPreferencesKey("COIN_VOLUME_ALERT_RATIO_KEY")
         private val COIN_PRICE_ALERT_RATIO_KEY = intPreferencesKey("COIN_PRICE_ALERT_RATIO_KEY")

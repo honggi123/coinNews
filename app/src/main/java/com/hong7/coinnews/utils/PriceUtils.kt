@@ -1,6 +1,5 @@
 package com.hong7.coinnews.utils
 
-import android.util.Log
 import java.text.DecimalFormat
 
 object PriceUtils {
