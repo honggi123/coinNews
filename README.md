@@ -14,7 +14,6 @@
 
 > Cryptocurrency News app
 
-[코인 왓치 (Google Play)](https://play.google.com/store/apps/details?id=com.hong7.coinnews&hl=ko&gl=US)
 
 
 
